@@ -1,6 +1,7 @@
 import pytest
 
 from app.domain.analysis.thermal import thermal_check
+from app.domain.errors import DomainValidationError
 from tests.unit.analysis._arch import arch, comp
 
 
@@ -45,3 +46,9 @@ def test_otherwise_not_modelled(exposure: str, caps: list[str]) -> None:
     r = thermal_check(a, exposure)  # type: ignore[arg-type]
     assert r.status == "not-modelled"
     assert r.explanation == "qualitative check only — no thermal balance computed"
+
+
+def test_unknown_exposure_raises_domain_error() -> None:
+    with pytest.raises(DomainValidationError) as exc:
+        thermal_check(arch(), "lava")  # type: ignore[arg-type]
+    assert exc.value.code == "UNKNOWN_EXPOSURE"

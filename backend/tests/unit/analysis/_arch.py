@@ -14,6 +14,7 @@ def comp(
     cost: float | None = None,
     modes: list[dict[str, Any]] | None = None,
     caps: list[str] | None = None,
+    tags: list[str] | None = None,
 ) -> CatalogComponent:
     params: dict[str, Any] = {}
     if cost is not None:
@@ -21,7 +22,7 @@ def comp(
     return CatalogComponent.model_validate(
         {
             "id": cid, "name": cid, "category": cat, "description": "d",
-            "parameters": params, "capabilities": caps or [],
+            "parameters": params, "tags": tags or [], "capabilities": caps or [],
             "failure_modes": modes or [],
             "source_record_id": "s", "provenance": PROV, "is_illustrative": True,
         }

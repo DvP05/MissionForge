@@ -59,3 +59,23 @@ def test_rpn_is_heuristic_not_probability() -> None:
             rpn(*bad)
     with pytest.raises(DomainValidationError):
         rpn(0.5, 4, detectability=0)
+
+
+def test_mitigation_by_tag_of_other_component() -> None:
+    a = arch(
+        bus=comp("bus", "bus", 1.0, [mode("b1", 0.1, 5, ["redundant-computer"])]),
+        cdh=comp("cdh", "cdh", 1.0, tags=["redundant-computer"]),
+    )
+    assert reliability(a).single_point_failures == []
+
+
+def test_mitigation_tag_only_on_own_component_still_spf() -> None:
+    a = arch(
+        bus=comp("bus", "bus", 1.0, [mode("b1", 0.1, 5, ["self-tag"])], tags=["self-tag"]),
+    )
+    assert reliability(a).single_point_failures == ["bus"]
+
+
+def test_assumptions_describe_per_mode_mean() -> None:
+    joined = " ".join(RELIABILITY_ASSUMPTIONS)
+    assert "per-mode mean" in joined and "dilutes" in joined
