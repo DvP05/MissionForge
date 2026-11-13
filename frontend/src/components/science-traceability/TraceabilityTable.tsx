@@ -32,7 +32,7 @@ function statusNote(row: TraceRow, hasAnalysis: boolean): string {
     case "uncovered":
       return `No selected instrument has the "${row.capability}" capability (capability match).`;
     case "not-returned":
-      return "Backend analysis: an instrument is present but no data is returned for this requirement.";
+      return "Backend analysis lists this requirement as missing returned data.";
     case "covered":
       return "Backend analysis: covered for this design revision.";
     case "matched":
@@ -112,6 +112,11 @@ export function TraceabilityTable({
                     {s.label}
                   </p>
                   <p className="mt-1 text-xs text-muted">{statusNote(row, hasAnalysis)}</p>
+                  {row.scheduled ? null : (
+                    <p data-testid={`trace-unscheduled-${row.requirementId}`} className="mt-1 text-xs text-accent-amber">
+                      No observation scheduled
+                    </p>
+                  )}
                 </td>
               </tr>
             );

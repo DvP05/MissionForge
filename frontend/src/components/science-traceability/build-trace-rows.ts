@@ -25,6 +25,8 @@ export interface TraceRow {
   required: boolean;
   instruments: InstrumentRef[];
   status: TraceStatus;
+  /** True when the operations plan has an observation item for this requirement. */
+  scheduled: boolean;
 }
 
 /**
@@ -37,6 +39,7 @@ export function buildTraceRows(
   objectives: readonly ScienceObjective[],
   selectedInstruments: readonly InstrumentRef[],
   analysis: MissionAnalysis | null,
+  scheduledMeasurementIds: ReadonlySet<string> = new Set(),
 ): TraceRow[] {
   const missing = new Set(analysis?.science.missingRequirements ?? []);
   const rows: TraceRow[] = [];
@@ -58,6 +61,7 @@ export function buildTraceRows(
         required: req.required,
         instruments,
         status,
+        scheduled: scheduledMeasurementIds.has(req.id),
       });
     }
   }

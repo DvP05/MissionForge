@@ -36,11 +36,19 @@ export function useAnalysis(): { retry: () => void } {
       (result) => {
         if (controller.signal.aborted) return;
         const state = useMissionStore.getState();
-        if (result.ok && result.data) state.applyAnalysis(result.data.analysis);
-        else state.setAnalysisError();
+        // A non-aborted response that does not match the current mission/revision is an error
+        // (never leave "calculating" forever).
+        if (!(result.ok && result.data && state.applyAnalysis(result.data.analysis))) {
+          state.setAnalysisError();
+        }
       },
     );
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+      // An aborted request must not leave a stale "calculating" behind (unmount/remount).
+      const s = useMissionStore.getState();
+      if (s.status === "calculating") useMissionStore.setState({ status: s.analysis ? "stale" : "idle" });
+    };
   }, [missionId, designRevision, attempt]);
 
   const retry = useCallback(() => setAttempt((n) => n + 1), []);

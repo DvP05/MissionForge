@@ -1,8 +1,6 @@
 "use client";
 
-import type { ScienceObjective } from "@/state/mission-store";
-
-export const MAX_OBJECTIVES = 3;
+import { MAX_OBJECTIVES, MIN_OBJECTIVES, type ScienceObjective } from "@/state/mission-store";
 
 const PRIORITIES: { value: number; label: string }[] = [
   { value: 0.5, label: "Low (0.5)" },
@@ -39,12 +37,12 @@ export function ObjectiveSelector({
         </p>
       </div>
       <p className="text-sm text-muted">
-        Keep two or three.{" "}
+        Keep two to four.{" "}
         {full ? "Deselect one to swap in another." : "Add an optional objective to widen the science."}
       </p>
       <ul className="space-y-2">
         {choices.map(({ objective, selected }) => {
-          const onlyOne = selected && selectedCount <= 1;
+          const onlyOne = selected && selectedCount <= MIN_OBJECTIVES;
           const blocked = onlyOne || (!selected && full);
           const checkboxId = `objective-check-${objective.id}`;
           const priorityId = `objective-priority-${objective.id}`;
@@ -70,7 +68,7 @@ export function ObjectiveSelector({
                   <span className="block font-medium">{objective.title}</span>
                   <span className="block text-sm text-muted">{objective.question}</span>
                   {onlyOne ? (
-                    <span className="block text-xs text-muted">At least one objective is required.</span>
+                    <span className="block text-xs text-muted">At least two objectives are required.</span>
                   ) : null}
                 </label>
               </div>

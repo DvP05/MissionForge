@@ -22,6 +22,10 @@ export type OperationsPlan = Schemas["OperationsPlan"];
 export type MissionConstraints = Schemas["MissionConstraints"];
 export type ScenarioId = MissionState["scenarioId"];
 
+/** Objective count bounds from F-002 (R25). */
+export const MIN_OBJECTIVES = 2;
+export const MAX_OBJECTIVES = 4;
+
 export type AnalysisStatus = "idle" | "calculating" | "stale" | "error";
 
 /** Catalogue categories (API `category`) that map onto architecture fields. */
@@ -68,7 +72,7 @@ export interface MissionStoreState {
   updateObjective: (objectiveId: string, patch: Partial<Omit<ScienceObjective, "id">>) => void;
   /** Adds an objective (e.g. an optional one from the scenario template); no-op if the id exists. */
   addObjective: (objective: ScienceObjective) => void;
-  /** Removes an objective; the last remaining objective is never removed. */
+  /** Removes an objective (and its observation-plan items); never goes below MIN_OBJECTIVES (R25). */
   removeObjective: (objectiveId: string) => void;
   updateOperations: (patch: Partial<OperationsPlan>) => void;
   updateConstraints: (patch: Partial<MissionConstraints>) => void;
@@ -188,11 +192,21 @@ export const useMissionStore = create<MissionStoreState>()((set, get) => {
     },
 
     removeObjective(objectiveId) {
-      edit((m) =>
-        m.scienceObjectives.length <= 1
-          ? m
-          : { ...m, scienceObjectives: m.scienceObjectives.filter((o) => o.id !== objectiveId) },
-      );
+      edit((m) => {
+        const removed = m.scienceObjectives.find((o) => o.id === objectiveId);
+        if (!removed || m.scienceObjectives.length <= MIN_OBJECTIVES) return m;
+        // Drop observation items for the removed objective's measurements (pure id filter),
+        // so the plan never references an unknown measurement.
+        const dropped = new Set(removed.requiredMeasurements.map((r) => r.id));
+        return {
+          ...m,
+          scienceObjectives: m.scienceObjectives.filter((o) => o.id !== objectiveId),
+          operations: {
+            ...m.operations,
+            observationPlan: m.operations.observationPlan.filter((i) => !dropped.has(i.measurementId)),
+          },
+        };
+      });
     },
 
     updateOperations(patch) {

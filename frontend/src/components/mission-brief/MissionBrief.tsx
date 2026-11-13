@@ -51,7 +51,8 @@ export function MissionBrief() {
       analysis && analysisRevision === mission.designRevision && analysis.missionId === mission.missionId
         ? analysis
         : null;
-    return buildTraceRows(mission.scienceObjectives, selected, current);
+    const scheduled = new Set(mission.operations.observationPlan.map((i) => i.measurementId));
+    return buildTraceRows(mission.scienceObjectives, selected, current, scheduled);
   }, [mission, instruments, analysis, analysisRevision]);
 
   if (!mission) return null;

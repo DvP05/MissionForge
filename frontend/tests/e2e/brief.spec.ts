@@ -26,14 +26,14 @@ test.describe("mission brief (onboarding)", () => {
     expect(narrative.trim()).toMatch(/^[^.!?]+[.!?]$/);
     await expect(page.getByTestId("brief-constraints").getByRole("listitem")).toHaveCount(3);
     await expect(page.getByTestId("starter-design-label")).toHaveText(/starter design/i);
-    await expect(page.getByTestId("objective-selected-count")).toHaveText(/2 of 3/);
+    await expect(page.getByTestId("objective-selected-count")).toHaveText(/2 of 4/);
     await expect(page.getByTestId("objective-obj-morphology")).toBeVisible();
     await expect(page.getByTestId("objective-obj-composition")).toBeVisible();
     await expect(page.getByTestId("objective-obj-thermal")).toBeVisible();
     const cta = page.getByRole("link", { name: /continue to architect/i });
     await expect(cta).toHaveAttribute("href", `/architect/${id}`);
     await cta.click();
-    await expect(page).toHaveURL(new RegExp(`/architect/${id}$`));
+    await expect(page).toHaveURL(new RegExp(`/architect/${id}$`), { timeout: 30_000 }); // first dev compile of the route
   });
 
   test("enabling and disabling optional objectives updates state, revision and storage", async ({
@@ -43,7 +43,7 @@ test.describe("mission brief (onboarding)", () => {
     await expect(page.getByTestId("revision-pill")).toHaveText("Revision 0");
     const thermal = page.getByTestId("objective-obj-thermal").getByRole("checkbox");
     await thermal.check();
-    await expect(page.getByTestId("objective-selected-count")).toHaveText(/3 of 3/);
+    await expect(page.getByTestId("objective-selected-count")).toHaveText(/3 of 4/);
     await expect(page.getByTestId("revision-pill")).toHaveText("Revision 1");
     expect(await storedObjectiveIds(page, id)).toContain("obj-thermal");
     await thermal.uncheck();
@@ -51,11 +51,50 @@ test.describe("mission brief (onboarding)", () => {
     expect(await storedObjectiveIds(page, id)).not.toContain("obj-thermal");
   });
 
-  test("the last remaining objective cannot be removed", async ({ page }) => {
+  test("at least two objectives are kept and at most four can be selected", async ({ page }) => {
     await startNeo(page);
+    await expect(
+      page.getByTestId("objective-obj-morphology").getByRole("checkbox"),
+    ).toBeDisabled();
+    await page.getByTestId("objective-obj-thermal").getByRole("checkbox").check();
+    await page.getByTestId("objective-obj-magnetic").getByRole("checkbox").check();
+    await expect(page.getByTestId("objective-selected-count")).toHaveText(/4 of 4/);
+    // all four selected: nothing further to add; deselecting is allowed again
+    await expect(
+      page.getByTestId("objective-obj-thermal").getByRole("checkbox"),
+    ).toBeEnabled();
+  });
+
+  test("removing a starter objective drops its observations and analysis still succeeds", async ({
+    page,
+  }) => {
+    const id = await startNeo(page);
+    await expect(page.getByTestId("science-coverage")).toContainText("%");
+    await page.getByTestId("objective-obj-thermal").getByRole("checkbox").check();
     await page.getByTestId("objective-obj-composition").getByRole("checkbox").uncheck();
-    const last = page.getByTestId("objective-obj-morphology").getByRole("checkbox");
-    await expect(last).toBeDisabled();
+    await expect(page.getByTestId("revision-pill")).toHaveText("Revision 2");
+    await expect(page.getByTestId("science-coverage")).toContainText("%");
+    await expect(page.getByTestId("analysis-error")).toHaveCount(0);
+    const ids = await page.evaluate((key) => {
+      const m = JSON.parse(window.localStorage.getItem(key) as string);
+      return m.operations.observationPlan.map((i: { measurementId: string }) => i.measurementId);
+    }, `missionforge:mission:${id}`);
+    expect(ids).not.toContain("meas-vnir-spectra");
+  });
+
+  test("an added optional objective shows No observation scheduled", async ({ page }) => {
+    await startNeo(page);
+    await page.getByTestId("objective-obj-thermal").getByRole("checkbox").check();
+    await expect(page.getByTestId("trace-unscheduled-meas-thermal-ir")).toHaveText(
+      /No observation scheduled/,
+    );
+    await expect(page.getByTestId("analysis-error")).toHaveCount(0);
+  });
+
+  test("brief page has a single h1", async ({ page }) => {
+    await startNeo(page);
+    await expect(page.getByTestId("brief-narrative")).toBeVisible();
+    await expect(page.locator("h1")).toHaveCount(1);
   });
 
   test("objective priority can be edited", async ({ page }) => {
@@ -76,7 +115,7 @@ test.describe("mission brief (onboarding)", () => {
     const t0 = Date.now();
     await startNeo(page);
     await page.getByTestId("objective-obj-thermal").getByRole("checkbox").check();
-    await expect(page.getByTestId("objective-selected-count")).toHaveText(/3 of 3/);
+    await expect(page.getByTestId("objective-selected-count")).toHaveText(/3 of 4/);
     const elapsed = Date.now() - t0;
     expect(elapsed).toBeLessThan(90_000);
   });
@@ -190,18 +229,18 @@ test.describe("workspace mission switching", () => {
     expect(b).not.toBe(a);
     await expect(page.getByTestId("workspace-mission-id")).toContainText(b);
     await expect(page.getByTestId("revision-pill")).toHaveText("Revision 0");
-    await expect(page.getByTestId("objective-selected-count")).toHaveText(/2 of 3/);
+    await expect(page.getByTestId("objective-selected-count")).toHaveText(/2 of 4/);
 
     await page.goBack(); // landing
     await page.goBack(); // mission A (client-side history)
     await expect(page).toHaveURL(new RegExp(`/mission/${a}$`));
     await expect(page.getByTestId("workspace-mission-id")).toContainText(a);
     await expect(page.getByTestId("revision-pill")).toHaveText("Revision 1");
-    await expect(page.getByTestId("objective-selected-count")).toHaveText(/3 of 3/);
+    await expect(page.getByTestId("objective-selected-count")).toHaveText(/3 of 4/);
 
     await page.goForward();
     await page.goForward();
     await expect(page.getByTestId("workspace-mission-id")).toContainText(b);
-    await expect(page.getByTestId("objective-selected-count")).toHaveText(/2 of 3/);
+    await expect(page.getByTestId("objective-selected-count")).toHaveText(/2 of 4/);
   });
 });
