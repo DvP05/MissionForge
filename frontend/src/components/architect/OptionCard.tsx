@@ -76,7 +76,7 @@ export function OptionCard({
         {conflicts.length === 0 ? (
           <>
             <CircleCheck aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-accent-cyan" />
-            <span>Compatible with the current selection</span>
+            <span>No catalogue rule conflict (re-checked by analysis)</span>
           </>
         ) : (
           <>
@@ -89,8 +89,14 @@ export function OptionCard({
       </p>
 
       <p data-testid="cost-delta" className="text-sm">
-        <span className="text-muted">Catalogue list cost delta (gameplay-estimate): </span>
+        <span className="text-muted">Catalogue list cost delta: </span>
         <span className="font-medium tabular-nums">{delta === null ? `${MISSING} no catalogue cost` : formatSigned(delta, "USD")}</span>
+        {delta !== null && component.parameters.cost ? (
+          <>
+            {" "}
+            <FidelityBadge fidelity={component.parameters.cost.provenance.fidelity} />
+          </>
+        ) : null}
       </p>
 
       <button

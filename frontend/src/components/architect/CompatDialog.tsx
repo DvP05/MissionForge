@@ -75,7 +75,7 @@ export function CompatDialog({
       </p>
       {pending.delta !== null ? (
         <p className="mt-2 text-sm text-muted">
-          Catalogue list cost delta (gameplay-estimate): {formatSigned(pending.delta, "USD")}
+          Catalogue list cost delta ({pending.component.parameters.cost?.provenance.fidelity ?? "unlabelled"}): {formatSigned(pending.delta, "USD")}
         </p>
       ) : null}
       <div className="mt-4 flex flex-wrap justify-end gap-2">

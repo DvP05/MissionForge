@@ -45,7 +45,7 @@ export function BudgetTile({
               label={row.label}
               text={row.text}
               provenance={row.provenance}
-              reason={allMissing && i > 0 ? "" : reason}
+              reason={allMissing && i > 0 ? "" : (row.reason ?? reason)}
               was={differs ? (before.text ?? "—") : null}
             />
           );

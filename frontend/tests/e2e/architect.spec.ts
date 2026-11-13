@@ -261,10 +261,9 @@ test.describe("stale-response protection", () => {
     await expect(failed.getByRole("button", { name: /retry/i })).toBeVisible();
     await expect(page.getByTestId("stale-badge")).toBeVisible();
     const mass = page.getByTestId("budget-tile-mass");
-    await expect(mass).toContainText(/kg/);
-    expect(await mass.textContent()).toContain(
-      (massBefore.match(/[\d.,]+\s?[kKMB]?\s?kg/) ?? [""])[0],
-    );
+    await expect(mass).toContainText(/\d\s?kg/);
+    await expect(mass).toHaveText(massBefore); // last good numbers unchanged, not zeroed
+    await expect(page.getByTestId("analysis-revision")).toContainText(/revision 0/i);
     await page.unroute(VALIDATE);
     await failed.getByRole("button", { name: /retry/i }).click();
     await expect(page.getByTestId("analysis-revision")).toContainText(/revision 1/i);
@@ -281,5 +280,76 @@ test.describe("stale-response protection", () => {
     await expect(tile).toContainText("—");
     await expect(tile.getByTestId("missing-reason").first()).toContainText(/analysis/i);
     await expect(tile).not.toContainText(/\b0\s?kg/);
+  });
+});
+
+test.describe("placeholder analysis and debounce", () => {
+  test("a failed-shaped analysis shows dashes and reasons, never 0 kg or 0 %", async ({ page }) => {
+    const id = await startNeo(page);
+    await page.route(VALIDATE, async (route) => {
+      const response = await route.fetch();
+      const body = await response.json();
+      const a = body.data.analysis;
+      const placeholder = {
+        fidelity: "not-modelled",
+        sourceName: "MISSIONFORGE analysis",
+        assumptions: ["Analysis could not run; placeholder value, not a result."],
+      };
+      for (const [k, v] of Object.entries(a.budgets)) {
+        if (v && typeof v === "object") {
+          a.budgets[k] = { value: 0, unit: (v as { unit: string }).unit, provenance: placeholder };
+        } else {
+          a.budgets[k] = 0;
+        }
+      }
+      a.science = { ...a.science, coverageScore: 0, collectedFraction: 0, returnedFraction: 0 };
+      a.constraints = [
+        {
+          id: "catalog-item-not-found",
+          label: "Catalogue item not found",
+          status: "fail",
+          severity: 3,
+          explanation: "Analysis could not run: unknown id.",
+          impactedSubsystems: ["architecture"],
+          suggestedActions: [{ actionId: "select-catalog-component", label: "Select an existing component", expectedEffect: "Lets the analysis run." }],
+        },
+      ];
+      a.feasibility = "infeasible";
+      a.missionReady = false;
+      a.topDrivers = ["catalog-item-not-found"];
+      await route.fulfill({ response, json: body });
+    });
+    await page.goto(`/architect/${id}`);
+    await expect(page.getByTestId("constraint-card-catalog-item-not-found")).toBeVisible({ timeout: 30_000 });
+    for (const t of ["mass", "power", "deltav", "data", "cost", "science"]) {
+      const tile = page.getByTestId(`budget-tile-${t}`);
+      await expect(tile).toContainText("—");
+      await expect(tile.getByTestId("missing-reason").first()).toContainText(/could not run/i);
+      await expect(tile.locator('[data-testid^="fidelity-badge-"]')).toHaveCount(0);
+    }
+    const panel = page.getByTestId("budget-panel");
+    await expect(panel).not.toContainText(/\b0\s?(kg|%|W|km\/s|bit|USD)/);
+  });
+
+  test("two edits within the debounce window send one request, for the latest revision", async ({ page }) => {
+    await openArchitect(page);
+    const revisions: number[] = [];
+    await page.route(VALIDATE, async (route) => {
+      revisions.push(route.request().postDataJSON().missionState.designRevision);
+      await route.continue();
+    });
+    await page.evaluate(() => {
+      const store = (window as unknown as { __missionStore: { getState: () => { selectComponent: (c: string, id: string) => void; commitRevision: () => void } } }).__missionStore;
+      const s = store.getState();
+      s.selectComponent("communications", "comms-xband-medium");
+      s.commitRevision();
+      setTimeout(() => {
+        s.selectComponent("thermal", "thermal-active");
+        s.commitRevision();
+      }, 40);
+    });
+    await expect(page.getByTestId("analysis-revision")).toContainText(/revision 2/i);
+    await page.waitForTimeout(600);
+    expect(revisions).toEqual([2]);
   });
 });

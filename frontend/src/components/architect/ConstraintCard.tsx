@@ -6,6 +6,7 @@ import { formatFraction, formatQuantity, MISSING } from "@/lib/format";
 
 export type Constraint = components["schemas"]["ConstraintResult"];
 type Quantity = components["schemas"]["Quantity"];
+type Provenance = components["schemas"]["Provenance"];
 
 function QuantityLine({
   testId,
@@ -46,9 +47,12 @@ function QuantityLine({
 export function ConstraintCard({
   constraint,
   selected,
+  marginProvenance,
   onExplain,
 }: {
   constraint: Constraint;
+  /** Engine provenance for the margin scalar (the API gives none). */
+  marginProvenance: Provenance;
   selected: boolean;
   onExplain: (id: string) => void;
 }) {
@@ -83,7 +87,11 @@ export function ConstraintCard({
             {constraint.marginFraction === null || constraint.marginFraction === undefined ? (
               <span className="font-normal text-muted">{MISSING} no margin reported</span>
             ) : (
-              formatFraction(constraint.marginFraction)
+              <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                {formatFraction(constraint.marginFraction)}
+                <FidelityBadge fidelity={marginProvenance.fidelity} />
+                <ProvenancePopover provenance={marginProvenance} label={`${constraint.label} margin`} />
+              </span>
             )}
           </dd>
         </div>

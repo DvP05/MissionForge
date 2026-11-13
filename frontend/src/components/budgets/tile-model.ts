@@ -15,6 +15,8 @@ export interface TileRow {
   provenance: Provenance;
   /** Raw backend number used only to detect a change between two analyses. */
   raw: number | null;
+  /** Why there is no number, when the row itself knows (overrides the panel reason). */
+  reason?: string;
 }
 
 export interface TileModel {
@@ -23,17 +25,42 @@ export interface TileModel {
   rows: TileRow[];
 }
 
-/** Provenance for backend-derived scalars that the API ships without their own record. */
+/** Constraint ids the backend uses when the engine could not run (numbers are placeholders). */
+const FAILURE_IDS = ["catalog-item-not-found", "model-input-invalid"];
+
+export function analysisFailed(a: MissionAnalysis): boolean {
+  return a.constraints.some((c) => FAILURE_IDS.includes(c.id));
+}
+
+const PLACEHOLDER_REASON = "Analysis could not run; placeholder value, not a result";
+
+/**
+ * Provenance for engine-computed scalars that the API ships without a record of their own.
+ * Deliberately generic: no specific scenario assumption is attributed to these numbers.
+ */
 export function analysisProvenance(a: MissionAnalysis): Provenance {
   return {
     fidelity: "derived",
     sourceName: "MISSIONFORGE analysis engine",
     sourceVersion: a.engineVersion,
-    assumptions: a.assumptions.slice(0, 4),
+    assumptions: [
+      "Computed by the engine from catalogue values that are gameplay-estimates; see the full assumption list in the drawer.",
+    ],
   };
 }
 
 function q(key: string, label: string, quantity: Quantity | undefined): TileRow {
+  // A not-modelled Quantity is a placeholder (e.g. failed analysis): never shown as a number.
+  if (quantity && quantity.provenance.fidelity === "not-modelled") {
+    return {
+      key,
+      label,
+      text: null,
+      provenance: quantity.provenance,
+      raw: null,
+      reason: quantity.provenance.assumptions?.[0] ?? PLACEHOLDER_REASON,
+    };
+  }
   return {
     key,
     label,
@@ -50,6 +77,9 @@ function scalar(
   value: number | undefined,
   render: (v: number) => string,
 ): TileRow {
+  if (analysisFailed(a)) {
+    return { key, label, text: null, provenance: analysisProvenance(a), raw: null, reason: PLACEHOLDER_REASON };
+  }
   const ok = value !== undefined && Number.isFinite(value);
   return {
     key,

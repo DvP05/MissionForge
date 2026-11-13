@@ -110,9 +110,15 @@ export function conflictsForCandidate(
 ): CompatConflict[] {
   const candidate = catalog.get(candidateId);
   if (!candidate) return [];
-  const others = CATEGORY_ORDER.filter((c) => c.category !== category)
-    .flatMap(({ category: cat }) => selectedIds(mission, cat))
-    .map((id) => catalog.get(id))
+  // Other categories, plus (for instruments) the other selected instruments, since the backend
+  // also checks same-category rules. A single selection being replaced is excluded.
+  const otherIds = CATEGORY_ORDER.filter((c) => c.category !== category).flatMap(({ category: cat }) =>
+    selectedIds(mission, cat),
+  );
+  if (category === "instrument") {
+    otherIds.push(...selectedIds(mission, category).filter((id) => id !== candidateId));
+  }
+  const others = otherIds.map((id) => catalog.get(id))
     .filter((c): c is CatalogComponent => c !== undefined);
   const conflicts = violations(candidate, others);
   for (const other of others) {

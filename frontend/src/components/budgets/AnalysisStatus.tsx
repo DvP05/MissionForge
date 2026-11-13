@@ -37,7 +37,9 @@ export function AnalysisStatus({
         {analysis && (failed || (behind && status !== "calculating")) ? (
           <span data-testid="stale-badge">
             <StatusPill tone="warn" icon={<TriangleAlert aria-hidden className="h-3.5 w-3.5" />}>
-              Stale: revision {analysis.designRevision}, design is at {designRevision}
+              {behind
+                ? `Stale: showing revision ${analysis.designRevision}, design is at ${designRevision}`
+                : "Analysis failed — showing last result"}
             </StatusPill>
           </span>
         ) : null}
