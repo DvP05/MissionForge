@@ -14,8 +14,10 @@ from pydantic import BaseModel
 
 from app.schemas import (
     analysis,
+    analyst,
     catalog,
     evidence,
+    health,
     operations,
     optimization,
     science_belief,
@@ -195,8 +197,8 @@ def constraint_result() -> analysis.ConstraintResult:
         id="power-margin",
         label="Power margin",
         status="warning",
-        actual=qty(0.12, "%"),
-        limit=qty(0.2, "%"),
+        actual=qty(0.12, "fraction"),
+        limit=qty(0.2, "fraction"),
         margin_fraction=-0.08,
         severity=2,
         explanation="Average power margin is below the 20 % target.",
@@ -247,7 +249,17 @@ def score_dimension() -> analysis.ScoreDimension:
 
 
 def score_breakdown() -> analysis.ScoreBreakdown:
-    return analysis.ScoreBreakdown(total=21.75, dimensions=[score_dimension()])
+    rest = [
+        ("mission-execution", 25.0, 20.0),
+        ("engineering-robustness", 20.0, 12.0),
+        ("resource-stewardship", 15.0, 11.0),
+        ("operations-quality", 10.0, 7.0),
+    ]
+    dims = [score_dimension()] + [
+        analysis.ScoreDimension(id=i, weight=w, score=s, explanation="educational proxy")
+        for i, w, s in rest
+    ]
+    return analysis.ScoreBreakdown(total=71.75, dimensions=dims)
 
 
 def mission_analysis() -> analysis.MissionAnalysis:
@@ -301,7 +313,7 @@ def mission_event() -> simulation.MissionEvent:
 def telemetry_sample() -> simulation.TelemetrySample:
     return simulation.TelemetrySample(
         channel="battery_soc",
-        unit="%",
+        unit="fraction",
         mission_day=260.5,
         value=0.32,
         fidelity="gameplay-estimate",
@@ -330,9 +342,26 @@ def final_report() -> simulation.FinalReport:
         outcome="partial",
         summary="Mission returned 70 % of collected science.",
         score=score_breakdown(),
+        realized_risks=["Data buffer saturation before contact"],
         root_causes=["Downlink capacity below generated data volume"],
         counterfactuals=["A second weekly contact would have returned all data."],
         limitations=["Simplified phase-checkpoint resource model."],
+    )
+
+
+def phase_transition() -> simulation.PhaseTransition:
+    return simulation.PhaseTransition(phase="science-ops", mission_day=250.0)
+
+
+def mission_run_manifest() -> simulation.MissionRunManifest:
+    return simulation.MissionRunManifest(
+        schema_version="1.0",
+        engine_version="0.1.0",
+        catalog_version="0.1.0",
+        scenario_version="0.1.0",
+        event_set_id="neo-rendezvous.events@0.1.0",
+        seed=42,
+        app_version="0.1.0",
     )
 
 
@@ -346,10 +375,14 @@ def mission_run() -> simulation.MissionRun:
         engine_version="0.1.0",
         catalog_version="0.1.0",
         experimental=False,
+        input_snapshot=mission_state(),
+        manifest=mission_run_manifest(),
         phases=["pre-launch", "launch-deployment", "science-ops", "complete"],
+        phase_transitions=[phase_transition()],
         events=[mission_event()],
         telemetry=[telemetry_sample()],
         decisions=[decision_record()],
+        autonomy_log=[autonomy_decision()],
         science_outcomes=[science_outcome()],
         final_report=final_report(),
     )
@@ -593,6 +626,7 @@ def autonomy_decision() -> operations.AutonomyDecision:
     return operations.AutonomyDecision(
         decision_maker="onboard-policy",
         policy="resource-aware",
+        belief=belief_state(),
         candidates=[
             scored_action(),
             operations.ScoredAction(
@@ -605,6 +639,80 @@ def autonomy_decision() -> operations.AutonomyDecision:
 
 
 # --- evidence --------------------------------------------------------------------------
+
+
+def architecture_graph() -> optimization.ArchitectureGraph:
+    meas = optimization.ArchitectureNode(
+        id="node-meas-albedo", kind="measurement-requirement", label="Albedo map"
+    )
+    return optimization.ArchitectureGraph(
+        nodes=[architecture_node(), meas], edges=[architecture_edge()]
+    )
+
+
+def metric_change() -> optimization.MetricChange:
+    return optimization.MetricChange(metric="science_score", before=72.5, after=40.0, unit="score")
+
+
+def impact_report() -> optimization.ImpactReport:
+    return optimization.ImpactReport(
+        changed_metrics=[metric_change()],
+        newly_violated=["science-minimum"],
+        improved=["power-margin"],
+        affected_objectives=["obj-surface"],
+    )
+
+
+def design_mutation() -> analyst.DesignMutation:
+    return analyst.DesignMutation(
+        kind="swap-component",
+        target="architecture.communicationsId",
+        from_value="comm-xband",
+        to_value="comm-xband-hga",
+        description="Use the high-gain X-band antenna",
+    )
+
+
+def recommendation() -> analyst.Recommendation:
+    return analyst.Recommendation(
+        id="rec-1",
+        mutation=design_mutation(),
+        metric_before={"data_margin_fraction": -0.25},
+        metric_after={"data_margin_fraction": 0.1},
+        tradeoffs=["+0.4 kg dry mass"],
+        confidence_label="medium",
+        source_refs=["ev-1"],
+        explanation="Doubling downlink rate returns all collected data.",
+    )
+
+
+def detector_config() -> health.DetectorConfig:
+    return health.DetectorConfig(
+        channel="battery_soc",
+        unit="fraction",
+        expected=0.8,
+        warn=0.1,
+        crit=0.2,
+        persistence_k=3,
+        hard_limit=0.2,
+        lam=0.3,
+        rationale="Battery reserve protects eclipse survival (gameplay estimate).",
+    )
+
+
+def anomaly() -> health.Anomaly:
+    return health.Anomaly(
+        channel="battery_soc",
+        unit="fraction",
+        observed=0.32,
+        baseline=0.8,
+        threshold=0.2,
+        window_start=259.0,
+        window_end=260.5,
+        severity="critical",
+        subsystems=["power"],
+        explanation="EWMA residual exceeded the critical threshold during eclipse.",
+    )
 
 
 def evidence_record() -> evidence.EvidenceRecord:
@@ -622,18 +730,6 @@ def evidence_record() -> evidence.EvidenceRecord:
         assumptions=["10 % structure allocation"],
         limitations=["Educational proxy"],
         related_ids=["power-margin"],
-    )
-
-
-def mission_run_manifest() -> evidence.MissionRunManifest:
-    return evidence.MissionRunManifest(
-        schema_version="1.0",
-        engine_version="0.1.0",
-        catalog_version="0.1.0",
-        scenario_version="0.1.0",
-        event_set_id="neo-rendezvous.events@0.1.0",
-        seed=42,
-        app_version="0.1.0",
     )
 
 
@@ -729,7 +825,15 @@ BUILDERS: dict[str, Callable[[], BaseModel]] = {
     "operations.ScoredAction": scored_action,
     "operations.AutonomyDecision": autonomy_decision,
     "evidence.EvidenceRecord": evidence_record,
-    "evidence.MissionRunManifest": mission_run_manifest,
+    "simulation.MissionRunManifest": mission_run_manifest,
+    "simulation.PhaseTransition": phase_transition,
+    "optimization.ArchitectureGraph": architecture_graph,
+    "optimization.MetricChange": metric_change,
+    "optimization.ImpactReport": impact_report,
+    "analyst.DesignMutation": design_mutation,
+    "analyst.Recommendation": recommendation,
+    "health.DetectorConfig": detector_config,
+    "health.Anomaly": anomaly,
     "evidence.MissionPackageManifest": mission_package_manifest,
     "evidence.MissionPackage": mission_package,
 }

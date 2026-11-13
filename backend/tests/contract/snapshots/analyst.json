@@ -1,0 +1,212 @@
+{
+  "DesignMutation": {
+    "additionalProperties": false,
+    "properties": {
+      "description": {
+        "title": "Description",
+        "type": "string"
+      },
+      "fromValue": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Fromvalue"
+      },
+      "kind": {
+        "enum": [
+          "swap-component",
+          "add-instrument",
+          "remove-instrument",
+          "change-operations"
+        ],
+        "title": "Kind",
+        "type": "string"
+      },
+      "target": {
+        "title": "Target",
+        "type": "string"
+      },
+      "toValue": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Tovalue"
+      }
+    },
+    "required": [
+      "kind",
+      "target",
+      "description"
+    ],
+    "title": "DesignMutation",
+    "type": "object"
+  },
+  "Recommendation": {
+    "$defs": {
+      "DesignMutation": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "fromValue": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fromvalue"
+          },
+          "kind": {
+            "enum": [
+              "swap-component",
+              "add-instrument",
+              "remove-instrument",
+              "change-operations"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "target": {
+            "title": "Target",
+            "type": "string"
+          },
+          "toValue": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tovalue"
+          }
+        },
+        "required": [
+          "kind",
+          "target",
+          "description"
+        ],
+        "title": "DesignMutation",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "confidenceLabel": {
+        "enum": [
+          "high",
+          "medium",
+          "low"
+        ],
+        "title": "Confidencelabel",
+        "type": "string"
+      },
+      "explanation": {
+        "title": "Explanation",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "metricAfter": {
+        "additionalProperties": {
+          "type": "number"
+        },
+        "title": "Metricafter",
+        "type": "object"
+      },
+      "metricBefore": {
+        "additionalProperties": {
+          "type": "number"
+        },
+        "title": "Metricbefore",
+        "type": "object"
+      },
+      "mutation": {
+        "$ref": "#/$defs/DesignMutation"
+      },
+      "sourceRefs": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Sourcerefs",
+        "type": "array"
+      },
+      "tradeoffs": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Tradeoffs",
+        "type": "array"
+      }
+    },
+    "required": [
+      "id",
+      "mutation",
+      "metricBefore",
+      "metricAfter",
+      "tradeoffs",
+      "confidenceLabel",
+      "explanation"
+    ],
+    "title": "Recommendation",
+    "type": "object"
+  }
+}

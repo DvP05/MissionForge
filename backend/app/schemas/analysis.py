@@ -6,10 +6,11 @@ design or while any constraint has status "fail".
 """
 
 from datetime import datetime
-from typing import Literal, Self
+from typing import Literal, Self, get_args
 
 from pydantic import Field, StrictBool, StrictInt, model_validator
 
+from app.schemas._frozen import FrozenContract
 from app.schemas.api import ContractModel
 from app.schemas.units import FiniteFloat, NonNegativeFloat, Quantity, UnitFraction
 
@@ -75,16 +76,23 @@ class ReliabilityAnalysis(ContractModel):
     single_point_failures: list[str]
 
 
-class ScoreDimension(ContractModel):
+class ScoreDimension(FrozenContract):
     id: ScoreDimensionId
     weight: NonNegativeFloat
     score: FiniteFloat
     explanation: str
 
 
-class ScoreBreakdown(ContractModel):
+class ScoreBreakdown(FrozenContract):
     total: FiniteFloat
-    dimensions: list[ScoreDimension]
+    dimensions: tuple[ScoreDimension, ...]
+
+    @model_validator(mode="after")
+    def _five_unique_dimensions(self) -> Self:
+        ids = [d.id for d in self.dimensions]
+        if len(ids) != len(set(ids)) or set(ids) != set(get_args(ScoreDimensionId)):
+            raise ValueError("dimensions must contain each of the five score dimensions once")
+        return self
 
 
 class MissionAnalysis(ContractModel):
@@ -104,12 +112,14 @@ class MissionAnalysis(ContractModel):
     assumptions: list[str]
 
     @model_validator(mode="after")
-    def _ready_requires_hard_feasibility(self) -> Self:
-        if self.mission_ready and (
-            self.feasibility == "infeasible" or any(c.status == "fail" for c in self.constraints)
-        ):
-            raise ValueError(
-                "mission_ready cannot be true when feasibility is infeasible "
-                "or any constraint failed"
-            )
+    def _hard_feasibility_is_consistent(self) -> Self:
+        # Constraint status "fail" == hard failure (soft issues are "warning"), so a design
+        # is infeasible exactly when at least one constraint failed (ruling R10).
+        any_failed = any(c.status == "fail" for c in self.constraints)
+        if any_failed and self.feasibility != "infeasible":
+            raise ValueError("feasibility must be 'infeasible' when any constraint failed")
+        if not any_failed and self.feasibility == "infeasible":
+            raise ValueError("feasibility 'infeasible' requires at least one failed constraint")
+        if self.mission_ready and self.feasibility == "infeasible":
+            raise ValueError("mission_ready cannot be true for an infeasible design")
         return self

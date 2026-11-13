@@ -3,18 +3,18 @@
 from datetime import date
 from typing import Literal
 
-from app.schemas.api import ContractModel
+from app.schemas._frozen import FrozenContract
 from app.schemas.units import FiniteFloat, Provenance
 
 
-class Destination(ContractModel):
+class Destination(FrozenContract):
     body_id: str
     name: str
     body_type: str
     source: Provenance | None = None
 
 
-class TrajectorySelection(ContractModel):
+class TrajectorySelection(FrozenContract):
     provider: Literal["jpl-mdesign", "scenario-preset", "manual-estimate"]
     option_id: str
     departure_date: date

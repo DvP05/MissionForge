@@ -4,17 +4,20 @@ lives in domain/dossier, schemas here).
 
 Version fields are plain strings so an imported run made with a different engine /
 catalogue version can still be represented and flagged as "not identical replay".
+`MissionRunManifest` is defined in simulation.py (MissionRun embeds it; defining it here
+would create an import cycle) and re-exported from this module.
 """
 
 from datetime import date, datetime
-from typing import Literal
+from typing import Literal, Self
 
-from pydantic import Field, StrictInt
+from pydantic import Field, model_validator
 
 from app.schemas.analysis import MissionAnalysis
 from app.schemas.api import ContractModel
 from app.schemas.mission import MissionState
 from app.schemas.simulation import MissionRun
+from app.schemas.simulation import MissionRunManifest as MissionRunManifest  # re-export
 from app.schemas.units import Fidelity, Unit
 
 
@@ -34,16 +37,6 @@ class EvidenceRecord(ContractModel):
     related_ids: list[str] = Field(default_factory=list)  # analysis constraint / event IDs
 
 
-class MissionRunManifest(ContractModel):
-    schema_version: str
-    engine_version: str
-    catalog_version: str
-    scenario_version: str
-    event_set_id: str
-    seed: StrictInt
-    app_version: str
-
-
 class MissionPackageManifest(ContractModel):
     app_version: str
     engine_version: str
@@ -59,3 +52,10 @@ class MissionPackage(ContractModel):
     runs: list[MissionRun] = Field(default_factory=list)
     evidence: list[EvidenceRecord] = Field(default_factory=list)
     manifest: MissionPackageManifest
+
+    @model_validator(mode="after")
+    def _runs_belong_to_mission(self) -> Self:
+        # Runs keep their own input_snapshot, so runs of older design revisions replay.
+        if any(r.mission_id != self.mission.mission_id for r in self.runs):
+            raise ValueError("every run must belong to the packaged mission")
+        return self

@@ -9,7 +9,9 @@ from typing import Literal, Self
 
 from pydantic import StrictBool, model_validator
 
+from app.schemas._frozen import FrozenContract
 from app.schemas.api import ContractModel
+from app.schemas.science_belief import BeliefState
 from app.schemas.units import FiniteFloat, NonNegativeFloat
 
 RejectionReason = Literal[
@@ -19,6 +21,7 @@ RejectionReason = Literal[
     "BUFFER_OVERFLOW_BEFORE_CONTACT",
     "NO_CONTACT",
     "PHASE",
+    "THERMAL",
 ]
 AutonomyPolicy = Literal["conservative", "science-first", "resource-aware"]
 
@@ -83,6 +86,17 @@ class MissionSchedule(ContractModel):
     rejected: list[RejectedOpportunity]
     cycles: list[ScheduledDataCycle]
     buffer_timeline: list[BufferPoint]
+    # Architecture 19.6 step 5: data loss only with the player's explicit acceptance.
+    data_loss_risk_accepted: StrictBool = False
+    data_lost_bits: NonNegativeFloat = 0.0
+
+    @model_validator(mode="after")
+    def _consistent(self) -> Self:
+        if set(self.accepted) & {r.id for r in self.rejected}:
+            raise ValueError("an opportunity cannot be both accepted and rejected")
+        if self.data_lost_bits > 0 and not self.data_loss_risk_accepted:
+            raise ValueError("data_lost_bits > 0 requires data_loss_risk_accepted")
+        return self
 
 
 class AutonomyAction(ContractModel):
@@ -95,16 +109,17 @@ class AutonomyAction(ContractModel):
     slew_seconds: NonNegativeFloat
 
 
-class ScoredAction(ContractModel):
+class ScoredAction(FrozenContract):
     action_id: str
     utility: FiniteFloat
     feasible: StrictBool
     rejection_reason: str | None = None
 
 
-class AutonomyDecision(ContractModel):
+class AutonomyDecision(FrozenContract):
     decision_maker: Literal["ground", "onboard-policy"]
     policy: AutonomyPolicy
-    candidates: list[ScoredAction]
+    belief: BeliefState  # input belief state the decision was made from (19.5)
+    candidates: tuple[ScoredAction, ...]
     selected_action_id: str | None = None
     reason: str

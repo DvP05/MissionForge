@@ -6,7 +6,7 @@ from typing import Annotated, Literal
 
 from pydantic import AfterValidator, Field, StrictBool, StrictInt, StrictStr
 
-from app.schemas.api import ContractModel
+from app.schemas._frozen import FrozenContract
 
 
 def _require_finite(v: float) -> float:
@@ -30,21 +30,22 @@ Fidelity = Literal["source-backed", "derived", "gameplay-estimate", "not-modelle
 Unit = Literal[
     "kg", "m", "s", "day", "km", "km/s", "m/s", "W", "Wh", "J",
     "bit/s", "bit", "Hz", "dB", "dBW", "K", "USD", "USD_2026", "%", "rad", "deg",
+    "fraction",
 ]  # fmt: skip
 
 
-class Provenance(ContractModel):
+class Provenance(FrozenContract):
     fidelity: Fidelity
     source_name: str
     source_url: str | None = None
     source_version: str | None = None
     retrieved_at: datetime | None = None
     published_at: date | None = None
-    assumptions: list[str] = Field(default_factory=list)
+    assumptions: tuple[str, ...] = Field(default_factory=tuple)
     notes: str | None = None
 
 
-class Uncertainty(ContractModel):
+class Uncertainty(FrozenContract):
     distribution: Literal["normal", "uniform", "triangular", "interval"]
     min: FiniteFloat | None = None
     mode: FiniteFloat | None = None
@@ -52,7 +53,7 @@ class Uncertainty(ContractModel):
     sigma: FiniteFloat | None = None
 
 
-class Quantity(ContractModel):
+class Quantity(FrozenContract):
     value: FiniteFloat
     unit: Unit
     provenance: Provenance

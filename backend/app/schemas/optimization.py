@@ -4,9 +4,9 @@ Owner: algorithms lead. Objective vectors are minimisation-normalised; hard cons
 stay outside the objective vector (see MissionAnalysis.constraints / feasibility).
 """
 
-from typing import Literal
+from typing import Literal, Self
 
-from pydantic import Field, StrictBool, StrictInt
+from pydantic import Field, StrictBool, StrictInt, model_validator
 
 from app.schemas.analysis import MissionAnalysis
 from app.schemas.api import ContractModel
@@ -45,6 +45,39 @@ class ArchitectureEdge(ContractModel):
     rationale: str
 
 
+class ArchitectureGraph(ContractModel):
+    """Typed directed mission graph (19.1); a projection of canonical state, never edited."""
+
+    nodes: list[ArchitectureNode]
+    edges: list[ArchitectureEdge]
+
+    @model_validator(mode="after")
+    def _edges_reference_nodes(self) -> Self:
+        ids = [n.id for n in self.nodes]
+        if len(ids) != len(set(ids)):
+            raise ValueError("duplicate node id")
+        known = set(ids)
+        if any(e.from_id not in known or e.to_id not in known for e in self.edges):
+            raise ValueError("edge references an unknown node")
+        return self
+
+
+class MetricChange(ContractModel):
+    metric: str
+    before: FiniteFloat
+    after: FiniteFloat
+    unit: str
+
+
+class ImpactReport(ContractModel):
+    """Effect of one design edit (19.1 behaviour 7)."""
+
+    changed_metrics: list[MetricChange]
+    newly_violated: list[str]  # constraint ids that now fail / warn
+    improved: list[str]  # constraint ids that improved
+    affected_objectives: list[str]  # science objective ids
+
+
 class OptimizationObjective(ContractModel):
     key: ObjectiveKey
     direction: Literal["minimize", "maximize"]
@@ -78,3 +111,13 @@ class OptimizationResult(ContractModel):
     pareto_front_ids: list[str]  # ids into `candidates`; feasible only
     archetypes: dict[Archetype, str]  # archetype -> candidate id
     near_misses: list[str]  # ids into `candidates`; hard-infeasible, shown separately
+
+    @model_validator(mode="after")
+    def _ids_reference_candidates(self) -> Self:
+        known = {c.id for c in self.candidates}
+        referenced = set(self.pareto_front_ids) | set(self.near_misses)
+        if not referenced | set(self.archetypes.values()) <= known:
+            raise ValueError("pareto_front_ids, archetypes and near_misses must be candidate ids")
+        if set(self.pareto_front_ids) & set(self.near_misses):
+            raise ValueError("a near miss cannot be on the Pareto front")
+        return self

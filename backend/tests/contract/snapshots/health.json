@@ -1,0 +1,184 @@
+{
+  "Anomaly": {
+    "additionalProperties": false,
+    "properties": {
+      "baseline": {
+        "title": "Baseline",
+        "type": "number"
+      },
+      "channel": {
+        "title": "Channel",
+        "type": "string"
+      },
+      "explanation": {
+        "title": "Explanation",
+        "type": "string"
+      },
+      "observed": {
+        "title": "Observed",
+        "type": "number"
+      },
+      "severity": {
+        "enum": [
+          "warning",
+          "critical"
+        ],
+        "title": "Severity",
+        "type": "string"
+      },
+      "subsystems": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Subsystems",
+        "type": "array"
+      },
+      "threshold": {
+        "title": "Threshold",
+        "type": "number"
+      },
+      "unit": {
+        "enum": [
+          "kg",
+          "m",
+          "s",
+          "day",
+          "km",
+          "km/s",
+          "m/s",
+          "W",
+          "Wh",
+          "J",
+          "bit/s",
+          "bit",
+          "Hz",
+          "dB",
+          "dBW",
+          "K",
+          "USD",
+          "USD_2026",
+          "%",
+          "rad",
+          "deg",
+          "fraction"
+        ],
+        "title": "Unit",
+        "type": "string"
+      },
+      "windowEnd": {
+        "ge": 0,
+        "title": "Windowend",
+        "type": "number"
+      },
+      "windowStart": {
+        "ge": 0,
+        "title": "Windowstart",
+        "type": "number"
+      }
+    },
+    "required": [
+      "channel",
+      "unit",
+      "observed",
+      "baseline",
+      "threshold",
+      "windowStart",
+      "windowEnd",
+      "severity",
+      "subsystems",
+      "explanation"
+    ],
+    "title": "Anomaly",
+    "type": "object"
+  },
+  "DetectorConfig": {
+    "additionalProperties": false,
+    "properties": {
+      "channel": {
+        "title": "Channel",
+        "type": "string"
+      },
+      "crit": {
+        "ge": 0,
+        "title": "Crit",
+        "type": "number"
+      },
+      "expected": {
+        "title": "Expected",
+        "type": "number"
+      },
+      "hardLimit": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Hardlimit"
+      },
+      "lam": {
+        "exclusiveMinimum": 0,
+        "maximum": 1,
+        "title": "Lam",
+        "type": "number"
+      },
+      "persistenceK": {
+        "minimum": 1,
+        "title": "Persistencek",
+        "type": "integer"
+      },
+      "rationale": {
+        "title": "Rationale",
+        "type": "string"
+      },
+      "unit": {
+        "enum": [
+          "kg",
+          "m",
+          "s",
+          "day",
+          "km",
+          "km/s",
+          "m/s",
+          "W",
+          "Wh",
+          "J",
+          "bit/s",
+          "bit",
+          "Hz",
+          "dB",
+          "dBW",
+          "K",
+          "USD",
+          "USD_2026",
+          "%",
+          "rad",
+          "deg",
+          "fraction"
+        ],
+        "title": "Unit",
+        "type": "string"
+      },
+      "warn": {
+        "ge": 0,
+        "title": "Warn",
+        "type": "number"
+      }
+    },
+    "required": [
+      "channel",
+      "unit",
+      "expected",
+      "warn",
+      "crit",
+      "persistenceK",
+      "lam",
+      "rationale"
+    ],
+    "title": "DetectorConfig",
+    "type": "object"
+  }
+}

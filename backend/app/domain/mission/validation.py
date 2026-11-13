@@ -7,6 +7,7 @@ cycle / probability outside [0,1]; defensive, the models already enforce it).
 """
 
 from collections import Counter
+from collections.abc import Sequence
 from typing import Protocol
 
 # sanitize_title moved to the schema layer (ruling R9); re-exported here for
@@ -32,7 +33,7 @@ _SINGLE_ID_FIELDS = (
 )
 
 
-def _duplicates(ids: list[str]) -> list[str]:
+def _duplicates(ids: Sequence[str]) -> list[str]:
     return [i for i, n in Counter(ids).items() if n > 1]
 
 

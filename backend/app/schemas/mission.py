@@ -8,6 +8,7 @@ from typing import Literal
 
 from pydantic import Field, StrictBool, StrictInt, StrictStr, field_validator
 
+from app.schemas._frozen import FrozenContract, FrozenMap
 from app.schemas._text import MAX_TITLE_LENGTH as MAX_TITLE_LENGTH  # re-export
 from app.schemas._text import sanitize_title
 from app.schemas.api import ContractModel
@@ -23,7 +24,7 @@ class ValidationIssue(ContractModel):
     message: str
 
 
-class MeasurementRequirement(ContractModel):
+class MeasurementRequirement(FrozenContract):
     id: str
     description: str
     instrument_capability: str
@@ -32,22 +33,22 @@ class MeasurementRequirement(ContractModel):
     required: StrictBool = True
 
 
-class ScienceObjective(ContractModel):
+class ScienceObjective(FrozenContract):
     id: str
     title: str
     question: str
     priority: FiniteFloat = Field(gt=0)
-    required_measurements: list[MeasurementRequirement]
+    required_measurements: tuple[MeasurementRequirement, ...]
 
 
-class ComponentSelection(ContractModel):
+class ComponentSelection(FrozenContract):
     component_id: str
     quantity: StrictInt = Field(gt=0)
     enabled: StrictBool = True
-    overrides: dict[str, FiniteFloat | StrictStr | StrictBool] = Field(default_factory=dict)
+    overrides: FrozenMap[FiniteFloat | StrictStr | StrictBool] = Field(default_factory=FrozenMap)
 
 
-class SpacecraftArchitecture(ContractModel):
+class SpacecraftArchitecture(FrozenContract):
     launch_vehicle_id: str
     bus_id: str
     propulsion_id: str
@@ -56,32 +57,32 @@ class SpacecraftArchitecture(ContractModel):
     communications_id: str
     thermal_id: str
     cdh_id: str
-    instrument_ids: list[str]
+    instrument_ids: tuple[str, ...]
     ground_segment_id: str
 
 
-class ObservationPlanItem(ContractModel):
+class ObservationPlanItem(FrozenContract):
     measurement_id: str
     start_day: FiniteFloat = Field(ge=0)
     duration_hours: FiniteFloat = Field(gt=0)
     duty_cycle: FiniteFloat = Field(ge=0, le=1)
 
 
-class DownlinkPlanItem(ContractModel):
+class DownlinkPlanItem(FrozenContract):
     start_day: FiniteFloat = Field(ge=0)
     duration_minutes: FiniteFloat = Field(gt=0)
     data_rate_bits_per_second: FiniteFloat = Field(gt=0)
 
 
-class OperationsPlan(ContractModel):
+class OperationsPlan(FrozenContract):
     mission_duration_days: FiniteFloat = Field(gt=0)
-    observation_plan: list[ObservationPlanItem]
-    downlink_plan: list[DownlinkPlanItem]
+    observation_plan: tuple[ObservationPlanItem, ...]
+    downlink_plan: tuple[DownlinkPlanItem, ...]
     safe_mode_policy: Literal["conservative", "balanced", "aggressive"]
     autonomy_level: Literal["ground-led", "supervised", "autonomous"]
 
 
-class MissionConstraints(ContractModel):
+class MissionConstraints(FrozenContract):
     maximum_budget_usd: FiniteFloat = Field(gt=0)
     launch_mass_limit_kg: FiniteFloat | None = Field(default=None, gt=0)
     minimum_science_score: FiniteFloat | None = None
@@ -92,7 +93,7 @@ class MissionConstraints(ContractModel):
     delta_v_margin_km_per_s: FiniteFloat = Field(ge=0)
 
 
-class MissionState(ContractModel):
+class MissionState(FrozenContract):
     schema_version: Literal["1.0"] = "1.0"
     mission_id: str
     title: str
@@ -100,7 +101,7 @@ class MissionState(ContractModel):
     created_at: datetime
     updated_at: datetime
     design_revision: StrictInt = Field(ge=0)
-    science_objectives: list[ScienceObjective]
+    science_objectives: tuple[ScienceObjective, ...]
     destination: Destination
     trajectory: TrajectorySelection
     architecture: SpacecraftArchitecture

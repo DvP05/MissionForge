@@ -740,7 +740,8 @@
               "USD_2026",
               "%",
               "rad",
-              "deg"
+              "deg",
+              "fraction"
             ],
             "title": "Unit",
             "type": "string"
@@ -1293,6 +1294,144 @@
     "title": "ArchitectureEdge",
     "type": "object"
   },
+  "ArchitectureGraph": {
+    "$defs": {
+      "ArchitectureEdge": {
+        "additionalProperties": false,
+        "properties": {
+          "fromId": {
+            "title": "Fromid",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "satisfies",
+              "allocated-to",
+              "depends-on",
+              "consumes",
+              "generates",
+              "constrains",
+              "downlinks-through"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "toId": {
+            "title": "Toid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "fromId",
+          "toId",
+          "kind",
+          "rationale"
+        ],
+        "title": "ArchitectureEdge",
+        "type": "object"
+      },
+      "ArchitectureNode": {
+        "additionalProperties": false,
+        "properties": {
+          "attributes": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            },
+            "title": "Attributes",
+            "type": "object"
+          },
+          "entityId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Entityid"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "science-objective",
+              "measurement-requirement",
+              "instrument",
+              "spacecraft-subsystem",
+              "launch-option",
+              "trajectory-option",
+              "observation-task",
+              "contact-window",
+              "science-product"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "label"
+        ],
+        "title": "ArchitectureNode",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "description": "Typed directed mission graph (19.1); a projection of canonical state, never edited.",
+    "properties": {
+      "edges": {
+        "items": {
+          "$ref": "#/$defs/ArchitectureEdge"
+        },
+        "title": "Edges",
+        "type": "array"
+      },
+      "nodes": {
+        "items": {
+          "$ref": "#/$defs/ArchitectureNode"
+        },
+        "title": "Nodes",
+        "type": "array"
+      }
+    },
+    "required": [
+      "nodes",
+      "edges"
+    ],
+    "title": "ArchitectureGraph",
+    "type": "object"
+  },
   "ArchitectureNode": {
     "additionalProperties": false,
     "properties": {
@@ -1358,6 +1497,108 @@
       "label"
     ],
     "title": "ArchitectureNode",
+    "type": "object"
+  },
+  "ImpactReport": {
+    "$defs": {
+      "MetricChange": {
+        "additionalProperties": false,
+        "properties": {
+          "after": {
+            "title": "After",
+            "type": "number"
+          },
+          "before": {
+            "title": "Before",
+            "type": "number"
+          },
+          "metric": {
+            "title": "Metric",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "metric",
+          "before",
+          "after",
+          "unit"
+        ],
+        "title": "MetricChange",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "description": "Effect of one design edit (19.1 behaviour 7).",
+    "properties": {
+      "affectedObjectives": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Affectedobjectives",
+        "type": "array"
+      },
+      "changedMetrics": {
+        "items": {
+          "$ref": "#/$defs/MetricChange"
+        },
+        "title": "Changedmetrics",
+        "type": "array"
+      },
+      "improved": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Improved",
+        "type": "array"
+      },
+      "newlyViolated": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Newlyviolated",
+        "type": "array"
+      }
+    },
+    "required": [
+      "changedMetrics",
+      "newlyViolated",
+      "improved",
+      "affectedObjectives"
+    ],
+    "title": "ImpactReport",
+    "type": "object"
+  },
+  "MetricChange": {
+    "additionalProperties": false,
+    "properties": {
+      "after": {
+        "title": "After",
+        "type": "number"
+      },
+      "before": {
+        "title": "Before",
+        "type": "number"
+      },
+      "metric": {
+        "title": "Metric",
+        "type": "string"
+      },
+      "unit": {
+        "title": "Unit",
+        "type": "string"
+      }
+    },
+    "required": [
+      "metric",
+      "before",
+      "after",
+      "unit"
+    ],
+    "title": "MetricChange",
     "type": "object"
   },
   "OptimizationObjective": {
@@ -2234,7 +2475,8 @@
               "USD_2026",
               "%",
               "rad",
-              "deg"
+              "deg",
+              "fraction"
             ],
             "title": "Unit",
             "type": "string"
@@ -3141,7 +3383,8 @@
               "USD_2026",
               "%",
               "rad",
-              "deg"
+              "deg",
+              "fraction"
             ],
             "title": "Unit",
             "type": "string"
@@ -3793,7 +4036,8 @@
               "USD_2026",
               "%",
               "rad",
-              "deg"
+              "deg",
+              "fraction"
             ],
             "title": "Unit",
             "type": "string"

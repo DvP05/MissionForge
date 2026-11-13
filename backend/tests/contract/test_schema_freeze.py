@@ -41,6 +41,8 @@ SCHEMA_MODULES = (
     "science_belief",
     "operations",
     "evidence",
+    "analyst",
+    "health",
 )
 REGEN_HINT = "UPDATE_SNAPSHOTS=1 uv run python -m pytest tests/contract -q"
 
@@ -116,6 +118,8 @@ def test_schema_snapshot(module_name: str) -> None:
     path = SNAPSHOT_DIR / f"{module_name}.json"
     rendered = json.dumps(current, indent=2, sort_keys=True) + "\n"
     if os.environ.get("UPDATE_SNAPSHOTS") == "1":
+        if os.environ.get("CI"):
+            pytest.fail("UPDATE_SNAPSHOTS is not allowed in CI; snapshots must be committed")
         SNAPSHOT_DIR.mkdir(exist_ok=True)
         path.write_text(rendered, encoding="utf-8", newline="\n")
     assert path.exists(), f"missing snapshot {path.name}; run: {REGEN_HINT}"
@@ -150,6 +154,62 @@ def test_mission_run_is_immutable(builders: dict[str, Callable[[], BaseModel]]) 
         run.events.append(run.events[0])  # type: ignore[attr-defined]
     with pytest.raises(ValidationError):
         run.final_report.summary = "rewritten"
+    with pytest.raises(ValidationError):
+        run.input_snapshot.title = "rewritten"
+    with pytest.raises(ValidationError):
+        run.manifest.seed = 1
+
+
+def test_mission_run_nested_score_cannot_change(
+    builders: dict[str, Callable[[], BaseModel]],
+) -> None:
+    run = builders["simulation.MissionRun"]()
+    with pytest.raises(ValidationError):
+        run.final_report.score.total = 100.0
+    with pytest.raises(ValidationError):
+        run.final_report.score.dimensions[0].score = 100.0
+    with pytest.raises(AttributeError):
+        run.final_report.score.dimensions.append(  # type: ignore[attr-defined]
+            run.final_report.score.dimensions[0]
+        )
+
+
+def test_validation_copies_instead_of_aliasing(
+    builders: dict[str, Callable[[], BaseModel]],
+) -> None:
+    from app.schemas.simulation import FinalReport
+
+    sb = builders["analysis.ScoreBreakdown"]()
+    report = FinalReport(
+        outcome="success",
+        summary="s",
+        score=sb,  # type: ignore[arg-type]
+        realized_risks=[],  # type: ignore[arg-type]
+        root_causes=[],  # type: ignore[arg-type]
+        counterfactuals=[],  # type: ignore[arg-type]
+        limitations=[],  # type: ignore[arg-type]
+    )
+    assert report.score == sb
+    assert report.score is not sb
+
+
+def test_trigger_and_effects_maps_are_immutable(
+    builders: dict[str, Callable[[], BaseModel]],
+) -> None:
+    run = builders["simulation.MissionRun"]()
+    event = run.events[0]
+    with pytest.raises(TypeError):
+        event.trigger["threshold"] = math.nan  # type: ignore[index]
+    with pytest.raises(TypeError):
+        event.choices[0].effects["science_days"] = 0.0  # type: ignore[index]
+    assert '"threshold":0.3' in event.model_dump_json()
+
+
+def test_mission_run_is_hashable(builders: dict[str, Callable[[], BaseModel]]) -> None:
+    run = builders["simulation.MissionRun"]()
+    again = type(run).model_validate_json(run.model_dump_json())
+    assert hash(run.final_report) == hash(again.final_report)
+    assert hash(run) == hash(again)
 
 
 # --- non-finite rejection ----------------------------------------------------------------
@@ -169,6 +229,12 @@ NAN_CASES = [
     ("science_belief.BeliefState", ("entropy_bits",)),
     ("operations.ContactWindow", ("max_downlink_bits",)),
     ("operations.BufferPoint", ("bits",)),
+    ("operations.MissionSchedule", ("data_lost_bits",)),
+    ("simulation.PhaseTransition", ("mission_day",)),
+    ("optimization.MetricChange", ("after",)),
+    ("analyst.Recommendation", ("metric_after", "data_margin_fraction")),
+    ("health.DetectorConfig", ("lam",)),
+    ("health.Anomaly", ("observed",)),
 ]
 
 
@@ -207,24 +273,49 @@ def test_nan_literal_rejected_in_json(builders: dict[str, Callable[[], BaseModel
 # --- semantic invariants -----------------------------------------------------------------
 
 
-def test_mission_ready_requires_no_failed_constraint(
+@pytest.mark.parametrize(
+    ("feasibility", "status", "ready", "ok"),
+    [
+        ("feasible", "fail", False, False),  # failed hard constraint => must be infeasible
+        ("marginal", "fail", False, False),
+        ("infeasible", "warning", False, False),  # infeasible needs a failed constraint
+        ("infeasible", "fail", True, False),  # never mission-ready when infeasible
+        ("infeasible", "fail", False, True),
+        ("feasible", "pass", True, True),
+        ("marginal", "warning", True, True),
+    ],
+)
+def test_feasibility_consistent_with_constraints(
+    feasibility: str,
+    status: str,
+    ready: bool,
+    ok: bool,
     builders: dict[str, Callable[[], BaseModel]],
 ) -> None:
-    data = builders["analysis.MissionAnalysis"]().model_dump()
-    data["mission_ready"] = True
-    data["feasibility"] = "feasible"
-    data["constraints"][0]["status"] = "fail"
-    with pytest.raises(ValidationError, match="mission_ready"):
-        type(builders["analysis.MissionAnalysis"]()).model_validate(data)
+    instance = builders["analysis.MissionAnalysis"]()
+    data = instance.model_dump()
+    data["mission_ready"] = ready
+    data["feasibility"] = feasibility
+    data["constraints"][0]["status"] = status
+    if ok:
+        type(instance).model_validate(data)
+    else:
+        with pytest.raises(ValidationError):
+            type(instance).model_validate(data)
 
 
-def test_mission_ready_requires_feasible(builders: dict[str, Callable[[], BaseModel]]) -> None:
-    data = builders["analysis.MissionAnalysis"]().model_dump()
-    data["mission_ready"] = True
-    data["feasibility"] = "infeasible"
-    data["constraints"] = []
-    with pytest.raises(ValidationError, match="mission_ready"):
-        type(builders["analysis.MissionAnalysis"]()).model_validate(data)
+def test_score_breakdown_requires_five_unique_dimensions(
+    builders: dict[str, Callable[[], BaseModel]],
+) -> None:
+    instance = builders["analysis.ScoreBreakdown"]()
+    data = instance.model_dump()
+    data["dimensions"] = data["dimensions"][:4]
+    with pytest.raises(ValidationError):
+        type(instance).model_validate(data)
+    data = instance.model_dump()
+    data["dimensions"][1]["id"] = "scientific-return"
+    with pytest.raises(ValidationError):
+        type(instance).model_validate(data)
 
 
 @pytest.mark.parametrize(
@@ -329,3 +420,169 @@ def test_sanitize_title_lives_in_schemas_and_is_reexported() -> None:
     assert validation.sanitize_title is _text.sanitize_title
     assert _text.sanitize_title("<b>Hi</b>\x00  there") == "Hi there"
     assert len(_text.sanitize_title("x" * 200)) == _text.MAX_TITLE_LENGTH
+
+
+def test_snapshot_rewrite_refused_in_ci(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("UPDATE_SNAPSHOTS", "1")
+    monkeypatch.setenv("CI", "true")
+    with pytest.raises(pytest.fail.Exception, match="not allowed in CI"):
+        test_schema_snapshot("api")
+
+
+# --- fix round 1 / ruling R10 invariants --------------------------------------------------
+
+
+def _invalid(instance: BaseModel, mutate: Callable[[dict[str, Any]], None]) -> None:
+    data = instance.model_dump()
+    mutate(data)
+    with pytest.raises(ValidationError):
+        type(instance).model_validate(data)
+
+
+def test_run_snapshot_and_manifest_must_match(
+    builders: dict[str, Callable[[], BaseModel]],
+) -> None:
+    run = builders["simulation.MissionRun"]()
+
+    def other_revision(d: dict[str, Any]) -> None:
+        d["input_snapshot"]["design_revision"] = 2
+
+    def other_mission(d: dict[str, Any]) -> None:
+        d["input_snapshot"]["mission_id"] = "other"
+
+    def other_seed(d: dict[str, Any]) -> None:
+        d["manifest"]["seed"] = 1
+
+    def other_engine(d: dict[str, Any]) -> None:
+        d["manifest"]["engine_version"] = "9.9.9"
+
+    def unordered_transitions(d: dict[str, Any]) -> None:
+        d["phase_transitions"] = (
+            {"phase": "science-ops", "mission_day": 250.0},
+            {"phase": "cruise", "mission_day": 10.0},
+        )
+
+    for mutate in (other_revision, other_mission, other_seed, other_engine, unordered_transitions):
+        _invalid(run, mutate)
+
+
+def test_autonomy_log_defaults_empty_and_records_belief(
+    builders: dict[str, Callable[[], BaseModel]],
+) -> None:
+    from app.schemas.simulation import MissionRun
+
+    run = builders["simulation.MissionRun"]()
+    assert isinstance(run, MissionRun)
+    assert run.autonomy_log[0].belief.hypotheses[0].hypothesis_id == "hyp-volatile"
+    data = run.model_dump()
+    del data["autonomy_log"]
+    assert MissionRun.model_validate(data).autonomy_log == ()
+
+
+def test_package_runs_keep_their_own_snapshot(
+    builders: dict[str, Callable[[], BaseModel]],
+) -> None:
+    from app.schemas.evidence import MissionPackage
+
+    pkg = builders["evidence.MissionPackage"]()
+    assert isinstance(pkg, MissionPackage)
+    newer = pkg.mission.model_copy(update={"design_revision": 4})
+    data = pkg.model_dump()
+    data["mission"] = newer.model_dump()
+    again = MissionPackage.model_validate(data)
+    assert again.runs[0].input_snapshot.design_revision == 3
+
+    def foreign_run(d: dict[str, Any]) -> None:
+        d["mission"]["mission_id"] = "someone-else"
+
+    _invalid(pkg, foreign_run)
+
+
+def test_evidence_reexports_run_manifest() -> None:
+    from app.schemas import evidence, simulation
+
+    assert evidence.MissionRunManifest is simulation.MissionRunManifest
+
+
+def test_optimization_ids_must_reference_candidates(
+    builders: dict[str, Callable[[], BaseModel]],
+) -> None:
+    result = builders["optimization.OptimizationResult"]()
+
+    def unknown_front(d: dict[str, Any]) -> None:
+        d["pareto_front_ids"] = ["nope"]
+
+    def unknown_archetype(d: dict[str, Any]) -> None:
+        d["archetypes"]["lean"] = "nope"
+
+    def unknown_near_miss(d: dict[str, Any]) -> None:
+        d["near_misses"] = ["nope"]
+
+    def front_and_near_miss(d: dict[str, Any]) -> None:
+        d["near_misses"] = ["cand-000"]
+
+    for mutate in (unknown_front, unknown_archetype, unknown_near_miss, front_and_near_miss):
+        _invalid(result, mutate)
+
+
+def test_schedule_consistency(builders: dict[str, Callable[[], BaseModel]]) -> None:
+    schedule = builders["operations.MissionSchedule"]()
+
+    def overlap(d: dict[str, Any]) -> None:
+        d["accepted"] = ["opp-1", "opp-2"]
+
+    def silent_loss(d: dict[str, Any]) -> None:
+        d["data_lost_bits"] = 1.0
+
+    for mutate in (overlap, silent_loss):
+        _invalid(schedule, mutate)
+    data = schedule.model_dump()
+    data.update(data_lost_bits=1.0, data_loss_risk_accepted=True)
+    type(schedule).model_validate(data)
+    data["rejected"][0]["reason_code"] = "THERMAL"
+    type(schedule).model_validate(data)
+
+
+def test_graph_edges_reference_nodes(builders: dict[str, Callable[[], BaseModel]]) -> None:
+    def dangling(d: dict[str, Any]) -> None:
+        d["edges"][0]["to_id"] = "missing"
+
+    def duplicate(d: dict[str, Any]) -> None:
+        d["nodes"].append(d["nodes"][0])
+
+    for mutate in (dangling, duplicate):
+        _invalid(builders["optimization.ArchitectureGraph"](), mutate)
+
+
+def test_health_contract_invariants(builders: dict[str, Callable[[], BaseModel]]) -> None:
+    def warn_above_crit(d: dict[str, Any]) -> None:
+        d["warn"] = 0.5
+
+    def zero_lambda(d: dict[str, Any]) -> None:
+        d["lam"] = 0.0
+
+    for mutate in (warn_above_crit, zero_lambda):
+        _invalid(builders["health.DetectorConfig"](), mutate)
+
+    def reversed_window(d: dict[str, Any]) -> None:
+        d["window_end"] = 1.0
+
+    _invalid(builders["health.Anomaly"](), reversed_window)
+
+
+def test_simulation_input_experimental_defaults_false(
+    builders: dict[str, Callable[[], BaseModel]],
+) -> None:
+    from app.schemas.simulation import SimulationInput
+
+    data = builders["simulation.SimulationInput"]().model_dump()
+    del data["experimental"]
+    assert SimulationInput.model_validate(data).experimental is False
+
+
+def test_fraction_unit_available() -> None:
+    from typing import get_args
+
+    from app.schemas.units import Unit
+
+    assert "fraction" in get_args(Unit)

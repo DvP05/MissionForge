@@ -98,7 +98,7 @@ def test_parses_camel_case() -> None:
 
 def test_parses_snake_case() -> None:
     s = MissionState.model_validate(snake(raw()))
-    assert s.architecture.instrument_ids == ["cam"]
+    assert s.architecture.instrument_ids == ("cam",)
 
 
 def test_unknown_field_rejected() -> None:

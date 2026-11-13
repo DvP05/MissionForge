@@ -139,7 +139,8 @@
               "USD_2026",
               "%",
               "rad",
-              "deg"
+              "deg",
+              "fraction"
             ],
             "type": "string"
           },
@@ -161,6 +162,100 @@
   },
   "MissionPackage": {
     "$defs": {
+      "AutonomyDecision": {
+        "additionalProperties": false,
+        "properties": {
+          "belief": {
+            "$ref": "#/$defs/BeliefState"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/$defs/ScoredAction"
+            },
+            "title": "Candidates",
+            "type": "array"
+          },
+          "decisionMaker": {
+            "enum": [
+              "ground",
+              "onboard-policy"
+            ],
+            "title": "Decisionmaker",
+            "type": "string"
+          },
+          "policy": {
+            "enum": [
+              "conservative",
+              "science-first",
+              "resource-aware"
+            ],
+            "title": "Policy",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "selectedActionId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Selectedactionid"
+          }
+        },
+        "required": [
+          "decisionMaker",
+          "policy",
+          "belief",
+          "candidates",
+          "reason"
+        ],
+        "title": "AutonomyDecision",
+        "type": "object"
+      },
+      "BeliefState": {
+        "additionalProperties": false,
+        "properties": {
+          "entropyBits": {
+            "ge": 0,
+            "title": "Entropybits",
+            "type": "number"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/HypothesisProbability"
+            },
+            "title": "Hypotheses",
+            "type": "array"
+          },
+          "observationHistory": {
+            "items": {
+              "$ref": "#/$defs/ObservationRecord"
+            },
+            "title": "Observationhistory",
+            "type": "array"
+          },
+          "version": {
+            "minimum": 0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "hypotheses",
+          "observationHistory",
+          "entropyBits",
+          "version"
+        ],
+        "title": "BeliefState",
+        "type": "object"
+      },
       "BudgetAnalysis": {
         "additionalProperties": false,
         "properties": {
@@ -593,7 +688,8 @@
                   "USD_2026",
                   "%",
                   "rad",
-                  "deg"
+                  "deg",
+                  "fraction"
                 ],
                 "type": "string"
               },
@@ -640,6 +736,13 @@
             "title": "Outcome",
             "type": "string"
           },
+          "realizedRisks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Realizedrisks",
+            "type": "array"
+          },
           "rootCauses": {
             "items": {
               "type": "string"
@@ -659,11 +762,33 @@
           "outcome",
           "summary",
           "score",
+          "realizedRisks",
           "rootCauses",
           "counterfactuals",
           "limitations"
         ],
         "title": "FinalReport",
+        "type": "object"
+      },
+      "HypothesisProbability": {
+        "additionalProperties": false,
+        "properties": {
+          "hypothesisId": {
+            "title": "Hypothesisid",
+            "type": "string"
+          },
+          "probability": {
+            "ge": 0,
+            "le": 1,
+            "title": "Probability",
+            "type": "number"
+          }
+        },
+        "required": [
+          "hypothesisId",
+          "probability"
+        ],
+        "title": "HypothesisProbability",
         "type": "object"
       },
       "MeasurementRequirement": {
@@ -1048,6 +1173,14 @@
       "MissionRun": {
         "additionalProperties": false,
         "properties": {
+          "autonomyLog": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/AutonomyDecision"
+            },
+            "title": "Autonomylog",
+            "type": "array"
+          },
           "catalogVersion": {
             "title": "Catalogversion",
             "type": "string"
@@ -1082,9 +1215,22 @@
           "finalReport": {
             "$ref": "#/$defs/FinalReport"
           },
+          "inputSnapshot": {
+            "$ref": "#/$defs/MissionState"
+          },
+          "manifest": {
+            "$ref": "#/$defs/MissionRunManifest"
+          },
           "missionId": {
             "title": "Missionid",
             "type": "string"
+          },
+          "phaseTransitions": {
+            "items": {
+              "$ref": "#/$defs/PhaseTransition"
+            },
+            "title": "Phasetransitions",
+            "type": "array"
           },
           "phases": {
             "items": {
@@ -1141,7 +1287,10 @@
           "engineVersion",
           "catalogVersion",
           "experimental",
+          "inputSnapshot",
+          "manifest",
           "phases",
+          "phaseTransitions",
           "events",
           "telemetry",
           "decisions",
@@ -1149,6 +1298,51 @@
           "finalReport"
         ],
         "title": "MissionRun",
+        "type": "object"
+      },
+      "MissionRunManifest": {
+        "additionalProperties": false,
+        "description": "Replay manifest (architecture 19.9). Re-exported by app.schemas.evidence.\n\nVersions are plain strings so an imported run made with a different engine /\ncatalogue version stays representable and can be flagged \"not identical replay\".",
+        "properties": {
+          "appVersion": {
+            "title": "Appversion",
+            "type": "string"
+          },
+          "catalogVersion": {
+            "title": "Catalogversion",
+            "type": "string"
+          },
+          "engineVersion": {
+            "title": "Engineversion",
+            "type": "string"
+          },
+          "eventSetId": {
+            "title": "Eventsetid",
+            "type": "string"
+          },
+          "scenarioVersion": {
+            "title": "Scenarioversion",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "title": "Schemaversion",
+            "type": "string"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "engineVersion",
+          "catalogVersion",
+          "scenarioVersion",
+          "eventSetId",
+          "seed",
+          "appVersion"
+        ],
+        "title": "MissionRunManifest",
         "type": "object"
       },
       "MissionState": {
@@ -1270,6 +1464,31 @@
         "title": "ObservationPlanItem",
         "type": "object"
       },
+      "ObservationRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "outcomeId": {
+            "title": "Outcomeid",
+            "type": "string"
+          },
+          "taskId": {
+            "title": "Taskid",
+            "type": "string"
+          },
+          "timestampMissionSeconds": {
+            "ge": 0,
+            "title": "Timestampmissionseconds",
+            "type": "number"
+          }
+        },
+        "required": [
+          "taskId",
+          "outcomeId",
+          "timestampMissionSeconds"
+        ],
+        "title": "ObservationRecord",
+        "type": "object"
+      },
       "OperationsPlan": {
         "additionalProperties": false,
         "properties": {
@@ -1319,6 +1538,38 @@
           "autonomyLevel"
         ],
         "title": "OperationsPlan",
+        "type": "object"
+      },
+      "PhaseTransition": {
+        "additionalProperties": false,
+        "properties": {
+          "missionDay": {
+            "ge": 0,
+            "title": "Missionday",
+            "type": "number"
+          },
+          "phase": {
+            "enum": [
+              "pre-launch",
+              "launch-deployment",
+              "commissioning",
+              "cruise",
+              "mid-course",
+              "approach",
+              "science-ops",
+              "downlink-return",
+              "complete",
+              "terminated"
+            ],
+            "title": "Phase",
+            "type": "string"
+          }
+        },
+        "required": [
+          "phase",
+          "missionDay"
+        ],
+        "title": "PhaseTransition",
         "type": "object"
       },
       "Provenance": {
@@ -1454,7 +1705,8 @@
               "USD_2026",
               "%",
               "rad",
-              "deg"
+              "deg",
+              "fraction"
             ],
             "title": "Unit",
             "type": "string"
@@ -1684,6 +1936,42 @@
         "title": "ScoreDimension",
         "type": "object"
       },
+      "ScoredAction": {
+        "additionalProperties": false,
+        "properties": {
+          "actionId": {
+            "title": "Actionid",
+            "type": "string"
+          },
+          "feasible": {
+            "title": "Feasible",
+            "type": "boolean"
+          },
+          "rejectionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rejectionreason"
+          },
+          "utility": {
+            "title": "Utility",
+            "type": "number"
+          }
+        },
+        "required": [
+          "actionId",
+          "utility",
+          "feasible"
+        ],
+        "title": "ScoredAction",
+        "type": "object"
+      },
       "SpacecraftArchitecture": {
         "additionalProperties": false,
         "properties": {
@@ -1830,7 +2118,8 @@
               "USD_2026",
               "%",
               "rad",
-              "deg"
+              "deg",
+              "fraction"
             ],
             "title": "Unit",
             "type": "string"
@@ -2115,50 +2404,6 @@
       "scenarioVersion"
     ],
     "title": "MissionPackageManifest",
-    "type": "object"
-  },
-  "MissionRunManifest": {
-    "additionalProperties": false,
-    "properties": {
-      "appVersion": {
-        "title": "Appversion",
-        "type": "string"
-      },
-      "catalogVersion": {
-        "title": "Catalogversion",
-        "type": "string"
-      },
-      "engineVersion": {
-        "title": "Engineversion",
-        "type": "string"
-      },
-      "eventSetId": {
-        "title": "Eventsetid",
-        "type": "string"
-      },
-      "scenarioVersion": {
-        "title": "Scenarioversion",
-        "type": "string"
-      },
-      "schemaVersion": {
-        "title": "Schemaversion",
-        "type": "string"
-      },
-      "seed": {
-        "title": "Seed",
-        "type": "integer"
-      }
-    },
-    "required": [
-      "schemaVersion",
-      "engineVersion",
-      "catalogVersion",
-      "scenarioVersion",
-      "eventSetId",
-      "seed",
-      "appVersion"
-    ],
-    "title": "MissionRunManifest",
     "type": "object"
   }
 }

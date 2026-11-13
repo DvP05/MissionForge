@@ -9,6 +9,7 @@ from typing import Self
 
 from pydantic import Field, StrictInt, model_validator
 
+from app.schemas._frozen import FrozenContract
 from app.schemas.api import ContractModel
 from app.schemas.units import NonNegativeFloat, UnitFraction
 
@@ -28,20 +29,20 @@ class ObservationLikelihood(ContractModel):
     likelihood_by_hypothesis: dict[str, UnitFraction]  # P(outcome | hypothesis)
 
 
-class HypothesisProbability(ContractModel):
+class HypothesisProbability(FrozenContract):
     hypothesis_id: str
     probability: UnitFraction
 
 
-class ObservationRecord(ContractModel):
+class ObservationRecord(FrozenContract):
     task_id: str
     outcome_id: str
     timestamp_mission_seconds: NonNegativeFloat
 
 
-class BeliefState(ContractModel):
-    hypotheses: list[HypothesisProbability]
-    observation_history: list[ObservationRecord]
+class BeliefState(FrozenContract):
+    hypotheses: tuple[HypothesisProbability, ...]
+    observation_history: tuple[ObservationRecord, ...]
     entropy_bits: NonNegativeFloat
     version: StrictInt = Field(ge=0)
 

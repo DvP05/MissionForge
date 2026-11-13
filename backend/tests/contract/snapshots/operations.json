@@ -50,6 +50,89 @@
   },
   "AutonomyDecision": {
     "$defs": {
+      "BeliefState": {
+        "additionalProperties": false,
+        "properties": {
+          "entropyBits": {
+            "ge": 0,
+            "title": "Entropybits",
+            "type": "number"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/HypothesisProbability"
+            },
+            "title": "Hypotheses",
+            "type": "array"
+          },
+          "observationHistory": {
+            "items": {
+              "$ref": "#/$defs/ObservationRecord"
+            },
+            "title": "Observationhistory",
+            "type": "array"
+          },
+          "version": {
+            "minimum": 0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "hypotheses",
+          "observationHistory",
+          "entropyBits",
+          "version"
+        ],
+        "title": "BeliefState",
+        "type": "object"
+      },
+      "HypothesisProbability": {
+        "additionalProperties": false,
+        "properties": {
+          "hypothesisId": {
+            "title": "Hypothesisid",
+            "type": "string"
+          },
+          "probability": {
+            "ge": 0,
+            "le": 1,
+            "title": "Probability",
+            "type": "number"
+          }
+        },
+        "required": [
+          "hypothesisId",
+          "probability"
+        ],
+        "title": "HypothesisProbability",
+        "type": "object"
+      },
+      "ObservationRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "outcomeId": {
+            "title": "Outcomeid",
+            "type": "string"
+          },
+          "taskId": {
+            "title": "Taskid",
+            "type": "string"
+          },
+          "timestampMissionSeconds": {
+            "ge": 0,
+            "title": "Timestampmissionseconds",
+            "type": "number"
+          }
+        },
+        "required": [
+          "taskId",
+          "outcomeId",
+          "timestampMissionSeconds"
+        ],
+        "title": "ObservationRecord",
+        "type": "object"
+      },
       "ScoredAction": {
         "additionalProperties": false,
         "properties": {
@@ -89,6 +172,9 @@
     },
     "additionalProperties": false,
     "properties": {
+      "belief": {
+        "$ref": "#/$defs/BeliefState"
+      },
       "candidates": {
         "items": {
           "$ref": "#/$defs/ScoredAction"
@@ -133,6 +219,7 @@
     "required": [
       "decisionMaker",
       "policy",
+      "belief",
       "candidates",
       "reason"
     ],
@@ -239,7 +326,8 @@
               "POINTING",
               "BUFFER_OVERFLOW_BEFORE_CONTACT",
               "NO_CONTACT",
-              "PHASE"
+              "PHASE",
+              "THERMAL"
             ],
             "title": "Reasoncode",
             "type": "string"
@@ -326,6 +414,17 @@
         },
         "title": "Cycles",
         "type": "array"
+      },
+      "dataLossRiskAccepted": {
+        "default": false,
+        "title": "Datalossriskaccepted",
+        "type": "boolean"
+      },
+      "dataLostBits": {
+        "default": 0.0,
+        "ge": 0,
+        "title": "Datalostbits",
+        "type": "number"
       },
       "rejected": {
         "items": {
@@ -418,7 +517,8 @@
           "POINTING",
           "BUFFER_OVERFLOW_BEFORE_CONTACT",
           "NO_CONTACT",
-          "PHASE"
+          "PHASE",
+          "THERMAL"
         ],
         "title": "Reasoncode",
         "type": "string"

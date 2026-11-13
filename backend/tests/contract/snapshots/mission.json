@@ -203,7 +203,8 @@
               "USD_2026",
               "%",
               "rad",
-              "deg"
+              "deg",
+              "fraction"
             ],
             "title": "Unit",
             "type": "string"
@@ -818,7 +819,8 @@
               "USD_2026",
               "%",
               "rad",
-              "deg"
+              "deg",
+              "fraction"
             ],
             "title": "Unit",
             "type": "string"
@@ -1532,7 +1534,8 @@
               "USD_2026",
               "%",
               "rad",
-              "deg"
+              "deg",
+              "fraction"
             ],
             "title": "Unit",
             "type": "string"
