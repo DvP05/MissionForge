@@ -1,0 +1,38 @@
+from typing import Literal
+
+from fastapi import APIRouter, Request
+
+from app.config import get_settings
+from app.schemas.api import ApiMeta, ApiResult, ContractModel
+
+
+class JplAdapterStatus(ContractModel):
+    status: Literal["live", "cached", "demo", "unknown"]
+
+
+class HealthData(ContractModel):
+    app_name: str
+    app_version: str
+    engine_version: str
+    catalog_version: str
+    schema_version: str
+    jpl_adapter: JplAdapterStatus
+
+
+router = APIRouter()
+
+
+@router.get("/health", response_model=ApiResult[HealthData])
+def health(request: Request) -> ApiResult[HealthData]:
+    settings = get_settings()
+    data = HealthData(
+        app_name=settings.app_name,
+        app_version=settings.app_version,
+        engine_version=settings.engine_version,
+        catalog_version=settings.catalog_version,
+        schema_version=settings.mission_schema_version,
+        jpl_adapter=JplAdapterStatus(status="unknown"),
+    )
+    return ApiResult[HealthData](
+        ok=True, data=data, meta=ApiMeta(request_id=request.state.request_id)
+    )
