@@ -10,25 +10,32 @@ score: nothing here depends on, or is offset by, the weighted score.
 from collections.abc import Sequence
 
 from app.domain.analysis.context import AnalysisContext
+from app.domain.analysis.propulsion import ManeuverBudget
 from app.schemas.analysis import ConstraintResult, ConstraintStatus, Feasibility, SuggestedAction
 from app.schemas.units import Provenance, Quantity, Unit
 
 MODEL_ID = "constraints-v1"
 
 CONSTRAINT_ASSUMPTIONS: tuple[str, ...] = (
-    "Hard gates (status 'fail' => infeasible): launch mass, delta-v with reserve, peak power, "
-    "energy closure and battery reserve, data-buffer overflow, trajectory validity, mandatory "
-    "science capability, budget, catalogue compatibility, and a downlink where every planned "
-    "contact has negative link margin.",
-    "Warnings (prod 'Watch'): within the limit but below the configured margin, partial "
-    "link-margin failure, data return below generated x (1 + data margin), collected-but-"
-    "unreturned mandatory science.",
+    "Hard gates (status 'fail' => infeasible): launch mass (allocated = wet x (1 + mass "
+    "margin) must fit the limit), delta-v with reserve, peak power, energy closure, battery "
+    "reserve, data-buffer overflow, trajectory validity, mandatory science capability, budget, "
+    "catalogue compatibility, and a downlink where every planned contact has negative link "
+    "margin.",
+    "Warnings (prod 'Watch'): partial link-margin failure, data return below generated x (1 + "
+    "data margin) or generated data not downlinked, mandatory science not collected or not "
+    "returned, science below the configured minimum score, thin power/data margins.",
+    "mass-margin is a gameplay 'watch' band: warning when 0 <= margin_to_limit < 5% "
+    "(gameplay-estimate); once the limit is exceeded mass-launch-limit fails and mass-margin "
+    "is not assessed.",
     "Thermal is qualitative: it is passed through unchanged and is never 'pass'.",
-    "Mass: the physical (wet) mass must fit the launch limit; allocated mass (wet x (1 + "
-    "margin)) over the limit is a warning. Without a launch limit both are 'not-modelled'.",
+    "Empty or zero inputs (no launch limit, no contacts, no generated data, no consumption, "
+    "no load and supply, no required measurements) are 'not-modelled', never 'pass'.",
     "Data return compares total downlink capacity (rate x duration x protocol efficiency x "
     "availability) with generated data x (1 + data margin), and flags any generated data "
     "that is not downlinked.",
+    "science-minimum-score is a soft warning; success-probability is 'not-modelled' because it "
+    "requires robustness/simulation (later phase). Neither is a hard gate.",
     "mission_ready requires feasibility 'feasible': a marginal design (any warning) is not "
     "mission-ready.",
     "Suggested actions are rule-based hints, not an optimiser's guarantee.",
@@ -38,7 +45,7 @@ _SRC = "MISSIONFORGE constraint model"
 _SEV_FAIL = 3
 _SEV_WATCH = 2
 _SEV_MINOR = 1
-_MS_PER_KM_S = 1000.0
+_MASS_WATCH_BAND = 0.05  # gameplay-estimate: margin_to_limit below this is a 'watch'
 
 
 def _q(value: float, unit: Unit) -> Quantity:
@@ -97,41 +104,56 @@ def _mass(ctx: AnalysisContext) -> list[ConstraintResult]:
         _act("larger-launch-vehicle", "Choose a larger launch vehicle", "Raises the mass limit."),
         _act("reduce-propellant", "Reduce propellant or payload mass", "Lowers wet mass."),
     ]
-    wet_margin = (limit - m.wet_kg) / limit
-    if m.wet_kg > limit:
-        launch = _result(
-            "mass-launch-limit", "Launch mass limit", "fail",
-            f"Wet mass {m.wet_kg:.1f} kg exceeds the launch limit {limit:.1f} kg.",
-            actual=_q(m.wet_kg, "kg"), limit=_q(limit, "kg"), margin=wet_margin,
-            severity=_SEV_FAIL, subsystems=["launch", "mass"], actions=actions,
-        )  # fmt: skip
-    else:
-        launch = _result(
-            "mass-launch-limit", "Launch mass limit", "pass",
-            f"Wet mass {m.wet_kg:.1f} kg is within the launch limit {limit:.1f} kg.",
-            actual=_q(m.wet_kg, "kg"), limit=_q(limit, "kg"), margin=wet_margin,
-        )  # fmt: skip
     margin = (limit - m.allocated_kg) / limit
+    actual, lim = _q(m.allocated_kg, "kg"), _q(limit, "kg")
+    detail = (
+        f"Allocated mass {m.allocated_kg:.1f} kg (wet {m.wet_kg:.1f} kg x (1 + "
+        f"{ctx.limits.mass_margin_fraction:.0%} margin))"
+    )
     if m.allocated_kg > limit:
+        return [
+            _result(
+                "mass-launch-limit", "Launch mass limit", "fail",
+                f"{detail} exceeds the launch limit {limit:.1f} kg.",
+                actual=actual, limit=lim, margin=margin, severity=_SEV_FAIL,
+                subsystems=["launch", "mass"], actions=actions,
+            ),
+            _result(
+                "mass-margin", "Mass margin", "not-modelled",
+                "Mass margin is not assessed separately: the launch limit is already "
+                "exceeded (see mass-launch-limit).",
+            ),
+        ]  # fmt: skip
+    launch = _result(
+        "mass-launch-limit", "Launch mass limit", "pass",
+        f"{detail} is within the launch limit {limit:.1f} kg.",
+        actual=actual, limit=lim, margin=margin,
+    )  # fmt: skip
+    if margin < _MASS_WATCH_BAND:
         held = _result(
             "mass-margin", "Mass margin", "warning",
-            f"Allocated mass {m.allocated_kg:.1f} kg (wet x (1 + "
-            f"{ctx.limits.mass_margin_fraction:.0%} margin)) exceeds the limit {limit:.1f} kg.",
-            actual=_q(m.allocated_kg, "kg"), limit=_q(limit, "kg"), margin=margin,
-            severity=_SEV_WATCH, subsystems=["launch", "mass"], actions=actions,
+            f"{detail} leaves only {margin:.1%} headroom to the {limit:.1f} kg limit "
+            f"(watch band below {_MASS_WATCH_BAND:.0%}).",
+            actual=actual, limit=lim, margin=margin, severity=_SEV_WATCH,
+            subsystems=["launch", "mass"], actions=actions,
         )  # fmt: skip
     else:
         held = _result(
             "mass-margin", "Mass margin", "pass",
-            f"Allocated mass {m.allocated_kg:.1f} kg is within the limit {limit:.1f} kg.",
-            actual=_q(m.allocated_kg, "kg"), limit=_q(limit, "kg"), margin=margin,
+            f"{detail} leaves {margin:.1%} headroom to the {limit:.1f} kg limit.",
+            actual=actual, limit=lim, margin=margin,
         )  # fmt: skip
     return [launch, held]
 
 
+def reserve_ms(b: ManeuverBudget) -> float:
+    """Delta-v reserve baked into the budget: available - required - margin."""
+    return b.available_ms - b.required_ms - b.margin_ms
+
+
 def _delta_v(ctx: AnalysisContext) -> ConstraintResult:
     b = ctx.maneuvers
-    reserve = ctx.limits.delta_v_margin_km_per_s * _MS_PER_KM_S
+    reserve = reserve_ms(b)
     needed = b.required_ms + reserve
     margin = _ratio(b.margin_ms, needed)
     if b.margin_ms < 0.0:
@@ -161,6 +183,11 @@ def _delta_v(ctx: AnalysisContext) -> ConstraintResult:
 
 def _peak_power(ctx: AnalysisContext) -> ConstraintResult:
     peak, supply, pm = ctx.peak_power_w, ctx.supply_power_w, ctx.limits.power_margin_fraction
+    if peak <= 0.0 and supply <= 0.0:
+        return _result(
+            "peak-power", "Peak power", "not-modelled",
+            "no electrical load and no power supply, so peak power cannot be checked",
+        )  # fmt: skip
     margin = (supply - peak) / supply if supply > 0.0 else (0.0 if peak <= 0.0 else -1.0)
     actions = [
         _act("swap-power", "Choose a larger power system", "Raises regulated peak supply."),
@@ -201,25 +228,21 @@ def _energy(ctx: AnalysisContext) -> list[ConstraintResult]:
     cons = sum(p.consumption_wh for p in ctx.energy.per_phase)
     pm = ctx.limits.power_margin_fraction
     need = cons * (1.0 + pm)
-    reasons: list[str] = []
-    if gen < need:
-        reasons.append(
-            f"generated {gen:.1f} Wh is below consumed {cons:.1f} Wh plus {pm:.0%} margin"
-        )
-    if not ctx.energy.closes:
-        reasons.append(
-            f"battery state of charge falls to {ctx.energy.min_soc_fraction:.0%}, below the "
-            f"{ctx.energy.soc_floor_fraction:.0%} floor"
-        )
     solar = _act("swap-power", "Choose a larger solar array", "Raises generated energy.")
     battery_action = _act("larger-battery", "Choose a larger battery", "Covers eclipse and draw.")
     duty = _act("reduce-duty-cycle", "Reduce instrument duty cycle", "Lowers consumed energy.")
-    if reasons:
+    if cons <= 0.0:
+        closure = _result(
+            "energy-closure", "Energy closure", "not-modelled",
+            "no energy is consumed, so solar replenishment cannot be checked",
+        )  # fmt: skip
+    elif gen < need:
         closure = _result(
             "energy-closure", "Energy closure", "fail",
-            "Energy does not close: " + "; ".join(reasons) + ".",
+            f"Solar energy does not replenish consumption: generated {gen:.1f} Wh is below "
+            f"consumed {cons:.1f} Wh plus {pm:.0%} margin ({need:.1f} Wh).",
             actual=_q(gen, "Wh"), limit=_q(need, "Wh"), margin=energy_margin_fraction(ctx),
-            severity=_SEV_FAIL, subsystems=["power"], actions=[solar, battery_action, duty],
+            severity=_SEV_FAIL, subsystems=["power"], actions=[solar, duty],
         )  # fmt: skip
     else:
         closure = _result(
@@ -340,8 +363,8 @@ def _data_return(ctx: AnalysisContext) -> ConstraintResult:
     margin = data_return_margin_fraction(ctx)
     if margin is None:
         return _result(
-            "data-return", "Data return", "pass",
-            "No science data is generated, so there is nothing to return.",
+            "data-return", "Data return", "not-modelled",
+            "no science data is generated, so data return cannot be checked",
         )  # fmt: skip
     capacity = sum(c.capacity_bits for c in d.per_contact)
     need = d.generated_bits * (1.0 + dm)
@@ -353,11 +376,20 @@ def _data_return(ctx: AnalysisContext) -> ConstraintResult:
             "with margin; all generated data is downlinked.",
             actual=_q(capacity, "bit"), limit=_q(need, "bit"), margin=margin,
         )  # fmt: skip
+    if capacity < need:
+        why = (
+            f"Downlink capacity {capacity:.3g} bit is below the {need:.3g} bit needed "
+            f"(generated {d.generated_bits:.3g} bit plus {dm:.0%} margin)"
+        )
+    else:
+        why = (
+            f"Downlink capacity {capacity:.3g} bit covers the {need:.3g} bit needed, but the "
+            "contacts occur too early or the buffer limits what they can send"
+        )
     return _result(
         "data-return", "Data return", "warning",
-        f"Downlink capacity {capacity:.3g} bit versus {need:.3g} bit needed (generated "
-        f"{d.generated_bits:.3g} bit plus {dm:.0%} margin); only {d.downlinked_bits:.3g} bit is "
-        "downlinked, so collected science is not fully returned.",
+        f"{why}; only {d.downlinked_bits:.3g} of {d.generated_bits:.3g} bit is downlinked, so "
+        "collected science is not fully returned.",
         actual=_q(capacity, "bit"), limit=_q(need, "bit"), margin=margin,
         severity=_SEV_WATCH, subsystems=["communications", "data", "payload"],
         actions=[
@@ -415,19 +447,93 @@ def _science(ctx: AnalysisContext) -> ConstraintResult:
             ],
         )  # fmt: skip
     if no_ret:
+        gen = ctx.data.generated_bits
+        returned = min(1.0, max(0.0, ctx.data.downlinked_bits / gen)) if gen > 0.0 else 0.0
+        # science.py assigns 'no-returned-data' when collected x returned == 0: nothing
+        # downlinked at all (returned == 0) or the requirement itself was never collected.
+        if gen > 0.0 and returned <= 0.0:
+            return _result(
+                "science-mandatory-coverage", "Mandatory science coverage", "warning",
+                f"Required measurement(s) {', '.join(no_ret)} are collected but no data is "
+                "returned to Earth.",
+                severity=_SEV_WATCH, subsystems=["payload", "data", "communications"],
+                actions=[
+                    _act("swap-comms", "Upgrade communications", "Returns the collected data."),
+                    _act("add-contacts", "Plan more downlink contacts", "Adds return capacity."),
+                ],
+            )  # fmt: skip
+        subsystems = ["payload", "operations"]
+        actions = [
+            _act(
+                "schedule-observation",
+                "Schedule enough observation time for the required measurement",
+                "Collects the measurement.",
+            )
+        ]
+        if not ctx.pointing_ok:
+            subsystems.append("adcs")
+            actions.append(
+                _act("upgrade-adcs", "Choose an ADCS with finer pointing", "Meets pointing need.")
+            )
+        if not ctx.power_ok:
+            subsystems.append("power")
+            actions.append(
+                _act("increase-power", "Increase available power", "Lets the instrument run.")
+            )
         return _result(
             "science-mandatory-coverage", "Mandatory science coverage", "warning",
-            f"Required measurement(s) {', '.join(no_ret)} are collected but no data is "
-            "returned to Earth.",
-            severity=_SEV_WATCH, subsystems=["payload", "data", "communications"],
-            actions=[
-                _act("swap-comms", "Upgrade communications", "Returns the collected data."),
-                _act("add-contacts", "Plan more downlink contacts", "Adds return capacity."),
-            ],
+            f"Required measurement(s) {', '.join(no_ret)} are not collected (unscheduled, "
+            "pointing insufficient or underpowered), so there is nothing to return.",
+            severity=_SEV_WATCH, subsystems=subsystems, actions=actions,
+        )  # fmt: skip
+    if not ctx.required_measurement_ids:
+        return _result(
+            "science-mandatory-coverage", "Mandatory science coverage", "not-modelled",
+            "no required measurements are defined, so mandatory coverage cannot be checked",
         )  # fmt: skip
     return _result(
         "science-mandatory-coverage", "Mandatory science coverage", "pass",
         "Every required measurement has instrument capability and returned data.",
+    )  # fmt: skip
+
+
+def _science_minimum(ctx: AnalysisContext) -> ConstraintResult:
+    minimum = ctx.limits.minimum_science_score
+    score = ctx.science.coverage_score
+    if minimum is None:
+        return _result(
+            "science-minimum-score", "Minimum science score", "not-modelled",
+            "no minimum science score is configured",
+        )  # fmt: skip
+    margin = (score - minimum) / minimum if minimum > 0.0 else None
+    actual, limit = _q(score, "%"), _q(minimum, "%")
+    if score < minimum:
+        return _result(
+            "science-minimum-score", "Minimum science score", "warning",
+            f"Science coverage score {score:.1f} is below the configured minimum {minimum:.1f}.",
+            actual=actual, limit=limit, margin=margin, severity=_SEV_WATCH,
+            subsystems=["payload", "science"],
+            actions=[
+                _act("schedule-observation", "Schedule more observations", "Raises coverage."),
+                _act("swap-comms", "Upgrade communications", "Returns more collected data."),
+            ],
+        )  # fmt: skip
+    return _result(
+        "science-minimum-score", "Minimum science score", "pass",
+        f"Science coverage score {score:.1f} meets the configured minimum {minimum:.1f}.",
+        actual=actual, limit=limit, margin=margin,
+    )  # fmt: skip
+
+
+def _success_probability(ctx: AnalysisContext) -> ConstraintResult:
+    if ctx.limits.minimum_success_probability is None:
+        return _result(
+            "success-probability", "Success probability", "not-modelled",
+            "no minimum success probability is configured",
+        )  # fmt: skip
+    return _result(
+        "success-probability", "Success probability", "not-modelled",
+        "requires robustness/simulation (later phase)",
     )  # fmt: skip
 
 
@@ -470,8 +576,8 @@ def _budget(ctx: AnalysisContext) -> ConstraintResult:
 def _thermal(ctx: AnalysisContext) -> ConstraintResult:
     t = ctx.thermal
     if t.status == "pass":  # thermal is qualitative: never a "pass"
-        return t.model_copy(
-            update={"status": "not-modelled", "severity": 0, "suggested_actions": []}
+        return ConstraintResult.model_validate(
+            {**t.model_dump(), "status": "not-modelled", "severity": 0, "suggested_actions": []}
         )
     return t
 
@@ -489,6 +595,8 @@ def evaluate_constraints(ctx: AnalysisContext) -> list[ConstraintResult]:
         _science(ctx),
         _trajectory(ctx),
         _budget(ctx),
+        _science_minimum(ctx),
+        _success_probability(ctx),
         _thermal(ctx),
     ]
 

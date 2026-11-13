@@ -48,7 +48,7 @@ def test_mass_over_limit_is_infeasible_and_not_ready_ac04() -> None:
     cs = evaluate_constraints(ctx)
     c = {x.id: x for x in cs}["mass-launch-limit"]
     assert c.status == "fail" and c.severity == 3
-    assert c.actual is not None and c.actual.unit == "kg" and c.actual.value == 600.0
+    assert c.actual is not None and c.actual.unit == "kg" and c.actual.value == 660.0
     assert c.limit is not None and c.limit.value == 500.0
     assert c.actual.provenance.fidelity == "derived"
     assert "600" in c.explanation and "500" in c.explanation
@@ -58,11 +58,25 @@ def test_mass_over_limit_is_infeasible_and_not_ready_ac04() -> None:
     assert top_drivers(cs)[0] == "mass-launch-limit"
 
 
-def test_mass_margin_warning_when_allocated_exceeds_but_wet_fits() -> None:
-    r = by_id(mass=mass(480.0))  # allocated 528 > 500
+def test_ac04_allocated_over_limit_with_wet_within_is_infeasible() -> None:
+    ctx = make_ctx(mass=mass(480.0))  # wet 480 <= 500 < allocated 528
+    cs = evaluate_constraints(ctx)
+    r = {c.id: c for c in cs}
+    assert r["mass-launch-limit"].status == "fail"
+    assert "528" in r["mass-launch-limit"].explanation
+    assert r["mass-margin"].status == "not-modelled"
+    assert feasibility(cs) == "infeasible" and not mission_ready(cs)
+    full = make_ctx()
+    ok_exec = score_preview(full, evaluate_constraints(full)).dimensions[1].score
+    assert score_preview(ctx, cs).dimensions[1].score < ok_exec  # mission-execution reduced
+
+
+def test_mass_margin_watch_band() -> None:
+    r = by_id(mass=mass(436.0))  # allocated 479.6, margin 4.1% -> watch
     assert r["mass-launch-limit"].status == "pass"
-    assert r["mass-margin"].status == "warning"
-    assert r["mass-margin"].severity == 2
+    assert r["mass-margin"].status == "warning" and r["mass-margin"].severity == 2
+    assert by_id(mass=mass(500.0 / 1.1 - 1e-6))["mass-margin"].status == "warning"  # margin 0
+    assert by_id(mass=mass(400.0))["mass-margin"].status == "pass"  # 12%
 
 
 def test_no_launch_limit_is_not_modelled_never_pass() -> None:
@@ -93,15 +107,16 @@ def test_peak_power_fail_warning_pass() -> None:
     assert by_id(peak_power_w=100.0)["peak-power"].status == "pass"
     z = by_id(peak_power_w=10.0, supply_power_w=0.0)["peak-power"]
     assert z.status == "fail" and z.margin_fraction == -1.0
-    assert by_id(peak_power_w=0.0, supply_power_w=0.0)["peak-power"].status == "pass"
+    assert by_id(peak_power_w=0.0, supply_power_w=0.0)["peak-power"].status == "not-modelled"
 
 
-def test_energy_closure_generation_shortfall_and_soc() -> None:
+def test_energy_closure_generation_shortfall_and_soc_are_separate_causes() -> None:
     short = by_id(energy=ledger(gen_wh=520.0, cons_wh=500.0))  # need 550
     assert short["energy-closure"].status == "fail"
     assert "520" in short["energy-closure"].explanation
+    assert short["battery-reserve"].status == "pass"
     low_soc = by_id(energy=ledger(min_soc=0.1))
-    assert low_soc["energy-closure"].status == "fail"
+    assert low_soc["energy-closure"].status == "pass"  # no double failure for one cause
     assert low_soc["battery-reserve"].status == "fail"
     acts = {a.action_id for a in low_soc["battery-reserve"].suggested_actions}
     assert "larger-battery" in acts
@@ -113,9 +128,9 @@ def test_battery_reserve_warning_when_close_to_floor() -> None:
     assert r["energy-closure"].status == "pass"
 
 
-def test_energy_without_consumption_passes_with_no_margin() -> None:
+def test_energy_without_consumption_is_not_modelled() -> None:
     c = by_id(energy=ledger(gen_wh=0.0, cons_wh=0.0))["energy-closure"]
-    assert c.status == "pass" and c.margin_fraction is None
+    assert c.status == "not-modelled" and c.margin_fraction is None
 
 
 def test_data_buffer_overflow_fail_unless_accepted() -> None:
@@ -151,12 +166,18 @@ def test_data_return_warning_is_headline_neo_shortfall() -> None:
     assert "communications" in c.impacted_subsystems
 
 
-def test_data_return_margin_and_zero_generated() -> None:
+def test_data_return_margin_zero_generated_and_undelivered_only() -> None:
     # capacity covers generated but not the required 20% margin
     d = data(generated=1.0e6, downlinked=1.0e6, capacity=1.1e6)
-    assert by_id(data=d)["data-return"].status == "warning"
+    c = by_id(data=d)["data-return"]
+    assert c.status == "warning" and "below" in c.explanation
     z = by_id(data=data(generated=0.0, downlinked=0.0))["data-return"]
-    assert z.status == "pass" and z.margin_fraction is None
+    assert z.status == "not-modelled" and z.margin_fraction is None
+    # capacity is ample but some generated data never reaches a contact
+    u = by_id(data=data(generated=1.0e6, downlinked=5.0e5, capacity=5.0e6))["data-return"]
+    assert u.status == "warning"
+    assert "covers" in u.explanation and "too early" in u.explanation
+    assert "below" not in u.explanation
 
 
 def test_compat_issue_each_becomes_a_failing_constraint() -> None:
@@ -174,8 +195,53 @@ def test_compat_issue_each_becomes_a_failing_constraint() -> None:
 def test_science_mandatory_coverage_levels() -> None:
     cap = by_id(science_missing=(("m1", "no-capability"),))["science-mandatory-coverage"]
     assert cap.status == "fail" and "m1" in cap.explanation
-    ret = by_id(science_missing=(("m2", "no-returned-data"),))["science-mandatory-coverage"]
-    assert ret.status == "warning"
+
+
+def test_science_not_returned_vs_not_collected() -> None:
+    missing = (("m2", "no-returned-data"),)
+    # data generated but none downlinked -> comms actions
+    ret = by_id(science_missing=missing, data=data(generated=1.0e6, downlinked=0.0))[
+        "science-mandatory-coverage"
+    ]
+    assert ret.status == "warning" and "not returned" not in ret.explanation
+    assert "collected but no data is returned" in ret.explanation
+    assert {a.action_id for a in ret.suggested_actions} == {"swap-comms", "add-contacts"}
+    # data is being returned, so the requirement itself was never collected
+    nc = by_id(science_missing=missing)["science-mandatory-coverage"]
+    assert nc.status == "warning" and "not collected" in nc.explanation
+    assert [a.action_id for a in nc.suggested_actions] == ["schedule-observation"]
+    # nothing generated at all -> not collected
+    none = by_id(science_missing=missing, data=data(generated=0.0, downlinked=0.0))
+    assert "not collected" in none["science-mandatory-coverage"].explanation
+    both = by_id(science_missing=missing, pointing_ok=False, power_ok=False)
+    c = both["science-mandatory-coverage"]
+    assert [a.action_id for a in c.suggested_actions] == [
+        "schedule-observation", "upgrade-adcs", "increase-power",
+    ]  # fmt: skip
+    assert {"adcs", "power"} <= set(c.impacted_subsystems)
+
+
+def test_science_no_required_measurements_not_modelled() -> None:
+    c = by_id(required_measurement_ids=())["science-mandatory-coverage"]
+    assert c.status == "not-modelled"
+
+
+def test_science_minimum_score_and_success_probability() -> None:
+    assert by_id()["science-minimum-score"].status == "not-modelled"
+    w = by_id(limits=limits(minimum_science_score=90.0))["science-minimum-score"]
+    assert w.status == "warning" and w.severity == 2 and w.suggested_actions
+    assert w.actual is not None and w.actual.value == 80.0
+    ok = by_id(limits=limits(minimum_science_score=80.0))["science-minimum-score"]
+    assert ok.status == "pass"
+    zero = by_id(limits=limits(minimum_science_score=0.0))["science-minimum-score"]
+    assert zero.status == "pass" and zero.margin_fraction is None
+    assert by_id()["success-probability"].status == "not-modelled"
+    sp = by_id(limits=limits(minimum_success_probability=0.8))["success-probability"]
+    assert sp.status == "not-modelled"
+    assert sp.explanation == "requires robustness/simulation (later phase)"
+    # soft: a science shortfall alone is marginal, never infeasible
+    cs = evaluate_constraints(make_ctx(limits=limits(minimum_science_score=90.0)))
+    assert feasibility(cs) == "marginal"
 
 
 def test_trajectory_invalid_fails() -> None:
@@ -208,9 +274,23 @@ def test_thermal_passthrough_and_never_pass() -> None:
 
 
 def test_not_modelled_never_maps_to_pass_for_missing_inputs() -> None:
-    cs = evaluate_constraints(make_ctx(contact_links=(), limits=limits(launch_mass_limit_kg=None)))
-    flagged = {"link-margin", "mass-launch-limit", "mass-margin", "thermal"}
-    assert {c.id for c in cs if c.status == "not-modelled"} == flagged
+    cs = evaluate_constraints(
+        make_ctx(
+            contact_links=(),
+            limits=limits(launch_mass_limit_kg=None),
+            data=data(generated=0.0, downlinked=0.0),
+            energy=ledger(gen_wh=0.0, cons_wh=0.0),
+            peak_power_w=0.0,
+            supply_power_w=0.0,
+            required_measurement_ids=(),
+        )
+    )
+    expected = {
+        "link-margin", "mass-launch-limit", "mass-margin", "thermal", "data-return",
+        "energy-closure", "peak-power", "science-mandatory-coverage",
+        "science-minimum-score", "success-probability",
+    }  # fmt: skip
+    assert {c.id for c in cs if c.status == "not-modelled"} == expected
 
 
 def test_every_fail_and_warning_is_explained_and_actionable() -> None:

@@ -109,6 +109,43 @@ def test_robustness_margins_relative_to_targets() -> None:
     assert r == pytest.approx(100.0 * (1.0 + 1.0 + 0.0 + 0.5) / 4.0)
 
 
+def _only(**over: object) -> object:
+    """Context whose only robustness credits come from the overridden inputs."""
+    base: dict[str, object] = {
+        "limits": limits(launch_mass_limit_kg=None),
+        "energy": ledger(gen_wh=0.0, cons_wh=0.0),
+        "data": data(generated=0.0, downlinked=0.0),
+        "maneuvers": ManeuverBudget(2000.0, 1000.0, 900.0, (), None, ()),  # reserve 100
+    }
+    base.update(over)
+    return make_ctx(**base)
+
+
+def _rob(ctx: object) -> float:
+    return dims(score_preview(ctx, []))["engineering-robustness"]  # type: ignore[arg-type]
+
+
+def test_robustness_credit_full_at_gate_threshold_zero_at_no_headroom() -> None:
+    # mass: limit 500, margin 0.1 -> allocated == limit (wet 500/1.1) gives full credit
+    lim = limits()
+    thr = _only(limits=lim, mass=MassResult(1.0, 1.0, 2.0, 500.0 / 1.1, 500.0, 0.0, ()))
+    assert _rob(thr) == pytest.approx(100.0)  # (mass 1 + delta-v 1) / 2
+    zero = _only(limits=lim, mass=MassResult(1.0, 1.0, 2.0, 500.0, 550.0, -0.1, ()))
+    assert _rob(zero) == pytest.approx(50.0)  # mass 0, delta-v 1
+    # delta-v: available == required + reserve -> 1; available == required -> 0
+    assert _rob(_only(maneuvers=ManeuverBudget(1100.0, 1000.0, 0.0, (), None, ()))) == (
+        pytest.approx(100.0)
+    )
+    assert _rob(_only(maneuvers=ManeuverBudget(1000.0, 1000.0, -100.0, (), None, ()))) == 0.0
+    # energy: generated == consumed x (1 + margin) -> 1; generated == consumed -> 0
+    assert _rob(_only(energy=ledger(gen_wh=550.0, cons_wh=500.0))) == pytest.approx(100.0)
+    e0 = _only(energy=ledger(gen_wh=500.0, cons_wh=500.0))
+    assert _rob(e0) == pytest.approx(50.0)  # energy 0, delta-v 1
+    # data: capacity == generated x (1 + margin) -> 1; capacity == generated -> 0
+    assert _rob(_only(data=data(1.0e6, 1.0e6, 1.2e6))) == pytest.approx(100.0)
+    assert _rob(_only(data=data(1.0e6, 1.0e6, 1.0e6))) == pytest.approx(50.0)
+
+
 def test_robustness_skips_unavailable_and_handles_zero_targets() -> None:
     ctx = make_ctx(
         limits=limits(

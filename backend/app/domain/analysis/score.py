@@ -8,7 +8,11 @@ total cost stays within budget.
 
 from collections.abc import Sequence
 
-from app.domain.analysis.constraints import data_return_margin_fraction, energy_margin_fraction
+from app.domain.analysis.constraints import (
+    data_return_margin_fraction,
+    energy_margin_fraction,
+    reserve_ms,
+)
 from app.domain.analysis.context import AnalysisContext
 from app.schemas.analysis import ConstraintResult, ScoreBreakdown, ScoreDimension, ScoreDimensionId
 
@@ -29,6 +33,7 @@ HARD_GATE_IDS = frozenset(
         "energy-closure",
         "data-buffer",
         "link-margin",
+        "battery-reserve",
         "trajectory-valid",
         "science-mandatory-coverage",
         "budget",
@@ -42,7 +47,7 @@ SCORE_ASSUMPTIONS: tuple[str, ...] = (
     "scientific-return = ScienceAnalysis.coverage_score (returned data, not merely collected).",
     "mission-execution is a design-time proxy; refined by simulation: 100 x mean credit over "
     "hard gates (pass 1, warning 0.5, fail 0); not-modelled gates are excluded.",
-    "engineering-robustness = mean of clamp(margin / required margin, 0, 1) x 100 over the "
+    "engineering-robustness = mean of clamp(headroom / required headroom, 0, 1) x 100 over the "
     "mass, delta-v, energy and data margins that can be evaluated.",
     "resource-stewardship = 100 within budget, falling linearly to 0 at twice the budget; "
     "a cheaper design inside the budget scores the same, so cost alone is never rewarded.",
@@ -55,11 +60,12 @@ def _clamp01(x: float) -> float:
     return min(1.0, max(0.0, x))
 
 
-def _margin_credit(margin: float, target: float) -> float:
-    """Margin relative to the required margin, clamped to [0, 1]."""
-    if target <= 0.0:
-        return 1.0 if margin >= 0.0 else 0.0
-    return _clamp01(margin / target)
+def _credit(headroom: float, required: float) -> float:
+    """clamp(headroom / required_headroom, 0, 1): 1 exactly at the hard-gate threshold,
+    0 at zero raw headroom."""
+    if required <= 0.0:
+        return 1.0 if headroom >= 0.0 else 0.0
+    return _clamp01(headroom / required)
 
 
 def _is_gate(c: ConstraintResult) -> bool:
@@ -82,20 +88,22 @@ def _execution(constraints: Sequence[ConstraintResult]) -> tuple[float, str]:
 def _robustness(ctx: AnalysisContext) -> tuple[float, str]:
     lim = ctx.limits
     credits: list[float] = []
-    if lim.launch_mass_limit_kg is not None and ctx.mass.margin_to_limit_fraction is not None:
-        credits.append(_margin_credit(ctx.mass.margin_to_limit_fraction, lim.mass_margin_fraction))
-    reserve_ms = lim.delta_v_margin_km_per_s * 1000.0
-    credits.append(_margin_credit(ctx.maneuvers.margin_ms, reserve_ms))
+    if lim.launch_mass_limit_kg is not None:
+        limit = lim.launch_mass_limit_kg
+        required = 1.0 - 1.0 / (1.0 + lim.mass_margin_fraction)
+        credits.append(_credit((limit - ctx.mass.wet_kg) / limit, required))
+    b = ctx.maneuvers
+    credits.append(_credit(b.available_ms - b.required_ms, reserve_ms(b)))
     energy = energy_margin_fraction(ctx)
     if energy is not None:
-        credits.append(_margin_credit(energy, lim.power_margin_fraction))
+        credits.append(_credit(energy, lim.power_margin_fraction))
     data = data_return_margin_fraction(ctx)
     if data is not None:
-        credits.append(_margin_credit(data, lim.data_margin_fraction))
+        credits.append(_credit(data, lim.data_margin_fraction))
     score = 100.0 * sum(credits) / len(credits)
     return score, (
-        f"Mean of {len(credits)} mass, delta-v, energy and data margins relative to the "
-        "required margins."
+        f"Mean of {len(credits)} mass, delta-v, energy and data headrooms relative to the "
+        "required headroom (full credit at the hard-gate threshold, zero at no headroom)."
     )
 
 

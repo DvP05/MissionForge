@@ -42,3 +42,6 @@ class AnalysisContext:
     compat_issues: tuple[CompatibilityIssue, ...]
     trajectory_valid: bool
     overflow_accepted: bool = False  # player explicitly accepted buffer data loss
+    required_measurement_ids: tuple[str, ...] = ()  # mandatory measurements in the mission
+    pointing_ok: bool = True  # ADCS meets instrument pointing needs (as passed to science)
+    power_ok: bool = True  # instruments can be powered (as passed to science)

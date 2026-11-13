@@ -111,5 +111,6 @@ def make_ctx(**over: Any) -> AnalysisContext:
         thermal=thermal_ok(),
         compat_issues=(),
         trajectory_valid=True,
+        required_measurement_ids=("m1",),
     )  # fmt: skip
     return replace(base, **over)
