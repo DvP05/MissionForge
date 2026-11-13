@@ -7,13 +7,15 @@
   "topConstraints": [
     "Fit the rideshare launch mass limit (150 kg).",
     "Keep payload mass within the 12U-class bus capacity.",
-    "Stay within the 12 M USD mission budget."
+    "Stay within the 20 M USD mission budget."
   ],
   "fidelityNotes": [
     "orbit: two-body circular educational preset",
     "curated transfer preset; not high-fidelity",
     "All catalogue values are illustrative gameplay-estimate archetypes, not real hardware.",
-    "Destination is Earth (low orbit); injection dates and delta-v are illustrative gameplay values."
+    "Destination is Earth (low orbit); injection dates and delta-v are illustrative gameplay values.",
+    "Starter teaching point: data return. A low-orbit ground station sees only short passes, so the 60 x 30 min contacts return only part of the generated data; add contacts or cut the duty cycle to clear the data-return warning.",
+    "Measurement targetThreshold values are the scheduled observation time each requirement needs (seconds, gameplay-estimate)."
   ],
   "optionalObjectives": [],
   "missionState": {
@@ -33,7 +35,19 @@
             "description": "Visible imaging of coastal zones",
             "instrumentCapability": "visible-imaging",
             "coverageWeight": 1.0,
-            "required": true
+            "required": true,
+            "targetThreshold": {
+              "value": 300.0,
+              "unit": "s",
+              "provenance": {
+                "fidelity": "gameplay-estimate",
+                "sourceName": "MISSIONFORGE scenario template v0.1.0",
+                "sourceVersion": "0.1.0",
+                "assumptions": [
+                  "Required scheduled observation time (300 s); illustrative."
+                ]
+              }
+            }
           }
         ]
       },
@@ -48,7 +62,19 @@
             "description": "Multi-band reflectance of coastal water",
             "instrumentCapability": "vnir-spectroscopy",
             "coverageWeight": 1.0,
-            "required": true
+            "required": true,
+            "targetThreshold": {
+              "value": 300.0,
+              "unit": "s",
+              "provenance": {
+                "fidelity": "gameplay-estimate",
+                "sourceName": "MISSIONFORGE scenario template v0.1.0",
+                "sourceVersion": "0.1.0",
+                "assumptions": [
+                  "Required scheduled observation time (300 s); illustrative."
+                ]
+              }
+            }
           }
         ]
       }
@@ -96,13 +122,13 @@
           "measurementId": "meas-coastal-imaging",
           "startDay": 30.0,
           "durationHours": 6.0,
-          "dutyCycle": 0.1
+          "dutyCycle": 0.0167
         },
         {
           "measurementId": "meas-water-spectra",
           "startDay": 60.0,
           "durationHours": 6.0,
-          "dutyCycle": 0.1
+          "dutyCycle": 0.0167
         }
       ],
       "downlinkPlan": [
@@ -112,42 +138,67 @@
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 38.0,
+          "startDay": 35.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 45.0,
+          "startDay": 40.0,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 52.0,
+          "startDay": 44.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 59.0,
+          "startDay": 49.0,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 66.0,
+          "startDay": 53.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 73.0,
+          "startDay": 58.0,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 80.0,
+          "startDay": 62.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 87.0,
+          "startDay": 67.0,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 71.5,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 76.0,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 80.5,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 85.0,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 89.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
@@ -157,42 +208,67 @@
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 101.0,
+          "startDay": 98.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 108.0,
+          "startDay": 103.0,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 115.0,
+          "startDay": 107.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 122.0,
+          "startDay": 112.0,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 129.0,
+          "startDay": 116.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 136.0,
+          "startDay": 121.0,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 143.0,
+          "startDay": 125.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 150.0,
+          "startDay": 130.0,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 134.5,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 139.0,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 143.5,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 148.0,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 152.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
@@ -202,42 +278,67 @@
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 164.0,
+          "startDay": 161.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 171.0,
+          "startDay": 166.0,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 178.0,
+          "startDay": 170.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 185.0,
+          "startDay": 175.0,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 192.0,
+          "startDay": 179.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 199.0,
+          "startDay": 184.0,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 206.0,
+          "startDay": 188.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 213.0,
+          "startDay": 193.0,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 197.5,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 202.0,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 206.5,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 211.0,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 215.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
@@ -247,42 +348,67 @@
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 227.0,
+          "startDay": 224.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 234.0,
+          "startDay": 229.0,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 241.0,
+          "startDay": 233.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 248.0,
+          "startDay": 238.0,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 255.0,
+          "startDay": 242.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 262.0,
+          "startDay": 247.0,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 269.0,
+          "startDay": 251.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 276.0,
+          "startDay": 256.0,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 260.5,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 265.0,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 269.5,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 274.0,
+          "durationMinutes": 30.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 278.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
@@ -292,17 +418,17 @@
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 290.0,
+          "startDay": 287.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 297.0,
+          "startDay": 292.0,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
-          "startDay": 304.0,
+          "startDay": 296.5,
           "durationMinutes": 30.0,
           "dataRateBitsPerSecond": 100000.0
         }
@@ -311,7 +437,7 @@
       "autonomyLevel": "supervised"
     },
     "constraints": {
-      "maximumBudgetUsd": 12000000.0,
+      "maximumBudgetUsd": 20000000.0,
       "launchMassLimitKg": 150.0,
       "minimumScienceScore": 50.0,
       "minimumSuccessProbability": 0.7,

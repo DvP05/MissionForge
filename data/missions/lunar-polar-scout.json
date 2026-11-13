@@ -13,7 +13,8 @@
     "orbit: two-body circular educational preset",
     "curated transfer preset; not high-fidelity",
     "All catalogue values are illustrative gameplay-estimate archetypes, not real hardware.",
-    "Destination is the Moon (south polar region); transfer dates, C3 and delta-v are illustrative gameplay values."
+    "Destination is the Moon (south polar region); transfer dates, C3 and delta-v are illustrative gameplay values.",
+    "Starter teaching point: data return. The plan generates about 7.2 Gbit but the 20 contacts of the medium radio return only about 5.2 Gbit, so science is partly returned (score above the minimum) and the data-return warning remains; add contacts or cut the duty cycle to clear it."
   ],
   "optionalObjectives": [],
   "missionState": {
@@ -97,114 +98,114 @@
           "measurementId": "meas-polar-imaging",
           "startDay": 20.0,
           "durationHours": 10.0,
-          "dutyCycle": 0.2
+          "dutyCycle": 0.1
         },
         {
           "measurementId": "meas-polar-thermal",
           "startDay": 40.0,
           "durationHours": 10.0,
-          "dutyCycle": 0.2
+          "dutyCycle": 0.1
         }
       ],
       "downlinkPlan": [
         {
           "startDay": 21.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 26.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 31.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 36.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 41.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 46.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 51.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 56.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 61.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 66.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 71.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 76.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 81.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 86.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 91.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 96.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 101.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 106.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 111.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         },
         {
           "startDay": 116.0,
-          "durationMinutes": 120.0,
+          "durationMinutes": 240.0,
           "dataRateBitsPerSecond": 100000.0
         }
       ],

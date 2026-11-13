@@ -17,7 +17,8 @@
     "Reference Earth-spacecraft range for the link budget is 0.25 AU (3.74e10 m): an illustrative mid-mission Earth-NEO distance chosen for gameplay, not an ephemeris value. Ground segment is ground-large (62 dBi, 40 K, 0.33 contact availability). Link budget (arch 7.5 equation, 8.4 GHz, 0.25 AU): comms-xband-medium closes the planned 50 kbit/s downlink with margin above 3 dB; comms-xband-lowgain does not close it.",
     "The starter warning is a data-return shortfall (downlink capacity): generated data exceeds what the low-gain radio can return, while onboard storage is not the limiting factor.",
     "Downlink plan rates are the planned rate; the achievable rate is capped by the selected radio's maximum data rate.",
-    "Optional extra objectives (thermal behaviour, magnetic/plasma environment) are listed in optionalObjectives and are not part of the starter MissionState."
+    "Optional extra objectives (thermal behaviour, magnetic/plasma environment) are listed in optionalObjectives and are not part of the starter MissionState.",
+    "Measurement targetThreshold values are the scheduled observation time each requirement needs (seconds, gameplay-estimate); the starter plan schedules slightly more than required, so the only starter shortfall is data return."
   ],
   "optionalObjectives": [
     {
@@ -70,14 +71,14 @@
             "coverageWeight": 0.7,
             "required": true,
             "targetThreshold": {
-              "value": 2.0,
-              "unit": "m",
+              "value": 360.0,
+              "unit": "s",
               "provenance": {
                 "fidelity": "gameplay-estimate",
                 "sourceName": "MISSIONFORGE scenario template v0.1.0",
                 "sourceVersion": "0.1.0",
                 "assumptions": [
-                  "Illustrative target threshold."
+                  "Required scheduled observation time (0.1 h) to build the shape model; illustrative."
                 ]
               }
             }
@@ -102,7 +103,19 @@
             "description": "VNIR reflectance spectra of the surface",
             "instrumentCapability": "vnir-spectroscopy",
             "coverageWeight": 1.0,
-            "required": true
+            "required": true,
+            "targetThreshold": {
+              "value": 1200.0,
+              "unit": "s",
+              "provenance": {
+                "fidelity": "gameplay-estimate",
+                "sourceName": "MISSIONFORGE scenario template v0.1.0",
+                "sourceVersion": "0.1.0",
+                "assumptions": [
+                  "Required scheduled observation time (0.33 h) for the VNIR spectra; illustrative."
+                ]
+              }
+            }
           }
         ]
       }
