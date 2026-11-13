@@ -4,7 +4,7 @@ import math
 from datetime import date, datetime
 from typing import Annotated, Literal
 
-from pydantic import AfterValidator, Field
+from pydantic import AfterValidator, Field, StrictBool, StrictInt, StrictStr
 
 from app.schemas.api import ContractModel
 
@@ -17,6 +17,14 @@ def _require_finite(v: float) -> float:
 
 # Strict float (rejects bool/str) that also rejects NaN and +/-inf.
 FiniteFloat = Annotated[float, Field(strict=True), AfterValidator(_require_finite)]
+
+# Finite float constrained to a fraction in [0, 1] (probabilities, coverage, margins of a whole).
+UnitFraction = Annotated[FiniteFloat, Field(ge=0, le=1)]
+# Finite float that must be >= 0 (energies, bit counts, durations, seconds).
+NonNegativeFloat = Annotated[FiniteFloat, Field(ge=0)]
+# Typed scalar for free-form attribute/trigger maps (replaces `Any`). bool is listed before
+# int so JSON `true` never coerces to 1; smart-mode unions keep exact types on round trip.
+Scalar = StrictStr | StrictBool | StrictInt | FiniteFloat
 
 Fidelity = Literal["source-backed", "derived", "gameplay-estimate", "not-modelled"]
 Unit = Literal[

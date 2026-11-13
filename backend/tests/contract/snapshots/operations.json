@@ -1,0 +1,521 @@
+{
+  "AutonomyAction": {
+    "additionalProperties": false,
+    "properties": {
+      "dataBits": {
+        "ge": 0,
+        "title": "Databits",
+        "type": "number"
+      },
+      "energyJoules": {
+        "ge": 0,
+        "title": "Energyjoules",
+        "type": "number"
+      },
+      "expectedScienceValue": {
+        "ge": 0,
+        "title": "Expectedsciencevalue",
+        "type": "number"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "observationId": {
+        "title": "Observationid",
+        "type": "string"
+      },
+      "risk": {
+        "ge": 0,
+        "title": "Risk",
+        "type": "number"
+      },
+      "slewSeconds": {
+        "ge": 0,
+        "title": "Slewseconds",
+        "type": "number"
+      }
+    },
+    "required": [
+      "id",
+      "observationId",
+      "expectedScienceValue",
+      "energyJoules",
+      "dataBits",
+      "risk",
+      "slewSeconds"
+    ],
+    "title": "AutonomyAction",
+    "type": "object"
+  },
+  "AutonomyDecision": {
+    "$defs": {
+      "ScoredAction": {
+        "additionalProperties": false,
+        "properties": {
+          "actionId": {
+            "title": "Actionid",
+            "type": "string"
+          },
+          "feasible": {
+            "title": "Feasible",
+            "type": "boolean"
+          },
+          "rejectionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rejectionreason"
+          },
+          "utility": {
+            "title": "Utility",
+            "type": "number"
+          }
+        },
+        "required": [
+          "actionId",
+          "utility",
+          "feasible"
+        ],
+        "title": "ScoredAction",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "candidates": {
+        "items": {
+          "$ref": "#/$defs/ScoredAction"
+        },
+        "title": "Candidates",
+        "type": "array"
+      },
+      "decisionMaker": {
+        "enum": [
+          "ground",
+          "onboard-policy"
+        ],
+        "title": "Decisionmaker",
+        "type": "string"
+      },
+      "policy": {
+        "enum": [
+          "conservative",
+          "science-first",
+          "resource-aware"
+        ],
+        "title": "Policy",
+        "type": "string"
+      },
+      "reason": {
+        "title": "Reason",
+        "type": "string"
+      },
+      "selectedActionId": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Selectedactionid"
+      }
+    },
+    "required": [
+      "decisionMaker",
+      "policy",
+      "candidates",
+      "reason"
+    ],
+    "title": "AutonomyDecision",
+    "type": "object"
+  },
+  "BufferPoint": {
+    "additionalProperties": false,
+    "properties": {
+      "bits": {
+        "ge": 0,
+        "title": "Bits",
+        "type": "number"
+      },
+      "t": {
+        "ge": 0,
+        "title": "T",
+        "type": "number"
+      }
+    },
+    "required": [
+      "t",
+      "bits"
+    ],
+    "title": "BufferPoint",
+    "type": "object"
+  },
+  "ContactWindow": {
+    "additionalProperties": false,
+    "properties": {
+      "end": {
+        "ge": 0,
+        "title": "End",
+        "type": "number"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "linkMarginDb": {
+        "title": "Linkmargindb",
+        "type": "number"
+      },
+      "maxDownlinkBits": {
+        "ge": 0,
+        "title": "Maxdownlinkbits",
+        "type": "number"
+      },
+      "start": {
+        "ge": 0,
+        "title": "Start",
+        "type": "number"
+      },
+      "stationId": {
+        "title": "Stationid",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "start",
+      "end",
+      "maxDownlinkBits",
+      "stationId",
+      "linkMarginDb"
+    ],
+    "title": "ContactWindow",
+    "type": "object"
+  },
+  "MissionSchedule": {
+    "$defs": {
+      "BufferPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "bits": {
+            "ge": 0,
+            "title": "Bits",
+            "type": "number"
+          },
+          "t": {
+            "ge": 0,
+            "title": "T",
+            "type": "number"
+          }
+        },
+        "required": [
+          "t",
+          "bits"
+        ],
+        "title": "BufferPoint",
+        "type": "object"
+      },
+      "RejectedOpportunity": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "reasonCode": {
+            "enum": [
+              "INSTRUMENT_CONFLICT",
+              "ENERGY",
+              "POINTING",
+              "BUFFER_OVERFLOW_BEFORE_CONTACT",
+              "NO_CONTACT",
+              "PHASE"
+            ],
+            "title": "Reasoncode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "reasonCode"
+        ],
+        "title": "RejectedOpportunity",
+        "type": "object"
+      },
+      "ScheduledDataCycle": {
+        "additionalProperties": false,
+        "properties": {
+          "bufferAfterBits": {
+            "ge": 0,
+            "title": "Bufferafterbits",
+            "type": "number"
+          },
+          "bufferBeforeBits": {
+            "ge": 0,
+            "title": "Bufferbeforebits",
+            "type": "number"
+          },
+          "contactWindowId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Contactwindowid"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "observations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Observations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "observations",
+          "bufferBeforeBits",
+          "bufferAfterBits",
+          "explanation"
+        ],
+        "title": "ScheduledDataCycle",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "accepted": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Accepted",
+        "type": "array"
+      },
+      "bufferTimeline": {
+        "items": {
+          "$ref": "#/$defs/BufferPoint"
+        },
+        "title": "Buffertimeline",
+        "type": "array"
+      },
+      "cycles": {
+        "items": {
+          "$ref": "#/$defs/ScheduledDataCycle"
+        },
+        "title": "Cycles",
+        "type": "array"
+      },
+      "rejected": {
+        "items": {
+          "$ref": "#/$defs/RejectedOpportunity"
+        },
+        "title": "Rejected",
+        "type": "array"
+      }
+    },
+    "required": [
+      "accepted",
+      "rejected",
+      "cycles",
+      "bufferTimeline"
+    ],
+    "title": "MissionSchedule",
+    "type": "object"
+  },
+  "ObservationOpportunity": {
+    "additionalProperties": false,
+    "properties": {
+      "compatibleAttitude": {
+        "title": "Compatibleattitude",
+        "type": "string"
+      },
+      "end": {
+        "ge": 0,
+        "title": "End",
+        "type": "number"
+      },
+      "energyJoules": {
+        "ge": 0,
+        "title": "Energyjoules",
+        "type": "number"
+      },
+      "expectedScienceValue": {
+        "ge": 0,
+        "title": "Expectedsciencevalue",
+        "type": "number"
+      },
+      "generatedDataBits": {
+        "ge": 0,
+        "title": "Generateddatabits",
+        "type": "number"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "instrumentId": {
+        "title": "Instrumentid",
+        "type": "string"
+      },
+      "slewSeconds": {
+        "ge": 0,
+        "title": "Slewseconds",
+        "type": "number"
+      },
+      "start": {
+        "ge": 0,
+        "title": "Start",
+        "type": "number"
+      }
+    },
+    "required": [
+      "id",
+      "start",
+      "end",
+      "instrumentId",
+      "expectedScienceValue",
+      "generatedDataBits",
+      "energyJoules",
+      "slewSeconds",
+      "compatibleAttitude"
+    ],
+    "title": "ObservationOpportunity",
+    "type": "object"
+  },
+  "RejectedOpportunity": {
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "reasonCode": {
+        "enum": [
+          "INSTRUMENT_CONFLICT",
+          "ENERGY",
+          "POINTING",
+          "BUFFER_OVERFLOW_BEFORE_CONTACT",
+          "NO_CONTACT",
+          "PHASE"
+        ],
+        "title": "Reasoncode",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "reasonCode"
+    ],
+    "title": "RejectedOpportunity",
+    "type": "object"
+  },
+  "ScheduledDataCycle": {
+    "additionalProperties": false,
+    "properties": {
+      "bufferAfterBits": {
+        "ge": 0,
+        "title": "Bufferafterbits",
+        "type": "number"
+      },
+      "bufferBeforeBits": {
+        "ge": 0,
+        "title": "Bufferbeforebits",
+        "type": "number"
+      },
+      "contactWindowId": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Contactwindowid"
+      },
+      "explanation": {
+        "title": "Explanation",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "observations": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Observations",
+        "type": "array"
+      }
+    },
+    "required": [
+      "id",
+      "observations",
+      "bufferBeforeBits",
+      "bufferAfterBits",
+      "explanation"
+    ],
+    "title": "ScheduledDataCycle",
+    "type": "object"
+  },
+  "ScoredAction": {
+    "additionalProperties": false,
+    "properties": {
+      "actionId": {
+        "title": "Actionid",
+        "type": "string"
+      },
+      "feasible": {
+        "title": "Feasible",
+        "type": "boolean"
+      },
+      "rejectionReason": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Rejectionreason"
+      },
+      "utility": {
+        "title": "Utility",
+        "type": "number"
+      }
+    },
+    "required": [
+      "actionId",
+      "utility",
+      "feasible"
+    ],
+    "title": "ScoredAction",
+    "type": "object"
+  }
+}

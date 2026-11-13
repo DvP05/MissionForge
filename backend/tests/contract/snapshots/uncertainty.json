@@ -1,0 +1,508 @@
+{
+  "DistributionSpec": {
+    "additionalProperties": false,
+    "properties": {
+      "kind": {
+        "enum": [
+          "normal",
+          "uniform",
+          "triangular"
+        ],
+        "title": "Kind",
+        "type": "string"
+      },
+      "max": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Max"
+      },
+      "mean": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Mean"
+      },
+      "min": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Min"
+      },
+      "mode": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Mode"
+      },
+      "stdDev": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Stddev"
+      }
+    },
+    "required": [
+      "kind"
+    ],
+    "title": "DistributionSpec",
+    "type": "object"
+  },
+  "MetricQuantiles": {
+    "additionalProperties": false,
+    "properties": {
+      "median": {
+        "title": "Median",
+        "type": "number"
+      },
+      "p10": {
+        "title": "P10",
+        "type": "number"
+      },
+      "p90": {
+        "title": "P90",
+        "type": "number"
+      },
+      "unit": {
+        "title": "Unit",
+        "type": "string"
+      }
+    },
+    "required": [
+      "p10",
+      "median",
+      "p90",
+      "unit"
+    ],
+    "title": "MetricQuantiles",
+    "type": "object"
+  },
+  "RobustnessResult": {
+    "$defs": {
+      "MetricQuantiles": {
+        "additionalProperties": false,
+        "properties": {
+          "median": {
+            "title": "Median",
+            "type": "number"
+          },
+          "p10": {
+            "title": "P10",
+            "type": "number"
+          },
+          "p90": {
+            "title": "P90",
+            "type": "number"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "p10",
+          "median",
+          "p90",
+          "unit"
+        ],
+        "title": "MetricQuantiles",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "assumptions": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Assumptions",
+        "type": "array"
+      },
+      "disclaimer": {
+        "title": "Disclaimer",
+        "type": "string"
+      },
+      "failureCounts": {
+        "additionalProperties": {
+          "type": "integer"
+        },
+        "title": "Failurecounts",
+        "type": "object"
+      },
+      "feasibilityWilson95": {
+        "maxItems": 2,
+        "minItems": 2,
+        "prefixItems": [
+          {
+            "ge": 0,
+            "le": 1,
+            "type": "number"
+          },
+          {
+            "ge": 0,
+            "le": 1,
+            "type": "number"
+          }
+        ],
+        "title": "Feasibilitywilson95",
+        "type": "array"
+      },
+      "metrics": {
+        "additionalProperties": {
+          "$ref": "#/$defs/MetricQuantiles"
+        },
+        "title": "Metrics",
+        "type": "object"
+      },
+      "probabilityFeasible": {
+        "ge": 0,
+        "le": 1,
+        "title": "Probabilityfeasible",
+        "type": "number"
+      },
+      "profileVersion": {
+        "title": "Profileversion",
+        "type": "string"
+      },
+      "samples": {
+        "minimum": 0,
+        "title": "Samples",
+        "type": "integer"
+      },
+      "seed": {
+        "title": "Seed",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "samples",
+      "seed",
+      "probabilityFeasible",
+      "feasibilityWilson95",
+      "metrics",
+      "failureCounts",
+      "profileVersion",
+      "assumptions",
+      "disclaimer"
+    ],
+    "title": "RobustnessResult",
+    "type": "object"
+  },
+  "UncertainParameter": {
+    "$defs": {
+      "DistributionSpec": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "normal",
+              "uniform",
+              "triangular"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Max"
+          },
+          "mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Mean"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Min"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Mode"
+          },
+          "stdDev": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Stddev"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "DistributionSpec",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "distribution": {
+        "$ref": "#/$defs/DistributionSpec"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "kind": {
+        "enum": [
+          "aleatory",
+          "epistemic"
+        ],
+        "title": "Kind",
+        "type": "string"
+      },
+      "path": {
+        "title": "Path",
+        "type": "string"
+      },
+      "rationale": {
+        "title": "Rationale",
+        "type": "string"
+      },
+      "sourceRef": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Sourceref"
+      }
+    },
+    "required": [
+      "id",
+      "path",
+      "kind",
+      "distribution",
+      "rationale"
+    ],
+    "title": "UncertainParameter",
+    "type": "object"
+  },
+  "UncertaintyProfile": {
+    "$defs": {
+      "DistributionSpec": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "normal",
+              "uniform",
+              "triangular"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Max"
+          },
+          "mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Mean"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Min"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Mode"
+          },
+          "stdDev": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Stddev"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "DistributionSpec",
+        "type": "object"
+      },
+      "UncertainParameter": {
+        "additionalProperties": false,
+        "properties": {
+          "distribution": {
+            "$ref": "#/$defs/DistributionSpec"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "aleatory",
+              "epistemic"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "sourceRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceref"
+          }
+        },
+        "required": [
+          "id",
+          "path",
+          "kind",
+          "distribution",
+          "rationale"
+        ],
+        "title": "UncertainParameter",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "parameters": {
+        "items": {
+          "$ref": "#/$defs/UncertainParameter"
+        },
+        "title": "Parameters",
+        "type": "array"
+      },
+      "version": {
+        "title": "Version",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "version",
+      "parameters"
+    ],
+    "title": "UncertaintyProfile",
+    "type": "object"
+  }
+}

@@ -8,12 +8,13 @@ from typing import Literal
 
 from pydantic import Field, StrictBool, StrictInt, StrictStr, field_validator
 
+from app.schemas._text import MAX_TITLE_LENGTH as MAX_TITLE_LENGTH  # re-export
+from app.schemas._text import sanitize_title
 from app.schemas.api import ContractModel
 from app.schemas.trajectory import Destination, TrajectorySelection
 from app.schemas.units import FiniteFloat, Quantity
 
 SCHEMA_VERSION = "1.0"
-MAX_TITLE_LENGTH = 80
 
 
 class ValidationIssue(ContractModel):
@@ -28,7 +29,7 @@ class MeasurementRequirement(ContractModel):
     instrument_capability: str
     target_threshold: Quantity | None = None
     coverage_weight: FiniteFloat = Field(ge=0)
-    required: bool = True
+    required: StrictBool = True
 
 
 class ScienceObjective(ContractModel):
@@ -42,7 +43,7 @@ class ScienceObjective(ContractModel):
 class ComponentSelection(ContractModel):
     component_id: str
     quantity: StrictInt = Field(gt=0)
-    enabled: bool = True
+    enabled: StrictBool = True
     overrides: dict[str, FiniteFloat | StrictStr | StrictBool] = Field(default_factory=dict)
 
 
@@ -110,7 +111,4 @@ class MissionState(ContractModel):
     @field_validator("title")
     @classmethod
     def _sanitize_title(cls, v: str) -> str:
-        # Local import: domain.mission.validation imports this module.
-        from app.domain.mission.validation import sanitize_title
-
         return sanitize_title(v)

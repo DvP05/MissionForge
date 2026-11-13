@@ -1,0 +1,248 @@
+{
+  "Destination": {
+    "$defs": {
+      "Provenance": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "fidelity": {
+            "enum": [
+              "source-backed",
+              "derived",
+              "gameplay-estimate",
+              "not-modelled"
+            ],
+            "title": "Fidelity",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Publishedat"
+          },
+          "retrievedAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Retrievedat"
+          },
+          "sourceName": {
+            "title": "Sourcename",
+            "type": "string"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceurl"
+          },
+          "sourceVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceversion"
+          }
+        },
+        "required": [
+          "fidelity",
+          "sourceName"
+        ],
+        "title": "Provenance",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "bodyId": {
+        "title": "Bodyid",
+        "type": "string"
+      },
+      "bodyType": {
+        "title": "Bodytype",
+        "type": "string"
+      },
+      "name": {
+        "title": "Name",
+        "type": "string"
+      },
+      "source": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/Provenance"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "bodyId",
+      "name",
+      "bodyType"
+    ],
+    "title": "Destination",
+    "type": "object"
+  },
+  "TrajectorySelection": {
+    "additionalProperties": false,
+    "properties": {
+      "arrivalDate": {
+        "anyOf": [
+          {
+            "format": "date",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Arrivaldate"
+      },
+      "arrivalVInfinityKmPerS": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Arrivalvinfinitykmpers"
+      },
+      "c3Km2PerS2": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "C3Km2Pers2"
+      },
+      "departureDate": {
+        "format": "date",
+        "title": "Departuredate",
+        "type": "string"
+      },
+      "departureVInfinityKmPerS": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Departurevinfinitykmpers"
+      },
+      "missionDeltaVKmPerS": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Missiondeltavkmpers"
+      },
+      "optionId": {
+        "title": "Optionid",
+        "type": "string"
+      },
+      "provider": {
+        "enum": [
+          "jpl-mdesign",
+          "scenario-preset",
+          "manual-estimate"
+        ],
+        "title": "Provider",
+        "type": "string"
+      },
+      "rawSourceRef": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Rawsourceref"
+      },
+      "timeOfFlightDays": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Timeofflightdays"
+      }
+    },
+    "required": [
+      "provider",
+      "optionId",
+      "departureDate"
+    ],
+    "title": "TrajectorySelection",
+    "type": "object"
+  }
+}

@@ -1,0 +1,492 @@
+{
+  "CatalogComponent": {
+    "$defs": {
+      "CompatibilityRule": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Ids"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tags"
+          }
+        },
+        "required": [
+          "category"
+        ],
+        "title": "CompatibilityRule",
+        "type": "object"
+      },
+      "FailureMode": {
+        "additionalProperties": false,
+        "properties": {
+          "affectedMetric": {
+            "title": "Affectedmetric",
+            "type": "string"
+          },
+          "baseProbability": {
+            "ge": 0,
+            "le": 1,
+            "title": "Baseprobability",
+            "type": "number"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "mitigationIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Mitigationids",
+            "type": "array"
+          },
+          "severity": {
+            "maximum": 5,
+            "minimum": 1,
+            "title": "Severity",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "description",
+          "baseProbability",
+          "affectedMetric",
+          "severity"
+        ],
+        "title": "FailureMode",
+        "type": "object"
+      },
+      "Provenance": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "fidelity": {
+            "enum": [
+              "source-backed",
+              "derived",
+              "gameplay-estimate",
+              "not-modelled"
+            ],
+            "title": "Fidelity",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Publishedat"
+          },
+          "retrievedAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Retrievedat"
+          },
+          "sourceName": {
+            "title": "Sourcename",
+            "type": "string"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceurl"
+          },
+          "sourceVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceversion"
+          }
+        },
+        "required": [
+          "fidelity",
+          "sourceName"
+        ],
+        "title": "Provenance",
+        "type": "object"
+      },
+      "Quantity": {
+        "additionalProperties": false,
+        "properties": {
+          "provenance": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Uncertainty"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "value",
+          "unit",
+          "provenance"
+        ],
+        "title": "Quantity",
+        "type": "object"
+      },
+      "Uncertainty": {
+        "additionalProperties": false,
+        "properties": {
+          "distribution": {
+            "enum": [
+              "normal",
+              "uniform",
+              "triangular",
+              "interval"
+            ],
+            "title": "Distribution",
+            "type": "string"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Max"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Min"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Mode"
+          },
+          "sigma": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sigma"
+          }
+        },
+        "required": [
+          "distribution"
+        ],
+        "title": "Uncertainty",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "capabilities": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Capabilities",
+        "type": "array"
+      },
+      "category": {
+        "enum": [
+          "launch",
+          "bus",
+          "propulsion",
+          "power",
+          "adcs",
+          "communications",
+          "thermal",
+          "cdh",
+          "instrument",
+          "ground"
+        ],
+        "title": "Category",
+        "type": "string"
+      },
+      "compatibleWith": {
+        "items": {
+          "$ref": "#/$defs/CompatibilityRule"
+        },
+        "title": "Compatiblewith",
+        "type": "array"
+      },
+      "description": {
+        "title": "Description",
+        "type": "string"
+      },
+      "failureModes": {
+        "items": {
+          "$ref": "#/$defs/FailureMode"
+        },
+        "title": "Failuremodes",
+        "type": "array"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "isIllustrative": {
+        "default": false,
+        "title": "Isillustrative",
+        "type": "boolean"
+      },
+      "name": {
+        "title": "Name",
+        "type": "string"
+      },
+      "parameters": {
+        "additionalProperties": {
+          "$ref": "#/$defs/Quantity"
+        },
+        "title": "Parameters",
+        "type": "object"
+      },
+      "provenance": {
+        "$ref": "#/$defs/Provenance"
+      },
+      "sourceRecordId": {
+        "title": "Sourcerecordid",
+        "type": "string"
+      },
+      "tags": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Tags",
+        "type": "array"
+      }
+    },
+    "required": [
+      "id",
+      "name",
+      "category",
+      "description",
+      "parameters",
+      "sourceRecordId",
+      "provenance"
+    ],
+    "title": "CatalogComponent",
+    "type": "object"
+  },
+  "CompatibilityRule": {
+    "additionalProperties": false,
+    "properties": {
+      "category": {
+        "title": "Category",
+        "type": "string"
+      },
+      "ids": {
+        "anyOf": [
+          {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Ids"
+      },
+      "tags": {
+        "anyOf": [
+          {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Tags"
+      }
+    },
+    "required": [
+      "category"
+    ],
+    "title": "CompatibilityRule",
+    "type": "object"
+  },
+  "FailureMode": {
+    "additionalProperties": false,
+    "properties": {
+      "affectedMetric": {
+        "title": "Affectedmetric",
+        "type": "string"
+      },
+      "baseProbability": {
+        "ge": 0,
+        "le": 1,
+        "title": "Baseprobability",
+        "type": "number"
+      },
+      "description": {
+        "title": "Description",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "mitigationIds": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Mitigationids",
+        "type": "array"
+      },
+      "severity": {
+        "maximum": 5,
+        "minimum": 1,
+        "title": "Severity",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "id",
+      "description",
+      "baseProbability",
+      "affectedMetric",
+      "severity"
+    ],
+    "title": "FailureMode",
+    "type": "object"
+  }
+}

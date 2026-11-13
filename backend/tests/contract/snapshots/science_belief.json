@@ -1,0 +1,193 @@
+{
+  "BeliefState": {
+    "$defs": {
+      "HypothesisProbability": {
+        "additionalProperties": false,
+        "properties": {
+          "hypothesisId": {
+            "title": "Hypothesisid",
+            "type": "string"
+          },
+          "probability": {
+            "ge": 0,
+            "le": 1,
+            "title": "Probability",
+            "type": "number"
+          }
+        },
+        "required": [
+          "hypothesisId",
+          "probability"
+        ],
+        "title": "HypothesisProbability",
+        "type": "object"
+      },
+      "ObservationRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "outcomeId": {
+            "title": "Outcomeid",
+            "type": "string"
+          },
+          "taskId": {
+            "title": "Taskid",
+            "type": "string"
+          },
+          "timestampMissionSeconds": {
+            "ge": 0,
+            "title": "Timestampmissionseconds",
+            "type": "number"
+          }
+        },
+        "required": [
+          "taskId",
+          "outcomeId",
+          "timestampMissionSeconds"
+        ],
+        "title": "ObservationRecord",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "entropyBits": {
+        "ge": 0,
+        "title": "Entropybits",
+        "type": "number"
+      },
+      "hypotheses": {
+        "items": {
+          "$ref": "#/$defs/HypothesisProbability"
+        },
+        "title": "Hypotheses",
+        "type": "array"
+      },
+      "observationHistory": {
+        "items": {
+          "$ref": "#/$defs/ObservationRecord"
+        },
+        "title": "Observationhistory",
+        "type": "array"
+      },
+      "version": {
+        "minimum": 0,
+        "title": "Version",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "hypotheses",
+      "observationHistory",
+      "entropyBits",
+      "version"
+    ],
+    "title": "BeliefState",
+    "type": "object"
+  },
+  "HypothesisProbability": {
+    "additionalProperties": false,
+    "properties": {
+      "hypothesisId": {
+        "title": "Hypothesisid",
+        "type": "string"
+      },
+      "probability": {
+        "ge": 0,
+        "le": 1,
+        "title": "Probability",
+        "type": "number"
+      }
+    },
+    "required": [
+      "hypothesisId",
+      "probability"
+    ],
+    "title": "HypothesisProbability",
+    "type": "object"
+  },
+  "ObservationLikelihood": {
+    "additionalProperties": false,
+    "properties": {
+      "instrumentId": {
+        "title": "Instrumentid",
+        "type": "string"
+      },
+      "likelihoodByHypothesis": {
+        "additionalProperties": {
+          "ge": 0,
+          "le": 1,
+          "type": "number"
+        },
+        "title": "Likelihoodbyhypothesis",
+        "type": "object"
+      },
+      "outcomeId": {
+        "title": "Outcomeid",
+        "type": "string"
+      }
+    },
+    "required": [
+      "instrumentId",
+      "outcomeId",
+      "likelihoodByHypothesis"
+    ],
+    "title": "ObservationLikelihood",
+    "type": "object"
+  },
+  "ObservationRecord": {
+    "additionalProperties": false,
+    "properties": {
+      "outcomeId": {
+        "title": "Outcomeid",
+        "type": "string"
+      },
+      "taskId": {
+        "title": "Taskid",
+        "type": "string"
+      },
+      "timestampMissionSeconds": {
+        "ge": 0,
+        "title": "Timestampmissionseconds",
+        "type": "number"
+      }
+    },
+    "required": [
+      "taskId",
+      "outcomeId",
+      "timestampMissionSeconds"
+    ],
+    "title": "ObservationRecord",
+    "type": "object"
+  },
+  "ScienceHypothesis": {
+    "additionalProperties": false,
+    "properties": {
+      "description": {
+        "title": "Description",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "label": {
+        "title": "Label",
+        "type": "string"
+      },
+      "priorProbability": {
+        "ge": 0,
+        "le": 1,
+        "title": "Priorprobability",
+        "type": "number"
+      }
+    },
+    "required": [
+      "id",
+      "label",
+      "priorProbability",
+      "description"
+    ],
+    "title": "ScienceHypothesis",
+    "type": "object"
+  }
+}

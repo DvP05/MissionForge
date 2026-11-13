@@ -6,27 +6,17 @@ not in the catalogue), DATE_ORDER (arrival before departure), FRACTION_RANGE (du
 cycle / probability outside [0,1]; defensive, the models already enforce it).
 """
 
-import re
 from collections import Counter
 from typing import Protocol
 
-from app.schemas.mission import MAX_TITLE_LENGTH, MissionState, ValidationIssue
-
-_TAGS = re.compile(r"<[^>]*>")
-_CONTROL = re.compile(r"[\x00-\x1f\x7f-\x9f]")
-_SPACE = re.compile(r"\s+")
+# sanitize_title moved to the schema layer (ruling R9); re-exported here for
+# backward compatibility.
+from app.schemas._text import sanitize_title as sanitize_title
+from app.schemas.mission import MissionState, ValidationIssue
 
 
 class CatalogLookup(Protocol):
     def has(self, component_id: str) -> bool: ...
-
-
-def sanitize_title(s: str) -> str:
-    """Strip HTML tags and control chars, collapse whitespace, trim, cap at 80 chars."""
-    s = _TAGS.sub("", s)
-    s = _CONTROL.sub(" ", s)
-    s = _SPACE.sub(" ", s).strip()
-    return s[:MAX_TITLE_LENGTH].rstrip()
 
 
 _SINGLE_ID_FIELDS = (

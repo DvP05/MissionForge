@@ -1,0 +1,89 @@
+{
+  "ApiError": {
+    "additionalProperties": false,
+    "properties": {
+      "code": {
+        "title": "Code",
+        "type": "string"
+      },
+      "details": {
+        "anyOf": [
+          {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Details"
+      },
+      "message": {
+        "title": "Message",
+        "type": "string"
+      },
+      "retryable": {
+        "title": "Retryable",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "code",
+      "message",
+      "retryable"
+    ],
+    "title": "ApiError",
+    "type": "object"
+  },
+  "ApiMeta": {
+    "additionalProperties": false,
+    "properties": {
+      "generatedAt": {
+        "anyOf": [
+          {
+            "format": "date-time",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Generatedat"
+      },
+      "requestId": {
+        "title": "Requestid",
+        "type": "string"
+      },
+      "schemaVersion": {
+        "const": "1.0",
+        "default": "1.0",
+        "title": "Schemaversion",
+        "type": "string"
+      },
+      "sourceStatus": {
+        "anyOf": [
+          {
+            "enum": [
+              "live",
+              "cached",
+              "demo"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Sourcestatus"
+      }
+    },
+    "required": [
+      "requestId"
+    ],
+    "title": "ApiMeta",
+    "type": "object"
+  }
+}

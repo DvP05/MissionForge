@@ -1,0 +1,1457 @@
+{
+  "BudgetAnalysis": {
+    "$defs": {
+      "Provenance": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "fidelity": {
+            "enum": [
+              "source-backed",
+              "derived",
+              "gameplay-estimate",
+              "not-modelled"
+            ],
+            "title": "Fidelity",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Publishedat"
+          },
+          "retrievedAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Retrievedat"
+          },
+          "sourceName": {
+            "title": "Sourcename",
+            "type": "string"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceurl"
+          },
+          "sourceVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceversion"
+          }
+        },
+        "required": [
+          "fidelity",
+          "sourceName"
+        ],
+        "title": "Provenance",
+        "type": "object"
+      },
+      "Quantity": {
+        "additionalProperties": false,
+        "properties": {
+          "provenance": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Uncertainty"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "value",
+          "unit",
+          "provenance"
+        ],
+        "title": "Quantity",
+        "type": "object"
+      },
+      "Uncertainty": {
+        "additionalProperties": false,
+        "properties": {
+          "distribution": {
+            "enum": [
+              "normal",
+              "uniform",
+              "triangular",
+              "interval"
+            ],
+            "title": "Distribution",
+            "type": "string"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Max"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Min"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Mode"
+          },
+          "sigma": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sigma"
+          }
+        },
+        "required": [
+          "distribution"
+        ],
+        "title": "Uncertainty",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "availableDeltaVKmPerS": {
+        "$ref": "#/$defs/Quantity"
+      },
+      "averagePowerW": {
+        "$ref": "#/$defs/Quantity"
+      },
+      "dataDownlinkedBits": {
+        "$ref": "#/$defs/Quantity"
+      },
+      "dataGeneratedBits": {
+        "$ref": "#/$defs/Quantity"
+      },
+      "dataMarginFraction": {
+        "title": "Datamarginfraction",
+        "type": "number"
+      },
+      "deltaVMarginKmPerS": {
+        "title": "Deltavmarginkmpers",
+        "type": "number"
+      },
+      "dryMassKg": {
+        "$ref": "#/$defs/Quantity"
+      },
+      "energyMarginFraction": {
+        "title": "Energymarginfraction",
+        "type": "number"
+      },
+      "estimatedCostUsd": {
+        "$ref": "#/$defs/Quantity"
+      },
+      "massMarginFraction": {
+        "title": "Massmarginfraction",
+        "type": "number"
+      },
+      "peakPowerW": {
+        "$ref": "#/$defs/Quantity"
+      },
+      "propellantMassKg": {
+        "$ref": "#/$defs/Quantity"
+      },
+      "requiredDeltaVKmPerS": {
+        "$ref": "#/$defs/Quantity"
+      },
+      "wetMassKg": {
+        "$ref": "#/$defs/Quantity"
+      }
+    },
+    "required": [
+      "dryMassKg",
+      "propellantMassKg",
+      "wetMassKg",
+      "massMarginFraction",
+      "averagePowerW",
+      "peakPowerW",
+      "energyMarginFraction",
+      "dataGeneratedBits",
+      "dataDownlinkedBits",
+      "dataMarginFraction",
+      "requiredDeltaVKmPerS",
+      "availableDeltaVKmPerS",
+      "deltaVMarginKmPerS",
+      "estimatedCostUsd"
+    ],
+    "title": "BudgetAnalysis",
+    "type": "object"
+  },
+  "ConstraintResult": {
+    "$defs": {
+      "Provenance": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "fidelity": {
+            "enum": [
+              "source-backed",
+              "derived",
+              "gameplay-estimate",
+              "not-modelled"
+            ],
+            "title": "Fidelity",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Publishedat"
+          },
+          "retrievedAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Retrievedat"
+          },
+          "sourceName": {
+            "title": "Sourcename",
+            "type": "string"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceurl"
+          },
+          "sourceVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceversion"
+          }
+        },
+        "required": [
+          "fidelity",
+          "sourceName"
+        ],
+        "title": "Provenance",
+        "type": "object"
+      },
+      "Quantity": {
+        "additionalProperties": false,
+        "properties": {
+          "provenance": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Uncertainty"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "value",
+          "unit",
+          "provenance"
+        ],
+        "title": "Quantity",
+        "type": "object"
+      },
+      "SuggestedAction": {
+        "additionalProperties": false,
+        "properties": {
+          "actionId": {
+            "title": "Actionid",
+            "type": "string"
+          },
+          "expectedEffect": {
+            "title": "Expectedeffect",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "actionId",
+          "label",
+          "expectedEffect"
+        ],
+        "title": "SuggestedAction",
+        "type": "object"
+      },
+      "Uncertainty": {
+        "additionalProperties": false,
+        "properties": {
+          "distribution": {
+            "enum": [
+              "normal",
+              "uniform",
+              "triangular",
+              "interval"
+            ],
+            "title": "Distribution",
+            "type": "string"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Max"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Min"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Mode"
+          },
+          "sigma": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sigma"
+          }
+        },
+        "required": [
+          "distribution"
+        ],
+        "title": "Uncertainty",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "actual": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/Quantity"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "explanation": {
+        "title": "Explanation",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "impactedSubsystems": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Impactedsubsystems",
+        "type": "array"
+      },
+      "label": {
+        "title": "Label",
+        "type": "string"
+      },
+      "limit": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/Quantity"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "marginFraction": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Marginfraction"
+      },
+      "severity": {
+        "maximum": 3,
+        "minimum": 0,
+        "title": "Severity",
+        "type": "integer"
+      },
+      "status": {
+        "enum": [
+          "pass",
+          "warning",
+          "fail",
+          "not-modelled"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "suggestedActions": {
+        "items": {
+          "$ref": "#/$defs/SuggestedAction"
+        },
+        "title": "Suggestedactions",
+        "type": "array"
+      }
+    },
+    "required": [
+      "id",
+      "label",
+      "status",
+      "severity",
+      "explanation"
+    ],
+    "title": "ConstraintResult",
+    "type": "object"
+  },
+  "MissionAnalysis": {
+    "$defs": {
+      "BudgetAnalysis": {
+        "additionalProperties": false,
+        "properties": {
+          "availableDeltaVKmPerS": {
+            "$ref": "#/$defs/Quantity"
+          },
+          "averagePowerW": {
+            "$ref": "#/$defs/Quantity"
+          },
+          "dataDownlinkedBits": {
+            "$ref": "#/$defs/Quantity"
+          },
+          "dataGeneratedBits": {
+            "$ref": "#/$defs/Quantity"
+          },
+          "dataMarginFraction": {
+            "title": "Datamarginfraction",
+            "type": "number"
+          },
+          "deltaVMarginKmPerS": {
+            "title": "Deltavmarginkmpers",
+            "type": "number"
+          },
+          "dryMassKg": {
+            "$ref": "#/$defs/Quantity"
+          },
+          "energyMarginFraction": {
+            "title": "Energymarginfraction",
+            "type": "number"
+          },
+          "estimatedCostUsd": {
+            "$ref": "#/$defs/Quantity"
+          },
+          "massMarginFraction": {
+            "title": "Massmarginfraction",
+            "type": "number"
+          },
+          "peakPowerW": {
+            "$ref": "#/$defs/Quantity"
+          },
+          "propellantMassKg": {
+            "$ref": "#/$defs/Quantity"
+          },
+          "requiredDeltaVKmPerS": {
+            "$ref": "#/$defs/Quantity"
+          },
+          "wetMassKg": {
+            "$ref": "#/$defs/Quantity"
+          }
+        },
+        "required": [
+          "dryMassKg",
+          "propellantMassKg",
+          "wetMassKg",
+          "massMarginFraction",
+          "averagePowerW",
+          "peakPowerW",
+          "energyMarginFraction",
+          "dataGeneratedBits",
+          "dataDownlinkedBits",
+          "dataMarginFraction",
+          "requiredDeltaVKmPerS",
+          "availableDeltaVKmPerS",
+          "deltaVMarginKmPerS",
+          "estimatedCostUsd"
+        ],
+        "title": "BudgetAnalysis",
+        "type": "object"
+      },
+      "ConstraintResult": {
+        "additionalProperties": false,
+        "properties": {
+          "actual": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Quantity"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "impactedSubsystems": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Impactedsubsystems",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Quantity"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "marginFraction": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Marginfraction"
+          },
+          "severity": {
+            "maximum": 3,
+            "minimum": 0,
+            "title": "Severity",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "pass",
+              "warning",
+              "fail",
+              "not-modelled"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "suggestedActions": {
+            "items": {
+              "$ref": "#/$defs/SuggestedAction"
+            },
+            "title": "Suggestedactions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "status",
+          "severity",
+          "explanation"
+        ],
+        "title": "ConstraintResult",
+        "type": "object"
+      },
+      "Provenance": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "fidelity": {
+            "enum": [
+              "source-backed",
+              "derived",
+              "gameplay-estimate",
+              "not-modelled"
+            ],
+            "title": "Fidelity",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Publishedat"
+          },
+          "retrievedAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Retrievedat"
+          },
+          "sourceName": {
+            "title": "Sourcename",
+            "type": "string"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceurl"
+          },
+          "sourceVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceversion"
+          }
+        },
+        "required": [
+          "fidelity",
+          "sourceName"
+        ],
+        "title": "Provenance",
+        "type": "object"
+      },
+      "Quantity": {
+        "additionalProperties": false,
+        "properties": {
+          "provenance": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Uncertainty"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "value",
+          "unit",
+          "provenance"
+        ],
+        "title": "Quantity",
+        "type": "object"
+      },
+      "ReliabilityAnalysis": {
+        "additionalProperties": false,
+        "properties": {
+          "nominalReliability": {
+            "ge": 0,
+            "le": 1,
+            "title": "Nominalreliability",
+            "type": "number"
+          },
+          "riskIndex": {
+            "ge": 0,
+            "title": "Riskindex",
+            "type": "number"
+          },
+          "singlePointFailures": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Singlepointfailures",
+            "type": "array"
+          }
+        },
+        "required": [
+          "nominalReliability",
+          "riskIndex",
+          "singlePointFailures"
+        ],
+        "title": "ReliabilityAnalysis",
+        "type": "object"
+      },
+      "ScienceAnalysis": {
+        "additionalProperties": false,
+        "properties": {
+          "collectedFraction": {
+            "ge": 0,
+            "le": 1,
+            "title": "Collectedfraction",
+            "type": "number"
+          },
+          "coverageScore": {
+            "ge": 0,
+            "title": "Coveragescore",
+            "type": "number"
+          },
+          "missingRequirements": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missingrequirements",
+            "type": "array"
+          },
+          "returnedFraction": {
+            "ge": 0,
+            "le": 1,
+            "title": "Returnedfraction",
+            "type": "number"
+          },
+          "weightedObjectiveCoverage": {
+            "additionalProperties": {
+              "ge": 0,
+              "le": 1,
+              "type": "number"
+            },
+            "title": "Weightedobjectivecoverage",
+            "type": "object"
+          }
+        },
+        "required": [
+          "coverageScore",
+          "weightedObjectiveCoverage",
+          "missingRequirements",
+          "collectedFraction",
+          "returnedFraction"
+        ],
+        "title": "ScienceAnalysis",
+        "type": "object"
+      },
+      "ScoreBreakdown": {
+        "additionalProperties": false,
+        "properties": {
+          "dimensions": {
+            "items": {
+              "$ref": "#/$defs/ScoreDimension"
+            },
+            "title": "Dimensions",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "number"
+          }
+        },
+        "required": [
+          "total",
+          "dimensions"
+        ],
+        "title": "ScoreBreakdown",
+        "type": "object"
+      },
+      "ScoreDimension": {
+        "additionalProperties": false,
+        "properties": {
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "id": {
+            "enum": [
+              "scientific-return",
+              "mission-execution",
+              "engineering-robustness",
+              "resource-stewardship",
+              "operations-quality"
+            ],
+            "title": "Id",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "weight": {
+            "ge": 0,
+            "title": "Weight",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "weight",
+          "score",
+          "explanation"
+        ],
+        "title": "ScoreDimension",
+        "type": "object"
+      },
+      "SuggestedAction": {
+        "additionalProperties": false,
+        "properties": {
+          "actionId": {
+            "title": "Actionid",
+            "type": "string"
+          },
+          "expectedEffect": {
+            "title": "Expectedeffect",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "actionId",
+          "label",
+          "expectedEffect"
+        ],
+        "title": "SuggestedAction",
+        "type": "object"
+      },
+      "Uncertainty": {
+        "additionalProperties": false,
+        "properties": {
+          "distribution": {
+            "enum": [
+              "normal",
+              "uniform",
+              "triangular",
+              "interval"
+            ],
+            "title": "Distribution",
+            "type": "string"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Max"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Min"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Mode"
+          },
+          "sigma": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sigma"
+          }
+        },
+        "required": [
+          "distribution"
+        ],
+        "title": "Uncertainty",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "assumptions": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Assumptions",
+        "type": "array"
+      },
+      "budgets": {
+        "$ref": "#/$defs/BudgetAnalysis"
+      },
+      "calculatedAt": {
+        "format": "date-time",
+        "title": "Calculatedat",
+        "type": "string"
+      },
+      "catalogVersion": {
+        "title": "Catalogversion",
+        "type": "string"
+      },
+      "constraints": {
+        "items": {
+          "$ref": "#/$defs/ConstraintResult"
+        },
+        "title": "Constraints",
+        "type": "array"
+      },
+      "designRevision": {
+        "minimum": 0,
+        "title": "Designrevision",
+        "type": "integer"
+      },
+      "engineVersion": {
+        "title": "Engineversion",
+        "type": "string"
+      },
+      "feasibility": {
+        "enum": [
+          "feasible",
+          "marginal",
+          "infeasible"
+        ],
+        "title": "Feasibility",
+        "type": "string"
+      },
+      "missionId": {
+        "title": "Missionid",
+        "type": "string"
+      },
+      "missionReady": {
+        "title": "Missionready",
+        "type": "boolean"
+      },
+      "reliability": {
+        "$ref": "#/$defs/ReliabilityAnalysis"
+      },
+      "science": {
+        "$ref": "#/$defs/ScienceAnalysis"
+      },
+      "score": {
+        "$ref": "#/$defs/ScoreBreakdown"
+      },
+      "topDrivers": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Topdrivers",
+        "type": "array"
+      }
+    },
+    "required": [
+      "missionId",
+      "designRevision",
+      "engineVersion",
+      "catalogVersion",
+      "calculatedAt",
+      "budgets",
+      "science",
+      "reliability",
+      "constraints",
+      "feasibility",
+      "missionReady",
+      "score",
+      "topDrivers",
+      "assumptions"
+    ],
+    "title": "MissionAnalysis",
+    "type": "object"
+  },
+  "ReliabilityAnalysis": {
+    "additionalProperties": false,
+    "properties": {
+      "nominalReliability": {
+        "ge": 0,
+        "le": 1,
+        "title": "Nominalreliability",
+        "type": "number"
+      },
+      "riskIndex": {
+        "ge": 0,
+        "title": "Riskindex",
+        "type": "number"
+      },
+      "singlePointFailures": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Singlepointfailures",
+        "type": "array"
+      }
+    },
+    "required": [
+      "nominalReliability",
+      "riskIndex",
+      "singlePointFailures"
+    ],
+    "title": "ReliabilityAnalysis",
+    "type": "object"
+  },
+  "ScienceAnalysis": {
+    "additionalProperties": false,
+    "properties": {
+      "collectedFraction": {
+        "ge": 0,
+        "le": 1,
+        "title": "Collectedfraction",
+        "type": "number"
+      },
+      "coverageScore": {
+        "ge": 0,
+        "title": "Coveragescore",
+        "type": "number"
+      },
+      "missingRequirements": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Missingrequirements",
+        "type": "array"
+      },
+      "returnedFraction": {
+        "ge": 0,
+        "le": 1,
+        "title": "Returnedfraction",
+        "type": "number"
+      },
+      "weightedObjectiveCoverage": {
+        "additionalProperties": {
+          "ge": 0,
+          "le": 1,
+          "type": "number"
+        },
+        "title": "Weightedobjectivecoverage",
+        "type": "object"
+      }
+    },
+    "required": [
+      "coverageScore",
+      "weightedObjectiveCoverage",
+      "missingRequirements",
+      "collectedFraction",
+      "returnedFraction"
+    ],
+    "title": "ScienceAnalysis",
+    "type": "object"
+  },
+  "ScoreBreakdown": {
+    "$defs": {
+      "ScoreDimension": {
+        "additionalProperties": false,
+        "properties": {
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "id": {
+            "enum": [
+              "scientific-return",
+              "mission-execution",
+              "engineering-robustness",
+              "resource-stewardship",
+              "operations-quality"
+            ],
+            "title": "Id",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "weight": {
+            "ge": 0,
+            "title": "Weight",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "weight",
+          "score",
+          "explanation"
+        ],
+        "title": "ScoreDimension",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "dimensions": {
+        "items": {
+          "$ref": "#/$defs/ScoreDimension"
+        },
+        "title": "Dimensions",
+        "type": "array"
+      },
+      "total": {
+        "title": "Total",
+        "type": "number"
+      }
+    },
+    "required": [
+      "total",
+      "dimensions"
+    ],
+    "title": "ScoreBreakdown",
+    "type": "object"
+  },
+  "ScoreDimension": {
+    "additionalProperties": false,
+    "properties": {
+      "explanation": {
+        "title": "Explanation",
+        "type": "string"
+      },
+      "id": {
+        "enum": [
+          "scientific-return",
+          "mission-execution",
+          "engineering-robustness",
+          "resource-stewardship",
+          "operations-quality"
+        ],
+        "title": "Id",
+        "type": "string"
+      },
+      "score": {
+        "title": "Score",
+        "type": "number"
+      },
+      "weight": {
+        "ge": 0,
+        "title": "Weight",
+        "type": "number"
+      }
+    },
+    "required": [
+      "id",
+      "weight",
+      "score",
+      "explanation"
+    ],
+    "title": "ScoreDimension",
+    "type": "object"
+  },
+  "SuggestedAction": {
+    "additionalProperties": false,
+    "properties": {
+      "actionId": {
+        "title": "Actionid",
+        "type": "string"
+      },
+      "expectedEffect": {
+        "title": "Expectedeffect",
+        "type": "string"
+      },
+      "label": {
+        "title": "Label",
+        "type": "string"
+      }
+    },
+    "required": [
+      "actionId",
+      "label",
+      "expectedEffect"
+    ],
+    "title": "SuggestedAction",
+    "type": "object"
+  }
+}
