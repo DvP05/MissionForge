@@ -1,36 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { WifiOff } from "lucide-react";
 
-import { apiGet } from "@/lib/api-client";
-import type { components } from "@/lib/api/schema";
-
-type Health = components["schemas"]["HealthData"];
-type State =
-  | { kind: "loading" }
-  | { kind: "online"; health: Health }
-  | { kind: "offline"; message: string };
+import { useBackendHealth } from "@/components/shell/BackendHealth";
 
 export function BackendStatus() {
-  const [state, setState] = useState<State>({ kind: "loading" });
-
-  useEffect(() => {
-    let cancelled = false;
-    apiGet<Health>("/api/health").then((result) => {
-      if (cancelled) return;
-      if (result.ok && result.data) {
-        setState({ kind: "online", health: result.data });
-      } else {
-        setState({
-          kind: "offline",
-          message: result.error?.message ?? "Backend unavailable",
-        });
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { state } = useBackendHealth();
 
   const dot =
     state.kind === "online"
@@ -56,5 +31,31 @@ export function BackendStatus() {
       <span aria-hidden className={`h-2 w-2 rounded-full ${dot}`} />
       {label}
     </span>
+  );
+}
+
+/** Persistent banner shown while the Python engine cannot be reached. */
+export function OfflineBanner() {
+  const { state, retry } = useBackendHealth();
+  if (state.kind !== "offline") return null;
+  return (
+    <div
+      data-testid="offline-banner"
+      role="alert"
+      className="flex flex-wrap items-center gap-3 border-b border-accent-amber/50 bg-accent-amber/10 px-4 py-2 text-sm text-accent-amber sm:px-6"
+    >
+      <WifiOff aria-hidden className="h-4 w-4 shrink-0" />
+      <span className="min-w-0 flex-1">
+        Backend unreachable. Analysis, templates and validation need the Python engine; saved
+        missions can still be opened.
+      </span>
+      <button
+        type="button"
+        onClick={retry}
+        className="min-h-9 rounded-md border border-accent-amber/60 px-3 text-xs font-medium hover:bg-accent-amber/10"
+      >
+        Retry
+      </button>
+    </div>
   );
 }
