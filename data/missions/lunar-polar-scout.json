@@ -1,0 +1,224 @@
+{
+  "scenarioId": "lunar-polar-scout",
+  "scenarioVersion": "0.1.0",
+  "title": "Shadowline",
+  "narrative": "Scout the lunar south polar region from orbit and map where sunlight never reaches.",
+  "topConstraints": [
+    "Keep launch mass under the dedicated small-lift limit (300 kg).",
+    "Carry enough propellant for lunar capture and orbit trim.",
+    "Stay within the 45 M USD mission budget."
+  ],
+  "fidelityNotes": [
+    "orbit: two-body circular educational preset",
+    "curated transfer preset; not high-fidelity",
+    "All catalogue values are illustrative gameplay-estimate archetypes, not real hardware.",
+    "Destination is the Moon (south polar region); transfer dates, C3 and delta-v are illustrative gameplay values."
+  ],
+  "optionalObjectives": [],
+  "missionState": {
+    "schemaVersion": "1.0",
+    "title": "Shadowline",
+    "scenarioId": "lunar-polar-scout",
+    "designRevision": 0,
+    "scienceObjectives": [
+      {
+        "id": "obj-shadow-imaging",
+        "title": "Permanently shadowed region imaging",
+        "question": "Which polar craters stay in permanent shadow, and how large are they?",
+        "priority": 2.0,
+        "requiredMeasurements": [
+          {
+            "id": "meas-polar-imaging",
+            "description": "Visible imaging of polar terrain",
+            "instrumentCapability": "visible-imaging",
+            "coverageWeight": 1.0,
+            "required": true
+          }
+        ]
+      },
+      {
+        "id": "obj-surface-temp",
+        "title": "Polar surface temperature",
+        "question": "How cold are the polar surfaces over a lunar day?",
+        "priority": 1.5,
+        "requiredMeasurements": [
+          {
+            "id": "meas-polar-thermal",
+            "description": "Thermal-infrared surface temperature maps",
+            "instrumentCapability": "thermal-infrared",
+            "coverageWeight": 1.0,
+            "required": true
+          }
+        ]
+      }
+    ],
+    "destination": {
+      "bodyId": "301",
+      "name": "Moon (south polar region)",
+      "bodyType": "moon",
+      "source": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE scenario template v0.1.0",
+        "sourceVersion": "0.1.0",
+        "assumptions": [
+          "Scenario destination; geometry is an educational preset."
+        ]
+      }
+    },
+    "trajectory": {
+      "provider": "scenario-preset",
+      "optionId": "lunar-direct-preset",
+      "departureDate": "2030-06-01",
+      "arrivalDate": "2030-06-06",
+      "timeOfFlightDays": 5.0,
+      "c3Km2PerS2": -2.0,
+      "missionDeltaVKmPerS": 0.75
+    },
+    "architecture": {
+      "launchVehicleId": "launch-small-dedicated",
+      "busId": "bus-27u",
+      "propulsionId": "prop-biprop",
+      "powerId": "power-medium",
+      "adcsId": "adcs-fine",
+      "communicationsId": "comms-xband-medium",
+      "thermalId": "thermal-heaters",
+      "cdhId": "cdh-standard",
+      "instrumentIds": [
+        "inst-wide-camera",
+        "inst-thermal-ir"
+      ],
+      "groundSegmentId": "ground-medium"
+    },
+    "operations": {
+      "missionDurationDays": 180.0,
+      "observationPlan": [
+        {
+          "measurementId": "meas-polar-imaging",
+          "startDay": 20.0,
+          "durationHours": 10.0,
+          "dutyCycle": 0.2
+        },
+        {
+          "measurementId": "meas-polar-thermal",
+          "startDay": 40.0,
+          "durationHours": 10.0,
+          "dutyCycle": 0.2
+        }
+      ],
+      "downlinkPlan": [
+        {
+          "startDay": 21.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 26.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 31.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 36.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 41.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 46.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 51.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 56.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 61.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 66.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 71.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 76.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 81.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 86.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 91.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 96.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 101.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 106.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 111.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 116.0,
+          "durationMinutes": 120.0,
+          "dataRateBitsPerSecond": 100000.0
+        }
+      ],
+      "safeModePolicy": "balanced",
+      "autonomyLevel": "supervised"
+    },
+    "constraints": {
+      "maximumBudgetUsd": 45000000.0,
+      "launchMassLimitKg": 300.0,
+      "minimumScienceScore": 50.0,
+      "minimumSuccessProbability": 0.7,
+      "massMarginFraction": 0.2,
+      "powerMarginFraction": 0.15,
+      "dataMarginFraction": 0.2,
+      "deltaVMarginKmPerS": 0.1
+    }
+  }
+}

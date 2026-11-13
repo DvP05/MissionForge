@@ -1,0 +1,340 @@
+{
+  "scenarioId": "neo-rendezvous",
+  "scenarioVersion": "0.1.0",
+  "title": "Echoes of Origins",
+  "narrative": "Send a small spacecraft to rendezvous with a near-Earth asteroid and decide what its surface can tell us about the early Solar System.",
+  "topConstraints": [
+    "Keep launch mass under the dedicated small-lift limit (300 kg) with margin.",
+    "Return every observation the instruments generate: downlinked data must keep up with generated data.",
+    "Stay within the 60 M USD mission budget."
+  ],
+  "fidelityNotes": [
+    "All catalogue values are illustrative gameplay-estimate archetypes, not real hardware.",
+    "Trajectory: scenario-preset. Departure and arrival dates, C3 (14 km2/s2), departure and arrival V-infinity and mission delta-v are illustrative gameplay values; a JPL-derived option replaces the preset in Phase 5.",
+    "Destination: synthetic target 'Scenario target NEO-A (illustrative)'; it is not a real asteroid.",
+    "Starter design deliberately pairs the high-data-rate camera with the low-gain X-band radio, so generated data exceeds downlink capacity: swapping to comms-xband-medium (or cutting the camera duty cycle) clears the data-buffer warning.",
+    "Downlink plan rates are the planned rate; the achievable rate is capped by the selected radio's maximum data rate.",
+    "Optional extra objectives (thermal behaviour, magnetic/plasma environment) are listed in optionalObjectives and are not part of the starter MissionState."
+  ],
+  "optionalObjectives": [
+    {
+      "id": "obj-thermal",
+      "title": "Thermal behaviour",
+      "question": "How does the surface heat and cool across the asteroid day?",
+      "priority": 1.0,
+      "requiredMeasurements": [
+        {
+          "id": "meas-thermal-ir",
+          "description": "Surface thermal-infrared radiometry across a rotation",
+          "instrumentCapability": "thermal-infrared",
+          "coverageWeight": 1.0,
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "obj-magnetic",
+      "title": "Magnetic and plasma environment",
+      "question": "Does the asteroid carry a remanent magnetic field?",
+      "priority": 0.5,
+      "requiredMeasurements": [
+        {
+          "id": "meas-magnetometry",
+          "description": "Magnetic field survey during close approach",
+          "instrumentCapability": "magnetometry",
+          "coverageWeight": 1.0,
+          "required": false
+        }
+      ]
+    }
+  ],
+  "missionState": {
+    "schemaVersion": "1.0",
+    "title": "Echoes of Origins",
+    "scenarioId": "neo-rendezvous",
+    "designRevision": 0,
+    "scienceObjectives": [
+      {
+        "id": "obj-morphology",
+        "title": "Surface morphology and shape",
+        "question": "What is the shape, size and surface texture of the asteroid?",
+        "priority": 2.0,
+        "requiredMeasurements": [
+          {
+            "id": "meas-shape-model",
+            "description": "Global shape model from multi-angle imaging",
+            "instrumentCapability": "shape-model",
+            "coverageWeight": 0.7,
+            "required": true,
+            "targetThreshold": {
+              "value": 2.0,
+              "unit": "m",
+              "provenance": {
+                "fidelity": "gameplay-estimate",
+                "sourceName": "MISSIONFORGE scenario template v0.1.0",
+                "sourceVersion": "0.1.0",
+                "assumptions": [
+                  "Illustrative target threshold."
+                ]
+              }
+            }
+          },
+          {
+            "id": "meas-surface-imaging",
+            "description": "Visible context imaging of surface features",
+            "instrumentCapability": "visible-imaging",
+            "coverageWeight": 0.3,
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "obj-composition",
+        "title": "Spectral composition",
+        "question": "What minerals and organics does the visible and near-infrared spectrum reveal?",
+        "priority": 1.5,
+        "requiredMeasurements": [
+          {
+            "id": "meas-vnir-spectra",
+            "description": "VNIR reflectance spectra of the surface",
+            "instrumentCapability": "vnir-spectroscopy",
+            "coverageWeight": 1.0,
+            "required": true
+          }
+        ]
+      }
+    ],
+    "destination": {
+      "bodyId": "SCENARIO-NEO-A",
+      "name": "Scenario target NEO-A (illustrative)",
+      "bodyType": "asteroid",
+      "source": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE scenario template v0.1.0",
+        "sourceVersion": "0.1.0",
+        "assumptions": [
+          "Synthetic target for gameplay; not a real asteroid."
+        ]
+      }
+    },
+    "trajectory": {
+      "provider": "scenario-preset",
+      "optionId": "neo-a-preset-2031",
+      "departureDate": "2031-03-01",
+      "arrivalDate": "2031-12-01",
+      "timeOfFlightDays": 275.0,
+      "c3Km2PerS2": 14.0,
+      "departureVInfinityKmPerS": 3.74,
+      "arrivalVInfinityKmPerS": 0.5,
+      "missionDeltaVKmPerS": 0.35
+    },
+    "architecture": {
+      "launchVehicleId": "launch-small-dedicated",
+      "busId": "bus-27u",
+      "propulsionId": "prop-monoprop",
+      "powerId": "power-large",
+      "adcsId": "adcs-precision",
+      "communicationsId": "comms-xband-lowgain",
+      "thermalId": "thermal-heaters",
+      "cdhId": "cdh-standard",
+      "instrumentIds": [
+        "inst-hires-camera",
+        "inst-vnir-spectrometer"
+      ],
+      "groundSegmentId": "ground-medium"
+    },
+    "operations": {
+      "missionDurationDays": 420.0,
+      "observationPlan": [
+        {
+          "measurementId": "meas-shape-model",
+          "startDay": 290.0,
+          "durationHours": 4.0,
+          "dutyCycle": 0.03
+        },
+        {
+          "measurementId": "meas-shape-model",
+          "startDay": 300.0,
+          "durationHours": 4.0,
+          "dutyCycle": 0.03
+        },
+        {
+          "measurementId": "meas-vnir-spectra",
+          "startDay": 310.0,
+          "durationHours": 8.0,
+          "dutyCycle": 0.05
+        },
+        {
+          "measurementId": "meas-vnir-spectra",
+          "startDay": 320.0,
+          "durationHours": 8.0,
+          "dutyCycle": 0.05
+        }
+      ],
+      "downlinkPlan": [
+        {
+          "startDay": 291.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 294.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 297.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 300.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 303.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 306.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 309.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 312.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 315.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 318.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 321.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 324.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 327.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 330.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 333.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 336.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 339.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 342.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 345.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 348.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 351.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 354.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 357.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 360.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 363.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 366.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 369.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 372.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 375.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        },
+        {
+          "startDay": 378.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 100000.0
+        }
+      ],
+      "safeModePolicy": "balanced",
+      "autonomyLevel": "supervised"
+    },
+    "constraints": {
+      "maximumBudgetUsd": 60000000.0,
+      "launchMassLimitKg": 300.0,
+      "minimumScienceScore": 60.0,
+      "minimumSuccessProbability": 0.7,
+      "massMarginFraction": 0.2,
+      "powerMarginFraction": 0.15,
+      "dataMarginFraction": 0.2,
+      "deltaVMarginKmPerS": 0.1
+    }
+  }
+}

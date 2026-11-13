@@ -43,6 +43,7 @@ SCHEMA_MODULES = (
     "evidence",
     "analyst",
     "health",
+    "templates",
 )
 REGEN_HINT = "UPDATE_SNAPSHOTS=1 uv run python -m pytest tests/contract -q"
 

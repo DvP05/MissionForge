@@ -242,3 +242,7 @@ which regenerates `openapi.json` / frontend types only when a route exposes the 
 |---|---|---|
 | 2026-11-13 | Interface v1 frozen (Task 1.3) | controller rulings D1–D9, R9 |
 | 2026-11-13 | Fix round 1: replayable immutable runs, autonomy belief, feasibility invariants, `fraction` unit, schedule data loss, phase transitions, cross-reference validators, graph/impact/analyst/health payloads, CI snapshot guard | controller ruling R10 |
+
+## Templates (Task 1.5)
+
+`app/schemas/templates.py` adds `ScenarioTemplate` / `TemplateMissionState` (new file; no existing contract changed). `TemplateMissionState` is MissionState without missionId, createdAt, updatedAt, randomSeed.

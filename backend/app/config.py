@@ -38,3 +38,6 @@ def get_settings() -> Settings:
 # <repo>/data/catalog (backend/app/config.py -> parents[2] is the repo root). Kept here, not in
 # the pure domain layer, which only ever receives an explicit path.
 DEFAULT_CATALOG_DIR = Path(__file__).resolve().parents[2] / "data" / "catalog"
+
+# <repo>/data/missions: scenario templates (explicit path passed into the pure domain layer).
+DEFAULT_MISSIONS_DIR = Path(__file__).resolve().parents[2] / "data" / "missions"

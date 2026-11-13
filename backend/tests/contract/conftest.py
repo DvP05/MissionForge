@@ -22,6 +22,7 @@ from app.schemas import (
     optimization,
     science_belief,
     simulation,
+    templates,
     uncertainty,
 )
 from app.schemas.api import ApiError, ApiMeta
@@ -753,6 +754,35 @@ def mission_package() -> evidence.MissionPackage:
     )
 
 
+def scenario_template() -> templates.ScenarioTemplate:
+    state = mission_state()
+    return templates.ScenarioTemplate(
+        scenario_id="neo-rendezvous",
+        scenario_version="0.1.0",
+        title="Echoes of Origins",
+        narrative="Characterise a small near-Earth asteroid.",
+        top_constraints=["Budget", "Launch mass", "Data return"],
+        fidelity_notes=["gameplay values"],
+        optional_objectives=state.science_objectives,
+        mission_state=template_mission_state(),
+    )
+
+
+def template_mission_state() -> templates.TemplateMissionState:
+    state = mission_state()
+    return templates.TemplateMissionState(
+        title=state.title,
+        scenario_id=state.scenario_id,
+        design_revision=0,
+        science_objectives=state.science_objectives,
+        destination=state.destination,
+        trajectory=state.trajectory,
+        architecture=state.architecture,
+        operations=state.operations,
+        constraints=state.constraints,
+    )
+
+
 # --- registry --------------------------------------------------------------------------
 
 BUILDERS: dict[str, Callable[[], BaseModel]] = {
@@ -836,6 +866,8 @@ BUILDERS: dict[str, Callable[[], BaseModel]] = {
     "health.Anomaly": anomaly,
     "evidence.MissionPackageManifest": mission_package_manifest,
     "evidence.MissionPackage": mission_package,
+    "templates.ScenarioTemplate": scenario_template,
+    "templates.TemplateMissionState": template_mission_state,
 }
 
 
