@@ -1,0 +1,925 @@
+{
+  "missionId": "m-golden",
+  "designRevision": 0,
+  "engineVersion": "0.1.0",
+  "catalogVersion": "0.1.0",
+  "budgets": {
+    "dryMassKg": {
+      "value": 109.10000000000001,
+      "unit": "kg",
+      "provenance": {
+        "fidelity": "derived",
+        "sourceName": "MISSIONFORGE mass model",
+        "sourceUrl": null,
+        "sourceVersion": "mass-v1",
+        "retrievedAt": null,
+        "publishedAt": null,
+        "assumptions": [
+          "Bus structure mass is included in bus mass and is not added separately.",
+          "No generic structure/harness percentage is applied; only catalogue masses are summed.",
+          "The ground segment contributes no spacecraft mass.",
+          "Allocated mass = (dry + propellant) x (1 + margin fraction).",
+          "Instrument quantity equals the number of repeated instrument ids."
+        ],
+        "notes": null
+      },
+      "uncertainty": null
+    },
+    "propellantMassKg": {
+      "value": 30.0,
+      "unit": "kg",
+      "provenance": {
+        "fidelity": "derived",
+        "sourceName": "MISSIONFORGE mass model",
+        "sourceUrl": null,
+        "sourceVersion": "mass-v1",
+        "retrievedAt": null,
+        "publishedAt": null,
+        "assumptions": [
+          "Bus structure mass is included in bus mass and is not added separately.",
+          "No generic structure/harness percentage is applied; only catalogue masses are summed.",
+          "The ground segment contributes no spacecraft mass.",
+          "Allocated mass = (dry + propellant) x (1 + margin fraction).",
+          "Instrument quantity equals the number of repeated instrument ids."
+        ],
+        "notes": null
+      },
+      "uncertainty": null
+    },
+    "wetMassKg": {
+      "value": 139.10000000000002,
+      "unit": "kg",
+      "provenance": {
+        "fidelity": "derived",
+        "sourceName": "MISSIONFORGE mass model",
+        "sourceUrl": null,
+        "sourceVersion": "mass-v1",
+        "retrievedAt": null,
+        "publishedAt": null,
+        "assumptions": [
+          "Bus structure mass is included in bus mass and is not added separately.",
+          "No generic structure/harness percentage is applied; only catalogue masses are summed.",
+          "The ground segment contributes no spacecraft mass.",
+          "Allocated mass = (dry + propellant) x (1 + margin fraction).",
+          "Instrument quantity equals the number of repeated instrument ids."
+        ],
+        "notes": null
+      },
+      "uncertainty": null
+    },
+    "massMarginFraction": 0.44359999999999994,
+    "averagePowerW": {
+      "value": 62.4781746031746,
+      "unit": "W",
+      "provenance": {
+        "fidelity": "derived",
+        "sourceName": "MISSIONFORGE power model",
+        "sourceUrl": null,
+        "sourceVersion": "power-v1",
+        "retrievedAt": null,
+        "publishedAt": null,
+        "assumptions": [
+          "Solar flux = 1 AU solar constant / d^2 (gameplay-estimate constant, inverse-square only).",
+          "Array generation = P_1AU / d^2 x EPS efficiency x cos(incidence); incidence beyond 90 degrees gives zero generation. No degradation, temperature or shadowing effects.",
+          "Average power = sum(P x duty); peak power = sum of P for every load with duty > 0, assuming all such loads run simultaneously (worst case).",
+          "Battery starts full. Surplus charges the battery up to capacity with no charge efficiency loss; deficits draw deficit / discharge_efficiency from the battery.",
+          "State of charge floor = 1 - usable DoD; the ledger closes only if SOC never drops below it.",
+          "Power is constant within each phase, so SOC extremes occur at phase boundaries."
+        ],
+        "notes": null
+      },
+      "uncertainty": null
+    },
+    "peakPowerW": {
+      "value": 100.0,
+      "unit": "W",
+      "provenance": {
+        "fidelity": "derived",
+        "sourceName": "MISSIONFORGE power model",
+        "sourceUrl": null,
+        "sourceVersion": "power-v1",
+        "retrievedAt": null,
+        "publishedAt": null,
+        "assumptions": [
+          "Solar flux = 1 AU solar constant / d^2 (gameplay-estimate constant, inverse-square only).",
+          "Array generation = P_1AU / d^2 x EPS efficiency x cos(incidence); incidence beyond 90 degrees gives zero generation. No degradation, temperature or shadowing effects.",
+          "Average power = sum(P x duty); peak power = sum of P for every load with duty > 0, assuming all such loads run simultaneously (worst case).",
+          "Battery starts full. Surplus charges the battery up to capacity with no charge efficiency loss; deficits draw deficit / discharge_efficiency from the battery.",
+          "State of charge floor = 1 - usable DoD; the ledger closes only if SOC never drops below it.",
+          "Power is constant within each phase, so SOC extremes occur at phase boundaries."
+        ],
+        "notes": null
+      },
+      "uncertainty": null
+    },
+    "energyMarginFraction": 2.455227303638394,
+    "dataGeneratedBits": {
+      "value": 12960000000.0,
+      "unit": "bit",
+      "provenance": {
+        "fidelity": "derived",
+        "sourceName": "MISSIONFORGE data model",
+        "sourceUrl": null,
+        "sourceVersion": "data-v1",
+        "retrievedAt": null,
+        "publishedAt": null,
+        "assumptions": [
+          "PROTOCOL_EFFICIENCY = 0.9 is a gameplay-estimate constant (R13).",
+          "Contact rate = min(planned, comms max_data_rate) if link margin at that rate >= 0, else 0.",
+          "Contact bits = rate x duration x protocol efficiency x ground availability, never more than the bits available (buffered plus generated so far) at that moment.",
+          "Observations generate uniformly over their window (rate x duty x compression); generation and downlink proceed concurrently where windows overlap.",
+          "Buffer clamps at capacity; excess is lost and reported as overflow_bits.",
+          "margin_fraction = (downlinked - generated) / generated; 0 when nothing is generated."
+        ],
+        "notes": null
+      },
+      "uncertainty": null
+    },
+    "dataDownlinkedBits": {
+      "value": 0.0,
+      "unit": "bit",
+      "provenance": {
+        "fidelity": "derived",
+        "sourceName": "MISSIONFORGE data model",
+        "sourceUrl": null,
+        "sourceVersion": "data-v1",
+        "retrievedAt": null,
+        "publishedAt": null,
+        "assumptions": [
+          "PROTOCOL_EFFICIENCY = 0.9 is a gameplay-estimate constant (R13).",
+          "Contact rate = min(planned, comms max_data_rate) if link margin at that rate >= 0, else 0.",
+          "Contact bits = rate x duration x protocol efficiency x ground availability, never more than the bits available (buffered plus generated so far) at that moment.",
+          "Observations generate uniformly over their window (rate x duty x compression); generation and downlink proceed concurrently where windows overlap.",
+          "Buffer clamps at capacity; excess is lost and reported as overflow_bits.",
+          "margin_fraction = (downlinked - generated) / generated; 0 when nothing is generated."
+        ],
+        "notes": null
+      },
+      "uncertainty": null
+    },
+    "dataMarginFraction": -1.0,
+    "requiredDeltaVKmPerS": {
+      "value": 0.25,
+      "unit": "km/s",
+      "provenance": {
+        "fidelity": "derived",
+        "sourceName": "MISSIONFORGE propulsion model",
+        "sourceUrl": null,
+        "sourceVersion": "propulsion-v1",
+        "retrievedAt": null,
+        "publishedAt": null,
+        "assumptions": [
+          "Delta-v = Isp x g0 x ln(m0/mf) with physical masses (m0 = dry + propellant, mf = dry).",
+          "Only spacecraft maneuvers count toward required delta-v; trajectory-info items are informational and never summed.",
+          "Impulsive maneuvers; gravity, drag and steering losses are not modelled.",
+          "Margin = available - required - reserve."
+        ],
+        "notes": null
+      },
+      "uncertainty": null
+    },
+    "availableDeltaVKmPerS": {
+      "value": 0.5241086162963525,
+      "unit": "km/s",
+      "provenance": {
+        "fidelity": "derived",
+        "sourceName": "MISSIONFORGE propulsion model",
+        "sourceUrl": null,
+        "sourceVersion": "propulsion-v1",
+        "retrievedAt": null,
+        "publishedAt": null,
+        "assumptions": [
+          "Delta-v = Isp x g0 x ln(m0/mf) with physical masses (m0 = dry + propellant, mf = dry).",
+          "Only spacecraft maneuvers count toward required delta-v; trajectory-info items are informational and never summed.",
+          "Impulsive maneuvers; gravity, drag and steering losses are not modelled.",
+          "Margin = available - required - reserve."
+        ],
+        "notes": null
+      },
+      "uncertainty": null
+    },
+    "deltaVMarginKmPerS": 0.2241086162963526,
+    "estimatedCostUsd": {
+      "value": 57118521.56057495,
+      "unit": "USD",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE cost model",
+        "sourceUrl": null,
+        "sourceVersion": "cost-v1",
+        "retrievedAt": null,
+        "publishedAt": null,
+        "assumptions": [
+          "All costs are illustrative gameplay estimates, not real prices.",
+          "Hardware = sum of spacecraft component costs; instrument repeats are counted.",
+          "Launch cost = launch-vehicle component cost.",
+          "Ground cost = ground-segment cost per mission-year x ops_days / 365.25.",
+          "Operations = ops_cost_per_day x ops_days.",
+          "Development = development_fraction x hardware.",
+          "Reserves = reserve_fraction x (hardware + launch + operations + ground + development).",
+          "Low/high bounds are total x low_factor / high_factor (not a statistical interval)."
+        ],
+        "notes": null
+      },
+      "uncertainty": {
+        "distribution": "interval",
+        "min": 45694817.248459965,
+        "mode": null,
+        "max": 79965930.18480492,
+        "sigma": null
+      }
+    }
+  },
+  "science": {
+    "coverageScore": 0.0,
+    "weightedObjectiveCoverage": {
+      "obj-morphology": 0.0,
+      "obj-composition": 0.0
+    },
+    "missingRequirements": [
+      "meas-shape-model",
+      "meas-vnir-spectra"
+    ],
+    "collectedFraction": 0.21942857142857145,
+    "returnedFraction": 0.0
+  },
+  "reliability": {
+    "nominalReliability": 0.3993114928709424,
+    "riskIndex": 0.02468181818181819,
+    "singlePointFailures": [
+      "bus-27u",
+      "launch-small-dedicated",
+      "power-large",
+      "prop-monoprop"
+    ]
+  },
+  "constraints": [
+    {
+      "id": "mass-launch-limit",
+      "label": "Launch mass limit",
+      "status": "pass",
+      "actual": {
+        "value": 166.92000000000002,
+        "unit": "kg",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "limit": {
+        "value": 300.0,
+        "unit": "kg",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "marginFraction": 0.44359999999999994,
+      "severity": 0,
+      "explanation": "Allocated mass 166.9 kg (wet 139.1 kg x (1 + 20% margin)) is within the launch limit 300.0 kg.",
+      "impactedSubsystems": [],
+      "suggestedActions": []
+    },
+    {
+      "id": "mass-margin",
+      "label": "Mass margin",
+      "status": "pass",
+      "actual": {
+        "value": 166.92000000000002,
+        "unit": "kg",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "limit": {
+        "value": 300.0,
+        "unit": "kg",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "marginFraction": 0.44359999999999994,
+      "severity": 0,
+      "explanation": "Allocated mass 166.9 kg (wet 139.1 kg x (1 + 20% margin)) leaves 44.4% headroom to the 300.0 kg limit.",
+      "impactedSubsystems": [],
+      "suggestedActions": []
+    },
+    {
+      "id": "delta-v-margin",
+      "label": "Delta-v margin",
+      "status": "pass",
+      "actual": {
+        "value": 524.1086162963526,
+        "unit": "m/s",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "limit": {
+        "value": 300.0,
+        "unit": "m/s",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "marginFraction": 0.7470287209878419,
+      "severity": 0,
+      "explanation": "Available delta-v 524 m/s covers required 250 m/s plus reserve 50 m/s.",
+      "impactedSubsystems": [],
+      "suggestedActions": []
+    },
+    {
+      "id": "peak-power",
+      "label": "Peak power",
+      "status": "pass",
+      "actual": {
+        "value": 100.0,
+        "unit": "W",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "limit": {
+        "value": 417.7514792899408,
+        "unit": "W",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "marginFraction": 0.7606232294617563,
+      "severity": 0,
+      "explanation": "Peak load 100.0 W is within the supply 417.8 W with margin.",
+      "impactedSubsystems": [],
+      "suggestedActions": []
+    },
+    {
+      "id": "energy-closure",
+      "label": "Energy closure",
+      "status": "pass",
+      "actual": {
+        "value": 10452.071005917158,
+        "unit": "Wh",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "limit": {
+        "value": 3478.7527998947157,
+        "unit": "Wh",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "marginFraction": 2.455227303638394,
+      "severity": 0,
+      "explanation": "Generated 10452.1 Wh covers consumed 3025.0 Wh plus 15% margin.",
+      "impactedSubsystems": [],
+      "suggestedActions": []
+    },
+    {
+      "id": "battery-reserve",
+      "label": "Battery reserve",
+      "status": "pass",
+      "actual": {
+        "value": 1.0,
+        "unit": "fraction",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "limit": {
+        "value": 0.5,
+        "unit": "fraction",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "marginFraction": 0.5,
+      "severity": 0,
+      "explanation": "Minimum battery state of charge 100% stays above the 50% floor.",
+      "impactedSubsystems": [],
+      "suggestedActions": []
+    },
+    {
+      "id": "data-buffer",
+      "label": "Data buffer",
+      "status": "pass",
+      "actual": {
+        "value": 12960000000.0,
+        "unit": "bit",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "limit": {
+        "value": 32000000000.0,
+        "unit": "bit",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "marginFraction": 0.595,
+      "severity": 0,
+      "explanation": "Peak buffer 1.3e+10 bit fits capacity 3.2e+10 bit with no overflow.",
+      "impactedSubsystems": [],
+      "suggestedActions": []
+    },
+    {
+      "id": "link-margin",
+      "label": "Link margin",
+      "status": "fail",
+      "actual": {
+        "value": -14.353201307608458,
+        "unit": "dB",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "limit": {
+        "value": 0.0,
+        "unit": "dB",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "marginFraction": null,
+      "severity": 3,
+      "explanation": "Link margin is negative on all 40 planned contacts (worst -14.4 dB, limit 0 dB): no data can be downlinked.",
+      "impactedSubsystems": [
+        "communications",
+        "data"
+      ],
+      "suggestedActions": [
+        {
+          "actionId": "swap-comms",
+          "label": "Upgrade communications (higher-gain antenna)",
+          "expectedEffect": "Raises link margin."
+        },
+        {
+          "actionId": "reduce-downlink-rate",
+          "label": "Plan a lower downlink rate",
+          "expectedEffect": "Raises Eb/N0 per bit."
+        }
+      ]
+    },
+    {
+      "id": "data-return",
+      "label": "Data return",
+      "status": "warning",
+      "actual": {
+        "value": 0.0,
+        "unit": "bit",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "limit": {
+        "value": 15552000000.0,
+        "unit": "bit",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "marginFraction": -1.0,
+      "severity": 2,
+      "explanation": "Downlink capacity 0 bit is below the 1.56e+10 bit needed (generated 1.3e+10 bit plus 20% margin); only 0 of 1.3e+10 bit is downlinked, so collected science is not fully returned.",
+      "impactedSubsystems": [
+        "communications",
+        "data",
+        "payload"
+      ],
+      "suggestedActions": [
+        {
+          "actionId": "swap-comms",
+          "label": "Upgrade communications (e.g. higher-gain antenna) or reduce observation duty cycle",
+          "expectedEffect": "Raises downlink capacity or lowers generated data so more science is returned."
+        },
+        {
+          "actionId": "reduce-duty-cycle",
+          "label": "Reduce observation duty cycle",
+          "expectedEffect": "Generates less data."
+        },
+        {
+          "actionId": "add-contacts",
+          "label": "Plan more or longer downlink contacts",
+          "expectedEffect": "Adds capacity."
+        }
+      ]
+    },
+    {
+      "id": "science-mandatory-coverage",
+      "label": "Mandatory science coverage",
+      "status": "warning",
+      "actual": null,
+      "limit": null,
+      "marginFraction": null,
+      "severity": 2,
+      "explanation": "Required measurement(s) meas-shape-model, meas-vnir-spectra are collected but no data is returned to Earth.",
+      "impactedSubsystems": [
+        "payload",
+        "data",
+        "communications"
+      ],
+      "suggestedActions": [
+        {
+          "actionId": "swap-comms",
+          "label": "Upgrade communications",
+          "expectedEffect": "Returns the collected data."
+        },
+        {
+          "actionId": "add-contacts",
+          "label": "Plan more downlink contacts",
+          "expectedEffect": "Adds return capacity."
+        }
+      ]
+    },
+    {
+      "id": "trajectory-valid",
+      "label": "Trajectory validity",
+      "status": "pass",
+      "actual": null,
+      "limit": null,
+      "marginFraction": null,
+      "severity": 0,
+      "explanation": "A valid trajectory option is selected.",
+      "impactedSubsystems": [],
+      "suggestedActions": []
+    },
+    {
+      "id": "budget",
+      "label": "Budget",
+      "status": "pass",
+      "actual": {
+        "value": 57118521.56057495,
+        "unit": "USD",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "limit": {
+        "value": 60000000.0,
+        "unit": "USD",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "marginFraction": 0.048024640657084186,
+      "severity": 0,
+      "explanation": "Estimated cost $57,118,522 is within the maximum budget $60,000,000.",
+      "impactedSubsystems": [],
+      "suggestedActions": []
+    },
+    {
+      "id": "science-minimum-score",
+      "label": "Minimum science score",
+      "status": "warning",
+      "actual": {
+        "value": 0.0,
+        "unit": "%",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "limit": {
+        "value": 60.0,
+        "unit": "%",
+        "provenance": {
+          "fidelity": "derived",
+          "sourceName": "MISSIONFORGE constraint model",
+          "sourceUrl": null,
+          "sourceVersion": null,
+          "retrievedAt": null,
+          "publishedAt": null,
+          "assumptions": [],
+          "notes": null
+        },
+        "uncertainty": null
+      },
+      "marginFraction": -1.0,
+      "severity": 2,
+      "explanation": "Science coverage score 0.0 is below the configured minimum 60.0.",
+      "impactedSubsystems": [
+        "payload",
+        "science"
+      ],
+      "suggestedActions": [
+        {
+          "actionId": "schedule-observation",
+          "label": "Schedule more observations",
+          "expectedEffect": "Raises coverage."
+        },
+        {
+          "actionId": "swap-comms",
+          "label": "Upgrade communications",
+          "expectedEffect": "Returns more collected data."
+        }
+      ]
+    },
+    {
+      "id": "success-probability",
+      "label": "Success probability",
+      "status": "not-modelled",
+      "actual": null,
+      "limit": null,
+      "marginFraction": null,
+      "severity": 0,
+      "explanation": "requires robustness/simulation (later phase)",
+      "impactedSubsystems": [],
+      "suggestedActions": []
+    },
+    {
+      "id": "thermal",
+      "label": "Thermal control",
+      "status": "not-modelled",
+      "actual": null,
+      "limit": null,
+      "marginFraction": null,
+      "severity": 0,
+      "explanation": "qualitative check only \u2014 no thermal balance computed",
+      "impactedSubsystems": [],
+      "suggestedActions": []
+    }
+  ],
+  "feasibility": "infeasible",
+  "missionReady": false,
+  "score": {
+    "total": 51.25,
+    "dimensions": [
+      {
+        "id": "scientific-return",
+        "weight": 30.0,
+        "score": 0.0,
+        "explanation": "Returned-data science coverage is 0 of 100 (collected data that is not downlinked does not count)."
+      },
+      {
+        "id": "mission-execution",
+        "weight": 25.0,
+        "score": 85.0,
+        "explanation": "8 of 10 hard gates pass (design-time proxy; refined by simulation)."
+      },
+      {
+        "id": "engineering-robustness",
+        "weight": 20.0,
+        "score": 75.0,
+        "explanation": "Mean of 4 mass, delta-v, energy and data headrooms relative to the required headroom (full credit at the hard-gate threshold, zero at no headroom)."
+      },
+      {
+        "id": "resource-stewardship",
+        "weight": 15.0,
+        "score": 100.0,
+        "explanation": "Cost $57,118,522 is within the $60,000,000 budget; spending less is not rewarded on its own."
+      },
+      {
+        "id": "operations-quality",
+        "weight": 10.0,
+        "score": 0.0,
+        "explanation": "0 of 40 planned contacts close (design-time proxy; refined by simulation)."
+      }
+    ]
+  },
+  "topDrivers": [
+    "link-margin",
+    "data-return",
+    "science-minimum-score",
+    "science-mandatory-coverage"
+  ],
+  "assumptions": [
+    "Propellant tank is loaded to its full capacity; propellant sizing is not optimised.",
+    "Trajectory mission delta-v counts as a spacecraft maneuver only for scenario-preset and manual-estimate trajectories; JPL trajectory figures are informational.",
+    "Launch mass limit = the stricter of the mission constraint and the launch vehicle limit.",
+    "Each maneuver runs the propulsion load for 1 h (gameplay-estimate).",
+    "Power ledger: one representative cycle per phase (cruise, then science = span of the observation plan), each split into sunlit and eclipse parts, with phase-average duty cycles; bus, ADCS, thermal and C&DH loads are always on.",
+    "Regulated peak supply = sunlit array output + battery capacity x 1C (gameplay-estimate).",
+    "Average power = sum(P x mission-average duty cycle) over every powered component.",
+    "Each measurement is observed by the capable selected instrument with the highest data rate; plan items without a capable instrument generate no data and draw no power.",
+    "Link budget per contact at min(planned rate, radio max rate), the rate the ledger uses.",
+    "Scenario neo-rendezvous: sun distance 1.3 AU and thermal exposure 'cold' are gameplay-estimate defaults; no eclipse is modelled for the starter scenarios.",
+    "Earth range for the link budget is the template reference range 3.74e+10 m (gameplay-estimate).",
+    "Bus structure mass is included in bus mass and is not added separately.",
+    "No generic structure/harness percentage is applied; only catalogue masses are summed.",
+    "The ground segment contributes no spacecraft mass.",
+    "Allocated mass = (dry + propellant) x (1 + margin fraction).",
+    "Instrument quantity equals the number of repeated instrument ids.",
+    "Delta-v = Isp x g0 x ln(m0/mf) with physical masses (m0 = dry + propellant, mf = dry).",
+    "Only spacecraft maneuvers count toward required delta-v; trajectory-info items are informational and never summed.",
+    "Impulsive maneuvers; gravity, drag and steering losses are not modelled.",
+    "Margin = available - required - reserve.",
+    "Solar flux = 1 AU solar constant / d^2 (gameplay-estimate constant, inverse-square only).",
+    "Array generation = P_1AU / d^2 x EPS efficiency x cos(incidence); incidence beyond 90 degrees gives zero generation. No degradation, temperature or shadowing effects.",
+    "Average power = sum(P x duty); peak power = sum of P for every load with duty > 0, assuming all such loads run simultaneously (worst case).",
+    "Battery starts full. Surplus charges the battery up to capacity with no charge efficiency loss; deficits draw deficit / discharge_efficiency from the battery.",
+    "State of charge floor = 1 - usable DoD; the ledger closes only if SOC never drops below it.",
+    "Power is constant within each phase, so SOC extremes occur at phase boundaries.",
+    "Free-space path loss only: FSPL = 20 log10(4 pi d / lambda); no atmosphere, pointing or polarisation loss beyond the explicit losses supplied.",
+    "Pr = Pt + Gt + Gr - FSPL - implementation loss - other losses (implementation loss is an explicit loss term); margin = Eb/N0 - required Eb/N0.",
+    "Noise N0 = kB x system noise temperature; no interference or coding-gain modelling.",
+    "capacity_bps is the highest bit rate with margin >= 0 (not capped by hardware).",
+    "PROTOCOL_EFFICIENCY = 0.9 is a gameplay-estimate constant (R13).",
+    "Contact rate = min(planned, comms max_data_rate) if link margin at that rate >= 0, else 0.",
+    "Contact bits = rate x duration x protocol efficiency x ground availability, never more than the bits available (buffered plus generated so far) at that moment.",
+    "Observations generate uniformly over their window (rate x duty x compression); generation and downlink proceed concurrently where windows overlap.",
+    "Buffer clamps at capacity; excess is lost and reported as overflow_bits.",
+    "margin_fraction = (downlinked - generated) / generated; 0 when nothing is generated.",
+    "Required observation time defaults to 1.0 h per measurement when neither the requirement threshold (s or day) nor an explicit mapping gives one (gameplay-estimate).",
+    "Capability match is binary: any selected instrument listing the capability counts.",
+    "Pointing is binary: ADCS accuracy must be <= the pointing requirement of a matching instrument; the loosest-requirement matching instrument is credited.",
+    "A power shortfall (power_ok false) is a hard zero for all science (gameplay-estimate).",
+    "Science score counts RETURNED data: returned fraction = downlinked / generated bits (0 if nothing was generated); collected-but-not-returned data is reported separately.",
+    "Mission-level collected/returned fractions are priority-weighted objective coverages.",
+    "All costs are illustrative gameplay estimates, not real prices.",
+    "Hardware = sum of spacecraft component costs; instrument repeats are counted.",
+    "Launch cost = launch-vehicle component cost.",
+    "Ground cost = ground-segment cost per mission-year x ops_days / 365.25.",
+    "Operations = ops_cost_per_day x ops_days.",
+    "Development = development_fraction x hardware.",
+    "Reserves = reserve_fraction x (hardware + launch + operations + ground + development).",
+    "Low/high bounds are total x low_factor / high_factor (not a statistical interval).",
+    "Failure modes and components are treated as statistically independent: R_system = product of component reliabilities.",
+    "common-cause failures (shared radiation, thermal, software or power events) are not modelled, so nominal reliability is optimistic.",
+    "Failure probabilities are illustrative gameplay estimates from the catalogue.",
+    "risk_index is a per-mode mean: sum(probability x severity) / (5 x number of failure modes), range 0..1; adding benign (low-probability) modes dilutes it.",
+    "Single-point failure: a component with a severity >= 4 failure mode and no mitigation resolving (by id or tag) to another selected component.",
+    "Thermal is a qualitative capability check against the scenario exposure class; no thermal balance or temperature is computed.",
+    "Hard gates (status 'fail' => infeasible): launch mass (allocated = wet x (1 + mass margin) must fit the limit), delta-v with reserve, peak power, energy closure, battery reserve, data-buffer overflow, trajectory validity, mandatory science capability, budget, catalogue compatibility, and a downlink where every planned contact has negative link margin.",
+    "Warnings (prod 'Watch'): partial link-margin failure, data return below generated x (1 + data margin) or generated data not downlinked, mandatory science not collected or not returned, science below the configured minimum score, thin power/data margins.",
+    "mass-margin is a gameplay 'watch' band: warning when 0 <= margin_to_limit < 5% (gameplay-estimate); once the limit is exceeded mass-launch-limit fails and mass-margin is not assessed.",
+    "Thermal is qualitative: it is passed through unchanged and is never 'pass'.",
+    "Empty or zero inputs (no launch limit, no contacts, no generated data, no consumption, no load and supply, no required measurements) are 'not-modelled', never 'pass'.",
+    "Data return compares total downlink capacity (rate x duration x protocol efficiency x availability) with generated data x (1 + data margin), and flags any generated data that is not downlinked.",
+    "science-minimum-score is a soft warning; success-probability is 'not-modelled' because it requires robustness/simulation (later phase). Neither is a hard gate.",
+    "mission_ready requires feasibility 'feasible': a marginal design (any warning) is not mission-ready.",
+    "Suggested actions are rule-based hints, not an optimiser's guarantee.",
+    "Weights 30/25/20/15/10 are displayed and sum to 100; total = sum(weight x score / 100).",
+    "scientific-return = ScienceAnalysis.coverage_score (returned data, not merely collected).",
+    "mission-execution is a design-time proxy; refined by simulation: 100 x mean credit over hard gates (pass 1, warning 0.5, fail 0); not-modelled gates are excluded.",
+    "engineering-robustness = mean of clamp(headroom / required headroom, 0, 1) x 100 over the mass, delta-v, energy and data margins that can be evaluated.",
+    "resource-stewardship = 100 within budget, falling linearly to 0 at twice the budget; a cheaper design inside the budget scores the same, so cost alone is never rewarded.",
+    "operations-quality is a design-time proxy; refined by simulation: 100 x share of planned contacts with non-negative link margin x (0.5 if the buffer overflows)."
+  ]
+}

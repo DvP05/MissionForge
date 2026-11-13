@@ -197,6 +197,43 @@ def test_validator_detects_each_defect(tmp_path: Path) -> None:
     assert any("SCHEMA" in e for e in _mutate(tmp_path / "e", "bus.json", bad_schema))
 
 
-@pytest.mark.skip(reason="Task 2.8: assert instrument/antenna/battery swap changes mass analysis")
-def test_component_swap_changes_mass_analysis() -> None:
-    raise AssertionError("implemented in Task 2.8")
+@pytest.mark.parametrize(
+    ("slot", "replacement"),
+    [
+        ("instrument_ids", ("inst-wide-camera", "inst-vnir-spectrometer")),  # instrument
+        ("communications_id", "comms-xband-medium"),  # antenna / radio
+        ("power_id", "power-xl"),  # battery + array
+    ],
+)
+def test_component_swap_changes_mass_analysis(slot: str, replacement: object) -> None:
+    from datetime import UTC, datetime
+
+    from app.config import DEFAULT_MISSIONS_DIR
+    from app.domain.analysis.orchestrator import (
+        ENGINE_VERSION,
+        analyze_mission,
+        scenario_inputs_from_template,
+    )
+    from app.domain.mission.defaults import default_mission_state, list_templates
+    from app.schemas.mission import MissionState
+
+    now = datetime(2026, 11, 13, tzinfo=UTC)
+    catalog = load_catalog(DEFAULT_CATALOG_DIR)
+    template = next(
+        t for t in list_templates(DEFAULT_MISSIONS_DIR) if t.scenario_id == "neo-rendezvous"
+    )
+    scenario = scenario_inputs_from_template(template)
+    base = default_mission_state(
+        "neo-rendezvous", mission_id="m", seed=1, now=now, templates_dir=DEFAULT_MISSIONS_DIR
+    )
+    dump = base.model_dump()
+    dump["architecture"][slot] = replacement
+    swapped = MissionState.model_validate(dump)
+
+    def run(state: MissionState) -> float:
+        a = analyze_mission(
+            state, catalog, scenario=scenario, engine_version=ENGINE_VERSION, now=now
+        )
+        return a.budgets.dry_mass_kg.value
+
+    assert run(swapped) != run(base)
