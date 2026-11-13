@@ -34,13 +34,9 @@ def default_mission_state(
     mission_id: str,
     seed: int,
     now: datetime,
-    templates_dir: Path | None = None,
+    templates_dir: Path,
 ) -> MissionState:
     """Build the starter MissionState for a scenario (design revision 0)."""
-    if templates_dir is None:
-        from app.config import DEFAULT_MISSIONS_DIR  # noqa: PLC0415  (default path only)
-
-        templates_dir = DEFAULT_MISSIONS_DIR
     for template in list_templates(templates_dir):
         if template.scenario_id == scenario_id:
             return MissionState.model_validate(

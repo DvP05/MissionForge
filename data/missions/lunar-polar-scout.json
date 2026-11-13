@@ -2,6 +2,7 @@
   "scenarioId": "lunar-polar-scout",
   "scenarioVersion": "0.1.0",
   "title": "Shadowline",
+  "referenceEarthRangeM": 384400000.0,
   "narrative": "Scout the lunar south polar region from orbit and map where sunlight never reaches.",
   "topConstraints": [
     "Keep launch mass under the dedicated small-lift limit (300 kg).",

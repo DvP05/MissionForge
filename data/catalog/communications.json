@@ -171,7 +171,7 @@
           }
         },
         "tx_power": {
-          "value": 10.0,
+          "value": 20.0,
           "unit": "W",
           "provenance": {
             "fidelity": "gameplay-estimate",
@@ -182,7 +182,7 @@
           }
         },
         "antenna_gain": {
-          "value": 25.0,
+          "value": 33.0,
           "unit": "dB",
           "provenance": {
             "fidelity": "gameplay-estimate",

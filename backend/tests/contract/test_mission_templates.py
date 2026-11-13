@@ -1,6 +1,7 @@
 """Scenario templates (Task 1.5): parse, resolve, validate, default NEO starter."""
 
 import json
+import math
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -35,7 +36,9 @@ def templates() -> dict[str, ScenarioTemplate]:
 
 
 def _state(scenario: str) -> MissionState:
-    return default_mission_state(scenario, mission_id="m-1", seed=42, now=NOW)
+    return default_mission_state(
+        scenario, mission_id="m-1", seed=42, now=NOW, templates_dir=DEFAULT_MISSIONS_DIR
+    )
 
 
 def test_three_templates_parse(templates: dict[str, ScenarioTemplate]) -> None:
@@ -167,18 +170,24 @@ def test_default_mission_state_is_deterministic() -> None:
 
 
 def test_default_mission_state_varies_with_inputs() -> None:
-    other = default_mission_state("neo-rendezvous", mission_id="m-2", seed=7, now=NOW)
+    other = default_mission_state(
+        "neo-rendezvous", mission_id="m-2", seed=7, now=NOW, templates_dir=DEFAULT_MISSIONS_DIR
+    )
     assert other.mission_id == "m-2" and other.random_seed == 7
     assert other.architecture == _state("neo-rendezvous").architecture
 
 
 def test_unknown_scenario_is_rejected() -> None:
     with pytest.raises(DomainValidationError, match="unknown scenario"):
-        default_mission_state("nope", mission_id="m", seed=1, now=NOW)
+        default_mission_state(
+            "nope", mission_id="m", seed=1, now=NOW, templates_dir=DEFAULT_MISSIONS_DIR
+        )
 
 
 def test_list_templates_is_path_injected(tmp_path: Path) -> None:
     assert list_templates(tmp_path) == []
+    with pytest.raises(TypeError):
+        list_templates()  # type: ignore[call-arg]
 
 
 def test_template_service_uses_default_paths() -> None:
@@ -190,7 +199,12 @@ def test_template_service_uses_default_paths() -> None:
     assert state.mission_id
 
 
-# --- NEO starter: deliberate, fixable data-buffer warning (gross arithmetic) -------------
+# --- NEO starter: deliberate, fixable data-return shortfall (gross arithmetic) ----------
+
+KB = 1.380649e-23
+C = 299792458.0
+G0 = 9.80665
+PROTOCOL_EFFICIENCY = 0.9  # arch 7.5 protocolEfficiency, assumed here (conservative)
 
 
 def _generated_bits(state: MissionState, catalog: Catalog) -> float:
@@ -210,46 +224,138 @@ def _generated_bits(state: MissionState, catalog: Catalog) -> float:
     )
 
 
-def _downlink_bits(state: MissionState, comms_id: str, catalog: Catalog) -> float:
-    link_cap = catalog.get(comms_id).parameters["max_data_rate"].value
+def link_margin_db(
+    catalog: Catalog, comms_id: str, ground_id: str, range_m: float, rate_bps: float
+) -> float:
+    """Architecture 7.5 link equation; implementation loss is an explicit other-loss."""
+    comms, ground = catalog.get(comms_id).parameters, catalog.get(ground_id).parameters
+    wavelength = C / comms["frequency"].value
+    fspl = 20 * math.log10(4 * math.pi * range_m / wavelength)
+    pr = (
+        10 * math.log10(comms["tx_power"].value)
+        + comms["antenna_gain"].value
+        + ground["station_gain"].value
+        - fspl
+        - comms["implementation_loss"].value
+    )
+    n0 = 10 * math.log10(KB * ground["noise_temperature"].value)
+    ebn0 = pr - n0 - 10 * math.log10(rate_bps)
+    return ebn0 - comms["required_ebn0"].value
+
+
+def _achievable_rate(
+    catalog: Catalog, comms_id: str, ground_id: str, range_m: float, planned: float
+) -> float:
+    rate = min(planned, catalog.get(comms_id).parameters["max_data_rate"].value)
+    margin = link_margin_db(catalog, comms_id, ground_id, range_m, rate)
+    return rate if margin >= 0 else rate * 10 ** (margin / 10)  # rate where margin == 0
+
+
+def _returned_bits(state: MissionState, comms_id: str, range_m: float, catalog: Catalog) -> float:
+    ground_id = state.architecture.ground_segment_id
+    avail = catalog.get(ground_id).parameters["contact_availability"].value
     return sum(
-        min(d.data_rate_bits_per_second, link_cap) * d.duration_minutes * 60.0
+        _achievable_rate(catalog, comms_id, ground_id, range_m, d.data_rate_bits_per_second)
+        * d.duration_minutes
+        * 60.0
+        * PROTOCOL_EFFICIENCY
+        * avail
         for d in state.operations.downlink_plan
     )
 
 
-def test_neo_starter_generates_more_data_than_it_can_downlink(catalog: Catalog) -> None:
+def test_neo_reference_range_is_stated_and_noted(templates: dict[str, ScenarioTemplate]) -> None:
+    t = templates["neo-rendezvous"]
+    au = 1.495978707e11
+    assert 0.2 * au <= t.reference_earth_range_m <= 0.3 * au
+    notes = " ".join(t.fidelity_notes)
+    assert "0.25 AU" in notes and "data-return shortfall (downlink capacity)" in notes
+    assert all(x.reference_earth_range_m > 0 for x in templates.values())
+
+
+def test_neo_link_budget_lowgain_vs_medium(
+    catalog: Catalog, templates: dict[str, ScenarioTemplate]
+) -> None:
     state = _state("neo-rendezvous")
+    rng = templates["neo-rendezvous"].reference_earth_range_m
+    g = state.architecture.ground_segment_id
+    planned = state.operations.downlink_plan[0].data_rate_bits_per_second
+    assert link_margin_db(catalog, "comms-xband-lowgain", g, rng, planned) < 0
+    assert link_margin_db(catalog, "comms-xband-medium", g, rng, planned) >= 3.0
+
+
+def test_neo_data_return_shortfall_and_fix(
+    catalog: Catalog, templates: dict[str, ScenarioTemplate]
+) -> None:
+    state = _state("neo-rendezvous")
+    rng = templates["neo-rendezvous"].reference_earth_range_m
     assert state.architecture.communications_id == "comms-xband-lowgain"
     assert "inst-hires-camera" in state.architecture.instrument_ids
     generated = _generated_bits(state, catalog)
     assert generated > 0
-    assert generated > _downlink_bits(state, state.architecture.communications_id, catalog)
+    assert _returned_bits(state, "comms-xband-lowgain", rng, catalog) < generated
+    margin = 1.0 + state.constraints.data_margin_fraction
+    assert _returned_bits(state, "comms-xband-medium", rng, catalog) >= generated * margin
 
 
-def test_neo_medium_comms_swap_clears_the_warning(catalog: Catalog) -> None:
+def test_neo_storage_has_headroom_so_only_data_return_is_the_issue(catalog: Catalog) -> None:
     state = _state("neo-rendezvous")
     generated = _generated_bits(state, catalog)
-    margin = 1.0 + state.constraints.data_margin_fraction
-    assert _downlink_bits(state, "comms-xband-medium", catalog) >= generated * margin
-    # the onboard storage is not the problem: generated data fits with margin
     storage = catalog.get(state.architecture.cdh_id).parameters["storage"].value
-    assert generated * margin <= storage
+    margin = 1.0 + state.constraints.data_margin_fraction
+    assert generated * margin <= 0.7 * storage  # worst case: nothing downlinked before the end
 
 
-def test_neo_starter_mass_within_launch_limit(catalog: Catalog) -> None:
-    state = _state("neo-rendezvous")
+def test_other_scenarios_close_their_link_with_their_radio(
+    catalog: Catalog, templates: dict[str, ScenarioTemplate]
+) -> None:
+    for sid in ("lunar-polar-scout", "earth-observation"):
+        s = templates[sid].mission_state
+        margin = link_margin_db(
+            catalog,
+            s.architecture.communications_id,
+            s.architecture.ground_segment_id,
+            templates[sid].reference_earth_range_m,
+            s.operations.downlink_plan[0].data_rate_bits_per_second,
+        )
+        assert margin >= 3.0, sid
+
+
+def _dry_and_prop(state: MissionState, catalog: Catalog) -> tuple[float, float, float]:
     r = resolve_architecture(state.architecture, catalog)
 
     def m(c: object) -> float:
         return c.parameters["mass"].value  # type: ignore[attr-defined,no-any-return]
 
-    mass = (
+    dry = (
         m(r.bus) + m(r.power) + m(r.adcs) + m(r.communications) + m(r.thermal) + m(r.cdh)
         + sum(m(i) for i in r.instruments)
         + r.propulsion.parameters["dry_mass"].value
-        + r.propulsion.parameters["propellant_capacity"].value
     )  # fmt: skip
-    limit = r.launch.parameters["launch_mass_limit"].value
-    assert mass * (1 + state.constraints.mass_margin_fraction) < limit
+    return (
+        dry,
+        r.propulsion.parameters["propellant_capacity"].value,
+        r.propulsion.parameters["isp"].value,
+    )
+
+
+@pytest.mark.parametrize("margin_on_dry", [False, True])
+def test_neo_delta_v_headroom(catalog: Catalog, margin_on_dry: bool) -> None:
+    state = _state("neo-rendezvous")
+    dry, prop, isp = _dry_and_prop(state, catalog)
+    if margin_on_dry:
+        dry *= 1 + state.constraints.mass_margin_fraction
+    available_km_s = isp * G0 * math.log((dry + prop) / dry) / 1000.0
+    maneuver = state.trajectory.mission_delta_v_km_per_s
+    assert maneuver is not None
+    required = maneuver + state.constraints.delta_v_margin_km_per_s
+    assert available_km_s >= 1.2 * required  # >= 20 % headroom under either convention
+    assert available_km_s >= 1.2 * maneuver
+
+
+def test_neo_starter_mass_within_launch_limit(catalog: Catalog) -> None:
+    state = _state("neo-rendezvous")
+    dry, prop, _ = _dry_and_prop(state, catalog)
+    limit = catalog.get(state.architecture.launch_vehicle_id).parameters["launch_mass_limit"].value
+    assert (dry + prop) * (1 + state.constraints.mass_margin_fraction) < limit
     assert state.constraints.launch_mass_limit_kg == limit

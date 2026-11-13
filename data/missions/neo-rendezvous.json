@@ -2,6 +2,7 @@
   "scenarioId": "neo-rendezvous",
   "scenarioVersion": "0.1.0",
   "title": "Echoes of Origins",
+  "referenceEarthRangeM": 37399000000.0,
   "narrative": "Send a small spacecraft to rendezvous with a near-Earth asteroid and decide what its surface can tell us about the early Solar System.",
   "topConstraints": [
     "Keep launch mass under the dedicated small-lift limit (300 kg) with margin.",
@@ -10,9 +11,11 @@
   ],
   "fidelityNotes": [
     "All catalogue values are illustrative gameplay-estimate archetypes, not real hardware.",
-    "Trajectory: scenario-preset. Departure and arrival dates, C3 (14 km2/s2), departure and arrival V-infinity and mission delta-v are illustrative gameplay values; a JPL-derived option replaces the preset in Phase 5.",
+    "Trajectory: scenario-preset. Departure and arrival dates, C3 (14 km2/s2), departure and arrival V-infinity and mission delta-v (0.25 km/s) are illustrative gameplay values; a JPL-derived option replaces the preset in Phase 5.",
     "Destination: synthetic target 'Scenario target NEO-A (illustrative)'; it is not a real asteroid.",
     "Starter design deliberately pairs the high-data-rate camera with the low-gain X-band radio, so generated data exceeds downlink capacity: swapping to comms-xband-medium (or cutting the camera duty cycle) clears the data-buffer warning.",
+    "Reference Earth-spacecraft range for the link budget is 0.25 AU (3.74e10 m): an illustrative mid-mission Earth-NEO distance chosen for gameplay, not an ephemeris value. Ground segment is ground-large (62 dBi, 40 K, 0.33 contact availability). Link budget (arch 7.5 equation, 8.4 GHz, 0.25 AU): comms-xband-medium closes the planned 50 kbit/s downlink with margin above 3 dB; comms-xband-lowgain does not close it.",
+    "The starter warning is a data-return shortfall (downlink capacity): generated data exceeds what the low-gain radio can return, while onboard storage is not the limiting factor.",
     "Downlink plan rates are the planned rate; the achievable rate is capped by the selected radio's maximum data rate.",
     "Optional extra objectives (thermal behaviour, magnetic/plasma environment) are listed in optionalObjectives and are not part of the starter MissionState."
   ],
@@ -126,7 +129,7 @@
       "c3Km2PerS2": 14.0,
       "departureVInfinityKmPerS": 3.74,
       "arrivalVInfinityKmPerS": 0.5,
-      "missionDeltaVKmPerS": 0.35
+      "missionDeltaVKmPerS": 0.25
     },
     "architecture": {
       "launchVehicleId": "launch-small-dedicated",
@@ -141,7 +144,7 @@
         "inst-hires-camera",
         "inst-vnir-spectrometer"
       ],
-      "groundSegmentId": "ground-medium"
+      "groundSegmentId": "ground-large"
     },
     "operations": {
       "missionDurationDays": 420.0,
@@ -150,177 +153,227 @@
           "measurementId": "meas-shape-model",
           "startDay": 290.0,
           "durationHours": 4.0,
-          "dutyCycle": 0.03
+          "dutyCycle": 0.015
         },
         {
           "measurementId": "meas-shape-model",
           "startDay": 300.0,
           "durationHours": 4.0,
-          "dutyCycle": 0.03
+          "dutyCycle": 0.015
         },
         {
           "measurementId": "meas-vnir-spectra",
           "startDay": 310.0,
           "durationHours": 8.0,
-          "dutyCycle": 0.05
+          "dutyCycle": 0.025
         },
         {
           "measurementId": "meas-vnir-spectra",
           "startDay": 320.0,
           "durationHours": 8.0,
-          "dutyCycle": 0.05
+          "dutyCycle": 0.025
         }
       ],
       "downlinkPlan": [
         {
           "startDay": 291.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 294.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 297.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 300.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 303.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 306.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 309.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 312.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 315.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 318.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 321.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 324.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 327.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 330.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 333.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 336.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 339.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 342.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 345.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 348.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 351.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 354.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 357.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 360.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 363.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 366.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 369.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 372.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 375.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 378.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
+        },
+        {
+          "startDay": 381.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 50000.0
+        },
+        {
+          "startDay": 384.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 50000.0
+        },
+        {
+          "startDay": 387.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 50000.0
+        },
+        {
+          "startDay": 390.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 50000.0
+        },
+        {
+          "startDay": 393.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 50000.0
+        },
+        {
+          "startDay": 396.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 50000.0
+        },
+        {
+          "startDay": 399.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 50000.0
+        },
+        {
+          "startDay": 402.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 50000.0
+        },
+        {
+          "startDay": 405.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 50000.0
+        },
+        {
+          "startDay": 408.0,
+          "durationMinutes": 480.0,
+          "dataRateBitsPerSecond": 50000.0
         }
       ],
       "safeModePolicy": "balanced",
@@ -334,7 +387,7 @@
       "massMarginFraction": 0.2,
       "powerMarginFraction": 0.15,
       "dataMarginFraction": 0.2,
-      "deltaVMarginKmPerS": 0.1
+      "deltaVMarginKmPerS": 0.05
     }
   }
 }

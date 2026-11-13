@@ -795,6 +795,11 @@
         "title": "Optionalobjectives",
         "type": "array"
       },
+      "referenceEarthRangeM": {
+        "exclusiveMinimum": 0,
+        "title": "Referenceearthrangem",
+        "type": "number"
+      },
       "scenarioId": {
         "enum": [
           "neo-rendezvous",
@@ -829,6 +834,7 @@
       "narrative",
       "topConstraints",
       "fidelityNotes",
+      "referenceEarthRangeM",
       "missionState"
     ],
     "title": "ScenarioTemplate",

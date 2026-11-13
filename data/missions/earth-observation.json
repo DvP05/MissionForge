@@ -2,6 +2,7 @@
   "scenarioId": "earth-observation",
   "scenarioVersion": "0.1.0",
   "title": "Blue Sentinel",
+  "referenceEarthRangeM": 2000000.0,
   "narrative": "Fly a compact Earth-observation satellite that watches coastal water colour from low orbit.",
   "topConstraints": [
     "Fit the rideshare launch mass limit (150 kg).",

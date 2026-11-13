@@ -17,6 +17,7 @@ from app.schemas.mission import (
     SpacecraftArchitecture,
 )
 from app.schemas.trajectory import Destination, TrajectorySelection
+from app.schemas.units import FiniteFloat
 
 
 class TemplateMissionState(FrozenContract):
@@ -41,5 +42,6 @@ class ScenarioTemplate(FrozenContract):
     narrative: str
     top_constraints: tuple[str, ...] = Field(min_length=3, max_length=3)
     fidelity_notes: tuple[str, ...]
+    reference_earth_range_m: FiniteFloat = Field(gt=0)
     optional_objectives: tuple[ScienceObjective, ...] = Field(default_factory=tuple)
     mission_state: TemplateMissionState

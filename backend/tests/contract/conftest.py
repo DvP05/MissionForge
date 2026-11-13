@@ -763,6 +763,7 @@ def scenario_template() -> templates.ScenarioTemplate:
         narrative="Characterise a small near-Earth asteroid.",
         top_constraints=["Budget", "Launch mass", "Data return"],
         fidelity_notes=["gameplay values"],
+        reference_earth_range_m=3.74e10,
         optional_objectives=state.science_objectives,
         mission_state=template_mission_state(),
     )
