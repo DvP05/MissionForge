@@ -11,6 +11,7 @@ Instrument quantity is the number of times an id appears in
 
 from dataclasses import dataclass, field
 
+from app.domain.analysis._params import derived_provenance, param_value
 from app.domain.catalog.resolver import ResolvedArchitecture
 from app.domain.errors import DomainValidationError
 from app.domain.units.guards import require_finite, require_positive
@@ -31,9 +32,7 @@ ASSUMPTIONS: tuple[str, ...] = (
 
 
 def _provenance() -> Provenance:
-    return Provenance(
-        fidelity="derived", source_name="MISSIONFORGE mass model", assumptions=ASSUMPTIONS
-    )
+    return derived_provenance("MISSIONFORGE mass model", ASSUMPTIONS)
 
 
 @dataclass(frozen=True)
@@ -52,12 +51,7 @@ class MassResult:
 
 def _mass(comp: CatalogComponent, key: str) -> float:
     field_name = f"{comp.id}.{key}"
-    q = comp.parameters.get(key)
-    if q is None:
-        raise DomainValidationError("MISSING_PARAMETER", field_name, f"{field_name} is required")
-    if q.unit != "kg":
-        raise DomainValidationError("WRONG_UNIT", field_name, f"{field_name} must be in kg")
-    value = require_finite(q.value, field_name)
+    value = param_value(comp, key, "kg", field=field_name)
     if value < 0.0:
         raise DomainValidationError("NEGATIVE_MASS", field_name, f"{field_name} must be >= 0")
     return value

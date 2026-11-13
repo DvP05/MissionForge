@@ -10,6 +10,7 @@ import math
 from dataclasses import dataclass, field
 from typing import Literal
 
+from app.domain.analysis._params import derived_provenance, param_value
 from app.domain.errors import DomainValidationError
 from app.domain.units.constants import G0
 from app.domain.units.guards import require_finite, require_positive
@@ -32,9 +33,7 @@ ResolvedPropulsion = CatalogComponent
 
 
 def _provenance(assumptions: tuple[str, ...]) -> Provenance:
-    return Provenance(
-        fidelity="derived", source_name="MISSIONFORGE propulsion model", assumptions=assumptions
-    )
+    return derived_provenance("MISSIONFORGE propulsion model", assumptions)
 
 
 @dataclass(frozen=True)
@@ -74,13 +73,7 @@ def propellant_for_delta_v(isp_s: float, mf_kg: float, dv_ms: float) -> float:
 
 
 def _param(comp: CatalogComponent, key: str, unit: str) -> float:
-    name = f"{comp.id}.{key}"
-    q = comp.parameters.get(key)
-    if q is None:
-        raise DomainValidationError("MISSING_PARAMETER", name, f"{name} is required")
-    if q.unit != unit:
-        raise DomainValidationError("WRONG_UNIT", name, f"{name} must be in {unit}")
-    return require_finite(q.value, name)
+    return param_value(comp, key, unit, field=f"{comp.id}.{key}")
 
 
 def maneuver_budget(
