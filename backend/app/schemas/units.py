@@ -2,11 +2,21 @@
 
 import math
 from datetime import date, datetime
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import Field, field_validator
+from pydantic import AfterValidator, Field
 
 from app.schemas.api import ContractModel
+
+
+def _require_finite(v: float) -> float:
+    if not math.isfinite(v):
+        raise ValueError("must be finite")
+    return v
+
+
+# Strict float (rejects bool/str) that also rejects NaN and +/-inf.
+FiniteFloat = Annotated[float, Field(strict=True), AfterValidator(_require_finite)]
 
 Fidelity = Literal["source-backed", "derived", "gameplay-estimate", "not-modelled"]
 Unit = Literal[
@@ -28,28 +38,14 @@ class Provenance(ContractModel):
 
 class Uncertainty(ContractModel):
     distribution: Literal["normal", "uniform", "triangular", "interval"]
-    min: float | None = Field(default=None, strict=True)
-    mode: float | None = Field(default=None, strict=True)
-    max: float | None = Field(default=None, strict=True)
-    sigma: float | None = Field(default=None, strict=True)
-
-    @field_validator("min", "mode", "max", "sigma")
-    @classmethod
-    def _finite(cls, v: float | None) -> float | None:
-        if v is not None and not math.isfinite(v):
-            raise ValueError("must be finite")
-        return v
+    min: FiniteFloat | None = None
+    mode: FiniteFloat | None = None
+    max: FiniteFloat | None = None
+    sigma: FiniteFloat | None = None
 
 
 class Quantity(ContractModel):
-    value: float = Field(strict=True)
+    value: FiniteFloat
     unit: Unit
     provenance: Provenance
     uncertainty: Uncertainty | None = None
-
-    @field_validator("value")
-    @classmethod
-    def _finite(cls, v: float) -> float:
-        if not math.isfinite(v):
-            raise ValueError("value must be finite")
-        return v
