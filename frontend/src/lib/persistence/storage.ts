@@ -42,18 +42,27 @@ function getStorage(): Storage | null {
   }
 }
 
+const isObject = (v: unknown): v is Record<string, unknown> =>
+  typeof v === "object" && v !== null && !Array.isArray(v);
+
 function looksLikeMission(value: unknown): value is MissionState {
-  if (typeof value !== "object" || value === null) return false;
-  const m = value as Record<string, unknown>;
+  if (!isObject(value)) return false;
+  const m = value;
   return (
     m.schemaVersion === "1.0" &&
     typeof m.missionId === "string" &&
     isValidMissionId(m.missionId) &&
     typeof m.designRevision === "number" &&
+    Number.isInteger(m.designRevision) &&
+    m.designRevision >= 0 &&
     typeof m.scenarioId === "string" &&
     typeof m.title === "string" &&
-    typeof m.architecture === "object" &&
-    m.architecture !== null
+    isObject(m.architecture) &&
+    Array.isArray(m.architecture.instrumentIds) &&
+    m.architecture.instrumentIds.every((id) => typeof id === "string") &&
+    Array.isArray(m.scienceObjectives) &&
+    isObject(m.operations) &&
+    isObject(m.constraints)
   );
 }
 

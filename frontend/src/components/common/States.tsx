@@ -8,7 +8,9 @@ function Frame({
   title,
   children,
   role,
+  level = 2,
 }: {
+  level?: 1 | 2;
   testId: string;
   icon: ReactNode;
   title: string;
@@ -22,7 +24,11 @@ function Frame({
       className="mx-auto flex max-w-xl flex-col items-start gap-3 rounded-xl border border-border bg-surface p-6"
     >
       <div className="text-accent-amber">{icon}</div>
-      <h2 className="text-xl font-semibold">{title}</h2>
+      {level === 1 ? (
+        <h1 className="text-xl font-semibold">{title}</h1>
+      ) : (
+        <h2 className="text-xl font-semibold">{title}</h2>
+      )}
       {children}
     </section>
   );
@@ -93,7 +99,7 @@ export function NotFoundState({
   message?: string;
 }) {
   return (
-    <Frame testId="not-found-state" icon={<SearchX aria-hidden className="h-6 w-6" />} title={title}>
+    <Frame level={1} testId="not-found-state" icon={<SearchX aria-hidden className="h-6 w-6" />} title={title}>
       <p className="text-sm text-muted">{message}</p>
       <Link href="/" className={ACTION_CLASS}>
         Start a mission

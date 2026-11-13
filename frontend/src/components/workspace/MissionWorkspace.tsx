@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { Suspense, useEffect, useMemo, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 
 import { StatusPill } from "@/components/common/StatusPill";
 import { LoadingState, NotFoundState } from "@/components/common/States";
 import { selectSaveState } from "@/state/selectors";
-import { isValidMissionId, loadMission } from "@/lib/persistence/storage";
 import { useMissionStore } from "@/state/mission-store";
 
 export type WorkspaceView = "brief" | "architect" | "arena";
@@ -17,17 +15,6 @@ const TABS: { view: WorkspaceView; label: string; base: string }[] = [
   { view: "architect", label: "Architect", base: "/architect" },
   { view: "arena", label: "Arena", base: "/arena" },
 ];
-
-type Probe = { ok: true } | { ok: false; reason: "not-found" | "corrupt" | "unavailable" };
-
-/** Read-only check of browser storage (no store mutation) used to pick the view state. */
-function hydrateProbe(missionId: string): Probe {
-  if (!isValidMissionId(missionId)) return { ok: false, reason: "not-found" };
-  const loaded = loadMission(missionId);
-  if (loaded.ok) return { ok: true };
-  const code = loaded.error.code;
-  return { ok: false, reason: code === "quota" ? "unavailable" : code };
-}
 
 const NOT_FOUND_COPY: Record<string, string> = {
   corrupt: "The saved mission could not be read. It may be damaged; start a new mission.",
@@ -39,15 +26,15 @@ const NOT_FOUND_COPY: Record<string, string> = {
  * Route guard + chrome for mission-scoped pages. Restores the mission from
  * browser storage by ID; renders loading / not-found states otherwise.
  */
-function WorkspaceInner({
+export function MissionWorkspace({
+  missionId,
   view,
   children,
 }: {
+  missionId: string;
   view: WorkspaceView;
   children: ReactNode;
 }) {
-  const params = useParams<{ missionId: string }>();
-  const missionId = params.missionId;
   const hydrate = useMissionStore((s) => s.hydrate);
   const mission = useMissionStore((s) => s.mission);
   const designRevision = useMissionStore((s) => s.designRevision);
@@ -58,21 +45,16 @@ function WorkspaceInner({
     () => true,
     () => false,
   );
-  const inStore = mission !== null && mission.missionId === missionId;
-  const probe = useMemo(
-    () => (mounted && !inStore ? hydrateProbe(missionId) : null),
-    [mounted, inStore, missionId],
-  );
+  const hydration = useMissionStore((s) => s.hydration);
 
   useEffect(() => {
-    if (probe?.ok) hydrate(missionId);
-  }, [probe, hydrate, missionId]);
+    hydrate(missionId);
+  }, [hydrate, missionId]);
 
-  if (!mounted || (!inStore && (probe === null || probe.ok))) {
-    return <LoadingState label="Loading mission" />;
-  }
-  if (!inStore || !mission) {
-    const reason = probe && !probe.ok ? probe.reason : "not-found";
+  const settled = mounted && hydration?.missionId === missionId;
+  if (!settled) return <LoadingState label="Loading mission" />;
+  if (!hydration.ok || !mission || mission.missionId !== missionId) {
+    const reason = hydration.ok ? "not-found" : hydration.reason;
     return <NotFoundState message={NOT_FOUND_COPY[reason]} />;
   }
 
@@ -117,14 +99,5 @@ function WorkspaceInner({
       </header>
       <div>{children}</div>
     </div>
-  );
-}
-
-/** Suspense boundary is required: the route param is only known at request time. */
-export function MissionWorkspace(props: { view: WorkspaceView; children: ReactNode }) {
-  return (
-    <Suspense fallback={<LoadingState label="Loading mission" />}>
-      <WorkspaceInner {...props} />
-    </Suspense>
   );
 }

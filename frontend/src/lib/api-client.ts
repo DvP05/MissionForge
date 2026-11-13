@@ -126,7 +126,8 @@ async function request(
     let body: unknown;
     try {
       body = await response.json();
-    } catch {
+    } catch (cause) {
+      if (controller.signal.aborted) throw cause;
       return failure(
         "NON_JSON_RESPONSE",
         `The backend returned a non-JSON response (HTTP ${response.status}).`,

@@ -47,7 +47,11 @@ export type HydrateOutcome =
   | { ok: true }
   | { ok: false; reason: "not-found" | "corrupt" | "unavailable"; message: string };
 
+export type HydrationRecord = { missionId: string } & HydrateOutcome;
+
 export interface MissionStoreState {
+  /** Result of the latest hydrate() call, for route guards to render from. */
+  hydration: HydrationRecord | null;
   mission: MissionState | null;
   designRevision: number;
   analysis: MissionAnalysis | null;
@@ -73,6 +77,7 @@ export interface MissionStoreState {
 }
 
 const EMPTY = {
+  hydration: null as HydrationRecord | null,
   mission: null,
   designRevision: 0,
   analysis: null,
@@ -117,22 +122,26 @@ export const useMissionStore = create<MissionStoreState>()((set, get) => {
     },
 
     hydrate(missionId) {
+      const finish = (outcome: HydrateOutcome): HydrateOutcome => {
+        set({ hydration: { missionId, ...outcome } });
+        return outcome;
+      };
       const current = get().mission;
-      if (current && current.missionId === missionId) return { ok: true };
+      if (current && current.missionId === missionId) return finish({ ok: true });
       if (!isValidMissionId(missionId)) {
-        return { ok: false, reason: "not-found", message: "Mission id is not valid." };
+        return finish({ ok: false, reason: "not-found", message: "Mission id is not valid." });
       }
       const loaded = loadMission(missionId);
       if (!loaded.ok) {
         const reason = loaded.error.code === "quota" ? "unavailable" : loaded.error.code;
-        return { ok: false, reason, message: loaded.error.message };
+        return finish({ ok: false, reason, message: loaded.error.message });
       }
       set({
         ...EMPTY,
         mission: loaded.value,
         designRevision: loaded.value.designRevision,
       });
-      return { ok: true };
+      return finish({ ok: true });
     },
 
     selectComponent(category, componentId) {

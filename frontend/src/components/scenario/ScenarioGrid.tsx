@@ -96,6 +96,7 @@ export function ScenarioGrid() {
                 <button
                   type="button"
                   disabled={!enabled || startingId !== null}
+                  aria-label={enabled ? undefined : `${template.title}: coming soon`}
                   onClick={() => start(template)}
                   className="min-h-11 w-full rounded-lg border border-accent-cyan/60 px-4 text-sm font-medium text-accent-cyan hover:bg-accent-cyan/10 disabled:cursor-not-allowed disabled:border-border disabled:text-muted disabled:hover:bg-transparent"
                 >

@@ -103,6 +103,29 @@ test.describe("workspace routing", () => {
     await expect(page.getByRole("link", { name: /start a mission/i })).toBeVisible();
   });
 
+  test("structurally partial stored mission is treated as corrupt, not a crash", async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        "missionforge:mission:mission-partial0001",
+        JSON.stringify({
+          schemaVersion: "1.0",
+          missionId: "mission-partial0001",
+          designRevision: 0,
+          scenarioId: "neo-rendezvous",
+          title: "Partial",
+          architecture: {},
+        }),
+      );
+    });
+    await page.goto("/architect/mission-partial0001");
+    await expect(page.getByTestId("not-found-state")).toContainText(/could not be read/i);
+    expect(errors).toEqual([]);
+  });
+
   test("blocked or full storage does not break starting a mission", async ({ page }) => {
     await page.addInitScript(() => {
       Storage.prototype.setItem = () => {
