@@ -8,7 +8,9 @@ Per measurement requirement::
 * capability_match: 1 if any selected instrument lists the requirement's capability, else 0.
 * pointing_ok: 1 if the ADCS accuracy (deg) is <= the pointing requirement of at least one
   capability-matching instrument (the loosest-requirement matching instrument is credited),
-  else 0. Instruments without a pointing_requirement are not gated.
+  else 0. When ``instrument_by_measurement`` is given (the orchestrator's assignment), only
+  the assigned instrument's pointing requirement is checked. Instruments without a
+  pointing_requirement are not gated.
 * power_ok False is a hard zero for every requirement.
 * scheduled_h = sum(duration_hours x duty_cycle) over plan items with that measurement id.
 * returned_fraction = downlinked / generated bits from the data ledger (0 if nothing generated).
@@ -42,7 +44,8 @@ _ASSUMPTIONS: tuple[str, ...] = (
     "threshold (s or day) nor an explicit mapping gives one (gameplay-estimate).",
     "Capability match is binary: any selected instrument listing the capability counts.",
     "Pointing is binary: ADCS accuracy must be <= the pointing requirement of a matching "
-    "instrument; the loosest-requirement matching instrument is credited.",
+    "instrument; the loosest-requirement matching instrument is credited, or only the "
+    "assigned instrument when the engine assigns one instrument per measurement.",
     "A power shortfall (power_ok false) is a hard zero for all science (gameplay-estimate).",
     "Science score counts RETURNED data: returned fraction = downlinked / generated bits "
     "(0 if nothing was generated); collected-but-not-returned data is reported separately.",
@@ -105,6 +108,7 @@ def _collected(
     pointing_accuracy_deg: float,
     power_ok: bool,
     mapping: Mapping[str, float] | None,
+    assigned: Mapping[str, CatalogComponent] | None = None,
 ) -> tuple[float, float]:
     """Return (capability_match, collected achieved fraction)."""
     matching = _matches(r, instruments)
@@ -112,7 +116,40 @@ def _collected(
     if not power_ok or not matching:
         return capability, 0.0
     frac = min(1.0, sched.get(r.id, 0.0) / _required_hours(r, mapping))
-    return capability, capability * frac * _pointing_ok(matching, pointing_accuracy_deg)
+    pointed = _pointing_candidates(r, matching, assigned)
+    return capability, capability * frac * _pointing_ok(pointed, pointing_accuracy_deg)
+
+
+def _pointing_candidates(
+    r: MeasurementRequirement,
+    matching: Sequence[CatalogComponent],
+    assigned: Mapping[str, CatalogComponent] | None,
+) -> Sequence[CatalogComponent]:
+    """The instrument(s) whose pointing need is checked: the assigned one when given."""
+    if assigned is not None and r.id in assigned:
+        return (assigned[r.id],)
+    return matching
+
+
+def pointing_ok_for(
+    objectives: Sequence[ScienceObjective],
+    instruments: Sequence[CatalogComponent],
+    *,
+    pointing_accuracy_deg: float,
+    instrument_by_measurement: Mapping[str, CatalogComponent] | None = None,
+) -> bool:
+    """True if the ADCS meets the pointing need of every REQUIRED measurement that has a
+    capable instrument, using the same rule (and assigned instrument) as the coverage."""
+    accuracy = require_finite(pointing_accuracy_deg, "pointing_accuracy_deg")
+    for o in objectives:
+        for r in o.required_measurements:
+            matching = _matches(r, instruments)
+            if not r.required or not matching:
+                continue
+            pointed = _pointing_candidates(r, matching, instrument_by_measurement)
+            if _pointing_ok(pointed, accuracy) == 0.0:
+                return False
+    return True
 
 
 def _validate(objectives: Sequence[ScienceObjective]) -> None:
@@ -134,6 +171,7 @@ def missing_reasons(
     pointing_accuracy_deg: float,
     power_ok: bool,
     required_hours_by_measurement: Mapping[str, float] | None = None,
+    instrument_by_measurement: Mapping[str, CatalogComponent] | None = None,
 ) -> dict[str, str]:
     """Required measurement id -> reason: 'no-capability' or 'no-returned-data'."""
     _validate(objectives)
@@ -146,7 +184,7 @@ def missing_reasons(
                 continue
             cap, col = _collected(
                 r, instruments, sched, pointing_accuracy_deg, power_ok,
-                required_hours_by_measurement,
+                required_hours_by_measurement, instrument_by_measurement,
             )  # fmt: skip
             if cap == 0.0:
                 out[r.id] = REASON_NO_CAPABILITY
@@ -164,6 +202,7 @@ def science_coverage(
     pointing_accuracy_deg: float,
     power_ok: bool,
     required_hours_by_measurement: Mapping[str, float] | None = None,
+    instrument_by_measurement: Mapping[str, CatalogComponent] | None = None,
 ) -> ScienceAnalysis:
     require_finite(pointing_accuracy_deg, "pointing_accuracy_deg")
     _validate(objectives)
@@ -177,7 +216,7 @@ def science_coverage(
         for r in o.required_measurements:
             _, col = _collected(
                 r, instruments, sched, pointing_accuracy_deg, power_ok,
-                required_hours_by_measurement,
+                required_hours_by_measurement, instrument_by_measurement,
             )  # fmt: skip
             col_w += r.coverage_weight * col
         obj_collected[o.id] = col_w / wsum
@@ -199,6 +238,7 @@ def science_coverage(
                 objectives, instruments, observation_plan, data_ledger,
                 pointing_accuracy_deg=pointing_accuracy_deg, power_ok=power_ok,
                 required_hours_by_measurement=required_hours_by_measurement,
+                instrument_by_measurement=instrument_by_measurement,
             )
         ),
         collected_fraction=mission(obj_collected),

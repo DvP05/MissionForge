@@ -6,6 +6,7 @@ from app.domain.analysis.data import DataLedger
 from app.domain.analysis.science import (
     DEFAULT_REQUIRED_HOURS,
     missing_reasons,
+    pointing_ok_for,
     science_assumptions,
     science_coverage,
 )
@@ -177,3 +178,34 @@ def test_empty_objectives() -> None:
 def test_assumptions_document_estimates() -> None:
     text = " ".join(science_assumptions())
     assert "1.0 h" in text and "gameplay-estimate" in text and "power" in text
+
+
+def test_assigned_instrument_controls_pointing() -> None:
+    tight, loose = inst(["imaging"], 0.05, "tight"), inst(["imaging"], 1.0, "loose")
+    objs = [obj([req()])]
+    # default rule credits the loosest matching instrument
+    assert run(objs, [tight, loose], [plan()]).coverage_score == pytest.approx(100.0)
+    assert pointing_ok_for(objs, [tight, loose], pointing_accuracy_deg=0.5) is True
+    # with the engine's assignment only the assigned instrument is checked
+    assigned = {"m1": tight}
+    r = run(objs, [tight, loose], [plan()], instrument_by_measurement=assigned)
+    assert r.coverage_score == 0.0
+    assert missing_reasons(
+        objs, [tight, loose], [plan()], ledger(), pointing_accuracy_deg=0.5, power_ok=True,
+        instrument_by_measurement=assigned,
+    ) == {"m1": "no-returned-data"}  # fmt: skip
+    assert (
+        pointing_ok_for(
+            objs, [tight, loose], pointing_accuracy_deg=0.5, instrument_by_measurement=assigned
+        )
+        is False
+    )
+
+
+def test_pointing_ok_counts_only_required_capable_measurements() -> None:
+    tight = inst(["imaging"], 0.05, "tight")
+    optional = [obj([req(required=False), req("m2", cap="none")])]
+    assert pointing_ok_for(optional, [tight], pointing_accuracy_deg=0.5) is True
+    assert pointing_ok_for([obj([req()])], [tight], pointing_accuracy_deg=0.5) is False
+    with pytest.raises(DomainValidationError):
+        pointing_ok_for([], [], pointing_accuracy_deg=math.inf)

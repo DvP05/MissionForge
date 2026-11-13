@@ -102,7 +102,11 @@ def _mass(ctx: AnalysisContext) -> list[ConstraintResult]:
         ]
     actions = [
         _act("larger-launch-vehicle", "Choose a larger launch vehicle", "Raises the mass limit."),
-        _act("reduce-propellant", "Reduce propellant or payload mass", "Lowers wet mass."),
+        _act(
+            "lighter-propulsion",
+            "Choose a lighter propulsion system or smaller tank, or remove payload",
+            "Lowers wet mass (the tank is always loaded to capacity).",
+        ),
     ]
     margin = (limit - m.allocated_kg) / limit
     actual, lim = _q(m.allocated_kg, "kg"), _q(limit, "kg")
@@ -164,19 +168,27 @@ def _delta_v(ctx: AnalysisContext) -> ConstraintResult:
         )
         return _result(
             "delta-v-margin", "Delta-v margin", "fail",
-            f"Available delta-v {b.available_ms:.0f} m/s is below required "
+            f"Available delta-v {b.available_ms:.0f} m/s (full propellant tank) is below required "
             f"{b.required_ms:.0f} m/s plus reserve {reserve:.0f} m/s.{consumer}",
             actual=_q(b.available_ms, "m/s"), limit=_q(needed, "m/s"), margin=margin,
             severity=_SEV_FAIL, subsystems=["propulsion", "trajectory", "mass"],
             actions=[
-                _act("add-propellant", "Add propellant", "Raises available delta-v."),
-                _act("swap-propulsion", "Choose higher-Isp propulsion", "Raises delta-v per kg."),
+                _act(
+                    "larger-tank-or-propulsion",
+                    "Choose propulsion with a larger tank or higher Isp",
+                    "Raises available delta-v (the tank is already full).",
+                ),
+                _act(
+                    "reduce-dry-mass",
+                    "Remove optional payload or choose lighter components",
+                    "Raises delta-v from the same propellant.",
+                ),
             ],
         )  # fmt: skip
     return _result(
         "delta-v-margin", "Delta-v margin", "pass",
-        f"Available delta-v {b.available_ms:.0f} m/s covers required {b.required_ms:.0f} m/s "
-        f"plus reserve {reserve:.0f} m/s.",
+        f"Available delta-v {b.available_ms:.0f} m/s (full propellant tank; the excess is spare "
+        f"tank capacity) covers required {b.required_ms:.0f} m/s plus reserve {reserve:.0f} m/s.",
         actual=_q(b.available_ms, "m/s"), limit=_q(needed, "m/s"), margin=margin,
     )  # fmt: skip
 

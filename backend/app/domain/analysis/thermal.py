@@ -12,6 +12,11 @@ from app.schemas.analysis import ConstraintResult, SuggestedAction
 
 ThermalExposure = Literal["benign", "cold", "hot", "extreme"]
 
+THERMAL_ASSUMPTIONS: tuple[str, ...] = (
+    "Thermal is a qualitative capability check against the scenario exposure class; no "
+    "thermal balance or temperature is computed.",
+)
+
 _REQUIRED: dict[str, tuple[str, ...]] = {
     "benign": (),
     "cold": ("heaters",),

@@ -246,3 +246,31 @@ which regenerates `openapi.json` / frontend types only when a route exposes the 
 ## Templates (Task 1.5)
 
 `app/schemas/templates.py` adds `ScenarioTemplate` / `TemplateMissionState` (new file; no existing contract changed). `TemplateMissionState` is MissionState without missionId, createdAt, updatedAt, randomSeed.
+
+## Analysis engine notes (Task 2.8, documentation only; no schema change)
+
+`analyze_mission` (`app/domain/analysis/orchestrator.py`) fills `MissionAnalysis` as follows.
+Consumers must read these rules before interpreting the plain-float fields.
+
+- **Failure path.** A design problem never raises. An unknown catalogue id, a missing or
+  invalid catalogue parameter, invalid model input, or a contract `ValidationError` raised
+  inside the engine produces a valid, infeasible, not-mission-ready `MissionAnalysis`. That
+  result contains exactly one constraint with id `catalog-item-not-found` or
+  `model-input-invalid`, and its explanation names the error code and field. On this path:
+  - every budget `Quantity` is 0 with provenance fidelity `not-modelled`;
+  - the bare-float margins (`massMarginFraction`, `energyMarginFraction`,
+    `dataMarginFraction`, `deltaVMarginKmPerS`), the science fractions and scores, and
+    `reliability.nominalReliability` / `riskIndex` are **placeholders (0), not results**.
+
+  Consumers (API route, UI, dossier) must branch on those two constraint ids rather than
+  read the numbers. The route layer may map `catalog-item-not-found` to the API error
+  `CATALOG_ITEM_NOT_FOUND`.
+- **Undefined margins on the happy path are 0.0.** The bare-float fields
+  `massMarginFraction` (no launch limit), `energyMarginFraction` (no energy consumed) and
+  `dataMarginFraction` (no data generated) are set to `0.0` when the quantity is
+  undefined. The matching constraint (`mass-launch-limit`, `energy-closure`, `data-return`)
+  is `not-modelled` in that case, so use the constraint status to tell "undefined" apart
+  from "exactly zero margin".
+- `dataMarginFraction` = total downlink capacity / generated − 1. This is the same measure
+  as the `data-return` constraint, and it differs from the ledger's
+  (downlinked − generated) / generated.

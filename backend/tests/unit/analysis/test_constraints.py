@@ -96,7 +96,10 @@ def test_delta_v_fail_names_actual_vs_limit() -> None:
     assert c.actual is not None and c.actual.unit == "m/s"
     assert c.limit is not None and c.limit.value == 1100.0
     assert "insertion" in c.explanation
-    assert "add-propellant" in {a.action_id for a in c.suggested_actions}
+    actions = {a.action_id for a in c.suggested_actions}
+    assert {"larger-tank-or-propulsion", "reduce-dry-mass"} <= actions
+    assert "add-propellant" not in actions
+    assert "full propellant tank" in c.explanation
     plain = ManeuverBudget(1050.0, 1000.0, -50.0, (), None, ())
     assert "insertion" not in by_id(maneuvers=plain)["delta-v-margin"].explanation
 

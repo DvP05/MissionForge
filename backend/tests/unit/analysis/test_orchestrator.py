@@ -273,17 +273,111 @@ def test_budgets_carry_units_and_provenance(
 def test_assumptions_are_merged_and_deduplicated(
     catalog: Catalog, templates: dict[str, ScenarioTemplate]
 ) -> None:
-    from app.domain.analysis import constraints, cost, mass, power, reliability, science, score
+    from app.domain.analysis import (
+        comms,
+        constraints,
+        cost,
+        data,
+        mass,
+        orchestrator,
+        power,
+        propulsion,
+        reliability,
+        science,
+        score,
+        thermal,
+    )
 
     a = _run(_state(), catalog, templates)
     assert len(a.assumptions) == len(set(a.assumptions))
-    for expected in (
-        mass.ASSUMPTIONS[0], power.ASSUMPTIONS[0], cost.ASSUMPTIONS[0],
-        reliability.RELIABILITY_ASSUMPTIONS[0], constraints.CONSTRAINT_ASSUMPTIONS[0],
-        score.SCORE_ASSUMPTIONS[0], science.science_assumptions()[0],
-    ):  # fmt: skip
-        assert expected in a.assumptions
+    groups = {
+        "orchestrator": orchestrator.ORCHESTRATOR_ASSUMPTIONS,
+        "scenario": scenario_inputs_from_template(templates["neo-rendezvous"]).assumptions,
+        "mass": mass.ASSUMPTIONS, "propulsion": propulsion.ASSUMPTIONS,
+        "power": power.ASSUMPTIONS, "comms": comms.ASSUMPTIONS, "data": data.ASSUMPTIONS,
+        "science": science.science_assumptions(), "cost": cost.ASSUMPTIONS,
+        "reliability": reliability.RELIABILITY_ASSUMPTIONS,
+        "thermal": thermal.THERMAL_ASSUMPTIONS,
+        "constraints": constraints.CONSTRAINT_ASSUMPTIONS, "score": score.SCORE_ASSUMPTIONS,
+    }  # fmt: skip
+    for name, group in groups.items():
+        assert group, name
+        missing = [s for s in group if s not in a.assumptions]
+        assert not missing, (name, missing)
     assert any("1.3 AU" in s for s in a.assumptions)
+    assert any("0.95" in s and "discharge" in s.lower() for s in a.assumptions)
+
+
+def test_eclipse_peak_is_checked_against_battery_only_supply(
+    catalog: Catalog, templates: dict[str, ScenarioTemplate]
+) -> None:
+    from app.domain.analysis.orchestrator import build_context
+
+    base = scenario_inputs_from_template(templates["neo-rendezvous"])
+    dark = ScenarioInputs(
+        reference_earth_range_m=base.reference_earth_range_m,
+        sun_distance_au=base.sun_distance_au,
+        thermal_exposure=base.thermal_exposure,
+        eclipse_fraction=0.1,
+    )
+    # power-medium: 90 Wh battery -> 90 W in eclipse; sunlit supply ~170 W; science peak 100 W
+    state = _edit(_state(), power_id="power-medium")
+    ctx = build_context(state, catalog, scenario=dark)
+    assert ctx.supply_power_w == pytest.approx(90.0)
+    assert ctx.peak_power_w == pytest.approx(100.0)
+    assert ctx.power_ok is False
+    a = analyze_mission(state, catalog, scenario=dark, engine_version=ENGINE_VERSION, now=NOW)
+    assert _c(a, "peak-power").status == "fail"
+    # without eclipse the same design is checked against the sunlit supply and passes
+    lit = build_context(state, catalog, scenario=base)
+    assert lit.supply_power_w > 160.0
+    assert _c(_run(state, catalog, templates), "peak-power").status == "pass"
+
+
+def test_pointing_uses_the_assigned_instrument(
+    catalog: Catalog, templates: dict[str, ScenarioTemplate]
+) -> None:
+    from app.domain.analysis.orchestrator import build_context
+
+    scen = scenario_inputs_from_template(templates["neo-rendezvous"])
+    radio = "comms-xband-medium"
+    # hires (20 Mbit/s, needs 0.05 deg) is assigned to the shape model over the wide camera
+    # (1.5 Mbit/s, needs 0.5 deg); adcs-basic gives 0.5 deg, so shape-model pointing fails
+    # even though the wide camera alone would be pointed well enough.
+    both = _edit(
+        _state(), adcs_id="adcs-basic", communications_id=radio,
+        instrument_ids=("inst-hires-camera", "inst-wide-camera"),
+    )  # fmt: skip
+    wide = _edit(
+        _state(), adcs_id="adcs-basic", communications_id=radio,
+        instrument_ids=("inst-wide-camera",),
+    )  # fmt: skip
+    assert build_context(both, catalog, scenario=scen).pointing_ok is False
+    a, b = _run(both, catalog, templates), _run(wide, catalog, templates)
+    assert a.science.weighted_objective_coverage["obj-morphology"] == 0.0
+    assert b.science.weighted_objective_coverage["obj-morphology"] > 0.0
+    # only REQUIRED measurements count: the wide camera alone meets the shape-model need
+    # (VNIR has no capable instrument, so it is not a pointing question)
+    assert build_context(wide, catalog, scenario=scen).pointing_ok is True
+
+
+def test_contract_validation_error_is_a_failed_analysis(
+    monkeypatch: pytest.MonkeyPatch, catalog: Catalog, templates: dict[str, ScenarioTemplate]
+) -> None:
+    from app.domain.analysis import orchestrator
+    from app.schemas.analysis import ReliabilityAnalysis
+
+    def bad_reliability(_: object) -> ReliabilityAnalysis:
+        return ReliabilityAnalysis(
+            nominal_reliability=2.0, risk_index=0.0, single_point_failures=[]
+        )
+
+    monkeypatch.setattr(orchestrator, "reliability", bad_reliability)
+    a = _run(_state(), catalog, templates)
+    c = _c(a, "model-input-invalid")
+    assert c.status == "fail" and "MODEL_INPUT_INVALID" in c.explanation
+    assert "nominal_reliability" in c.explanation
+    assert a.feasibility == "infeasible" and a.mission_ready is False
 
 
 def test_jpl_trajectory_delta_v_is_informational(

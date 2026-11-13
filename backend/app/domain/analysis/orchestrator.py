@@ -18,6 +18,8 @@ Engine conventions (all labelled in ``ORCHESTRATOR_ASSUMPTIONS``):
   ``MissionConstraints.delta_v_margin_km_per_s``.
 * Launch limit: the stricter of ``MissionConstraints.launch_mass_limit_kg`` and the
   selected launch vehicle's ``launch_mass_limit``.
+* Peak power: supply is computed per phase (eclipse = battery only) and the phase with
+  the smallest supply - peak margin is the one passed to the constraints.
 * Power: one representative cycle (``power_cycle_s``, default one day) per phase -- cruise
   and science (the span of the observation plan) -- each split into sunlit and eclipse
   parts. Loads use phase-average duty cycles; bus, ADCS, thermal and C&DH are always on.
@@ -25,7 +27,8 @@ Engine conventions (all labelled in ``ORCHESTRATOR_ASSUMPTIONS``):
   same rate the data ledger uses; range from ``ScenarioInputs.reference_earth_range_m``.
 
 Error policy: a design problem (unknown catalogue id, missing catalogue parameter, invalid
-model input) never escapes as an exception. It becomes a MissionAnalysis with a single
+model input, or a pydantic ValidationError from a contract model built inside the
+analysis) never escapes as an exception. It becomes a MissionAnalysis with a single
 failing constraint (``catalog-item-not-found`` or ``model-input-invalid``, explanation
 naming the error code and field) and zero placeholder budgets labelled ``not-modelled``;
 the contract represents this (fail => infeasible, never mission-ready).
@@ -35,6 +38,8 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Literal
+
+from pydantic import ValidationError
 
 from app.domain.analysis import comms as comms_mod
 from app.domain.analysis._params import param_value
@@ -69,9 +74,14 @@ from app.domain.analysis.power import (
 )
 from app.domain.analysis.propulsion import Maneuver, ManeuverBudget, maneuver_budget
 from app.domain.analysis.reliability import RELIABILITY_ASSUMPTIONS, reliability
-from app.domain.analysis.science import missing_reasons, science_assumptions, science_coverage
+from app.domain.analysis.science import (
+    missing_reasons,
+    pointing_ok_for,
+    science_assumptions,
+    science_coverage,
+)
 from app.domain.analysis.score import SCORE_ASSUMPTIONS, WEIGHTS, score_preview
-from app.domain.analysis.thermal import ThermalExposure, thermal_check
+from app.domain.analysis.thermal import THERMAL_ASSUMPTIONS, ThermalExposure, thermal_check
 from app.domain.catalog.compat import check_compatibility
 from app.domain.catalog.loader import Catalog
 from app.domain.catalog.resolver import (
@@ -116,7 +126,10 @@ ORCHESTRATOR_ASSUMPTIONS: tuple[str, ...] = (
     "Power ledger: one representative cycle per phase (cruise, then science = span of the "
     "observation plan), each split into sunlit and eclipse parts, with phase-average duty "
     "cycles; bus, ADCS, thermal and C&DH loads are always on.",
-    "Regulated peak supply = sunlit array output + battery capacity x 1C (gameplay-estimate).",
+    "Regulated peak supply per phase = array output + battery capacity x 1C (gameplay-"
+    "estimate); in eclipse only the battery term applies. The phase with the smallest "
+    "supply - peak margin is checked.",
+    f"Battery discharge efficiency = {BATTERY_DISCHARGE_EFFICIENCY} (gameplay-estimate).",
     "Average power = sum(P x mission-average duty cycle) over every powered component.",
     "Each measurement is observed by the capable selected instrument with the highest data "
     "rate; plan items without a capable instrument generate no data and draw no power.",
@@ -306,10 +319,15 @@ def _power(
         phases.append(PowerPhase(f"{pid}-sunlit", t * (1.0 - f), generation, tuple(ls)))
         if f > 0.0:
             phases.append(PowerPhase(f"{pid}-eclipse", t * f, 0.0, tuple(ls)))
+    # Peak vs supply per phase: sunlit = array + battery 1C, eclipse = battery 1C only.
+    # The phase with the smallest (supply - peak) margin is the one checked.
+    battery_w = battery.capacity_wh * BATTERY_PEAK_C_RATE_PER_H
+    pairs = [(peak_power_w(list(ph.loads)), ph.generation_w + battery_w) for ph in phases]
+    peak, supply = min(pairs, key=lambda ps: ps[1] - ps[0])
     return _Power(
         avg_w=average_power_w(mission_loads),
-        peak_w=max(peak_power_w(list(ph.loads)) for ph in phases),
-        supply_w=generation + battery.capacity_wh * BATTERY_PEAK_C_RATE_PER_H,
+        peak_w=peak,
+        supply_w=supply,
         ledger=energy_ledger(phases, battery),
     )
 
@@ -375,21 +393,17 @@ def _build(state: MissionState, catalog: Catalog, scenario: ScenarioInputs) -> _
     science = science_coverage(
         objectives, resolved.instruments, ops.observation_plan, ledger,
         pointing_accuracy_deg=pointing, power_ok=power_ok,
+        instrument_by_measurement=assigned,
     )  # fmt: skip
     missing = missing_reasons(
         objectives, resolved.instruments, ops.observation_plan, ledger,
         pointing_accuracy_deg=pointing, power_ok=power_ok,
+        instrument_by_measurement=assigned,
     )  # fmt: skip
-    pointing_ok = all(
-        any(
-            (p := i.parameters.get("pointing_requirement")) is None or pointing <= p.value
-            for i in resolved.instruments
-            if r.instrument_capability in i.capabilities
-        )
-        for o in objectives
-        for r in o.required_measurements
-        if any(r.instrument_capability in i.capabilities for i in resolved.instruments)
-    )
+    pointing_ok = pointing_ok_for(
+        objectives, resolved.instruments,
+        pointing_accuracy_deg=pointing, instrument_by_measurement=assigned,
+    )  # fmt: skip
 
     ctx = AnalysisContext(
         limits=limits,
@@ -426,17 +440,11 @@ def _build(state: MissionState, catalog: Catalog, scenario: ScenarioInputs) -> _
         science_assumptions(),
         ctx.cost.assumptions,
         RELIABILITY_ASSUMPTIONS,
-        _THERMAL_ASSUMPTIONS,
+        THERMAL_ASSUMPTIONS,
         CONSTRAINT_ASSUMPTIONS,
         SCORE_ASSUMPTIONS,
     )
     return _Built(ctx=ctx, maneuvers=budget, propellant_kg=propellant, assumptions=assumptions)
-
-
-_THERMAL_ASSUMPTIONS: tuple[str, ...] = (
-    "Thermal is a qualitative capability check against the scenario exposure class; no "
-    "thermal balance or temperature is computed.",
-)
 
 
 def build_context(
@@ -626,6 +634,11 @@ def analyze_mission(
         return _complete(state, catalog, built, constraints, engine_version=engine_version, now=now)
     except DomainValidationError as exc:
         return _failed(state, catalog, exc, engine_version=engine_version, now=now)
+    except ValidationError as exc:  # a contract model rejected an engine value
+        err = exc.errors()[0] if exc.error_count() else {"loc": (), "msg": str(exc)}
+        loc = ".".join(str(x) for x in err["loc"]) or exc.title
+        wrapped = DomainValidationError("MODEL_INPUT_INVALID", loc, str(err["msg"]))
+        return _failed(state, catalog, wrapped, engine_version=engine_version, now=now)
 
 
 __all__ = [

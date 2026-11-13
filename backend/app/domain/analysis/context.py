@@ -29,11 +29,13 @@ class AnalysisContext:
     maneuvers: ManeuverBudget
     avg_power_w: float
     peak_power_w: float
-    supply_power_w: float  # regulated peak supply available from the power system
+    # regulated peak supply of the phase whose peak-vs-supply margin is worst
+    supply_power_w: float
     energy: EnergyLedger
     data: DataLedger
     buffer_capacity_bits: float
-    contact_links: tuple[LinkResult, ...]  # one per planned downlink contact (planned rate)
+    # one per planned downlink contact, at min(planned rate, radio max rate) (R19)
+    contact_links: tuple[LinkResult, ...]
     science: ScienceAnalysis
     science_missing: tuple[tuple[str, str], ...]  # (requirement id, reason) from science.py
     cost: CostBreakdown
