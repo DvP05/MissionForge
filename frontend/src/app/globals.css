@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+/* Mission-control design tokens: midnight / graphite surfaces, cyan + amber accents. */
+:root {
+  --midnight: #070b14;
+  --graphite: #111827;
+  --graphite-border: #243044;
+  --text: #e6edf7;
+  --text-muted: #8fa0b8;
+  --cyan: #22d3ee;
+  --amber: #fbbf24;
+}
+
+@theme inline {
+  --color-background: var(--midnight);
+  --color-surface: var(--graphite);
+  --color-border: var(--graphite-border);
+  --color-foreground: var(--text);
+  --color-muted: var(--text-muted);
+  --color-accent-cyan: var(--cyan);
+  --color-accent-amber: var(--amber);
+  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
