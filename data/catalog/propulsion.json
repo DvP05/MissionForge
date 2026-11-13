@@ -75,10 +75,20 @@
       "failureModes": [
         {
           "id": "prop-cold-gas-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Thruster valve leaks and bleeds off propellant",
+          "baseProbability": 0.05,
+          "affectedMetric": "delta_v",
           "severity": 3,
+          "mitigationIds": [
+            "prop-monoprop"
+          ]
+        },
+        {
+          "id": "prop-cold-gas-fm2",
+          "description": "Low specific impulse leaves too little reserve for trajectory correction",
+          "baseProbability": 0.08,
+          "affectedMetric": "delta_v",
+          "severity": 2,
           "mitigationIds": []
         }
       ],
@@ -168,10 +178,20 @@
       "failureModes": [
         {
           "id": "prop-monoprop-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Catalyst bed degrades after cold starts and reduces thrust",
+          "baseProbability": 0.04,
+          "affectedMetric": "delta_v",
           "severity": 3,
+          "mitigationIds": [
+            "thermal-heaters"
+          ]
+        },
+        {
+          "id": "prop-monoprop-fm2",
+          "description": "Propellant tank pressurant leak lowers usable propellant",
+          "baseProbability": 0.02,
+          "affectedMetric": "delta_v",
+          "severity": 4,
           "mitigationIds": []
         }
       ],
@@ -198,7 +218,7 @@
       ],
       "parameters": {
         "dry_mass": {
-          "value": 22.0,
+          "value": 12.0,
           "unit": "kg",
           "provenance": {
             "fidelity": "gameplay-estimate",
@@ -233,7 +253,7 @@
           }
         },
         "propellant_capacity": {
-          "value": 90.0,
+          "value": 35.0,
           "unit": "kg",
           "provenance": {
             "fidelity": "gameplay-estimate",
@@ -268,11 +288,23 @@
       "failureModes": [
         {
           "id": "prop-biprop-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
-          "severity": 3,
-          "mitigationIds": []
+          "description": "Oxidiser or fuel valve sticks and unbalances mixture ratio",
+          "baseProbability": 0.03,
+          "affectedMetric": "delta_v",
+          "severity": 4,
+          "mitigationIds": [
+            "prop-monoprop"
+          ]
+        },
+        {
+          "id": "prop-biprop-fm2",
+          "description": "Propellant slosh disturbs pointing during burns",
+          "baseProbability": 0.04,
+          "affectedMetric": "pointing_error",
+          "severity": 2,
+          "mitigationIds": [
+            "adcs-fine"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-prop-biprop",
@@ -368,11 +400,23 @@
       "failureModes": [
         {
           "id": "prop-electric-ion-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Grid erosion shortens thruster life before the transfer is complete",
+          "baseProbability": 0.05,
+          "affectedMetric": "delta_v",
+          "severity": 4,
+          "mitigationIds": [
+            "prop-biprop"
+          ]
+        },
+        {
+          "id": "prop-electric-ion-fm2",
+          "description": "Power processing unit trips when array output dips",
+          "baseProbability": 0.06,
+          "affectedMetric": "battery_soc",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "power-large"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-prop-electric-ion",

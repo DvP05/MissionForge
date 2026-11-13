@@ -84,11 +84,23 @@
       "failureModes": [
         {
           "id": "power-small-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Battery cells degrade faster than planned and lose depth-of-discharge margin",
+          "baseProbability": 0.06,
+          "affectedMetric": "battery_soc",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "power-medium"
+          ]
+        },
+        {
+          "id": "power-small-fm2",
+          "description": "Array output falls below demand at far distances from the Sun",
+          "baseProbability": 0.07,
+          "affectedMetric": "power_margin",
+          "severity": 3,
+          "mitigationIds": [
+            "power-large"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-power-small",
@@ -184,10 +196,20 @@
       "failureModes": [
         {
           "id": "power-medium-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Array string failure reduces output during peak payload operations",
+          "baseProbability": 0.03,
+          "affectedMetric": "power_margin",
           "severity": 3,
+          "mitigationIds": [
+            "power-large"
+          ]
+        },
+        {
+          "id": "power-medium-fm2",
+          "description": "Battery charge controller fault leaves the bus on array power only",
+          "baseProbability": 0.02,
+          "affectedMetric": "battery_soc",
+          "severity": 4,
           "mitigationIds": []
         }
       ],
@@ -285,9 +307,19 @@
       "failureModes": [
         {
           "id": "power-large-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Array deployment hinge jams and leaves part of the wing stowed",
+          "baseProbability": 0.025,
+          "affectedMetric": "power_margin",
+          "severity": 4,
+          "mitigationIds": [
+            "power-medium"
+          ]
+        },
+        {
+          "id": "power-large-fm2",
+          "description": "Bus voltage regulator drift trips load shedding",
+          "baseProbability": 0.015,
+          "affectedMetric": "battery_soc",
           "severity": 3,
           "mitigationIds": []
         }
@@ -386,9 +418,19 @@
       "failureModes": [
         {
           "id": "power-xl-fm1",
-          "description": "Degraded performance",
+          "description": "Large-array flexible modes disturb attitude control",
+          "baseProbability": 0.03,
+          "affectedMetric": "pointing_error",
+          "severity": 3,
+          "mitigationIds": [
+            "adcs-precision"
+          ]
+        },
+        {
+          "id": "power-xl-fm2",
+          "description": "Cell-to-cell mismatch in the large battery lowers usable energy",
           "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "affectedMetric": "battery_soc",
           "severity": 3,
           "mitigationIds": []
         }

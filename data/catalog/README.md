@@ -21,3 +21,11 @@ Parameter keys (value is a `Quantity`; SI or the listed unit):
 
 `compatible_with` rules: each selected component of the named category must match one rule of
 that category (by `ids` and/or `tags`). Validate with `cd backend && uv run python -m scripts.validate_catalog`.
+
+Failure modes are per-component, differentiated gameplay estimates (distinct description,
+`baseProbability`, `severity` 1-5). `affectedMetric` names a metric the engine reports
+(`battery_soc`, `link_margin`, `pointing_error`, `data_buffer`, `delta_v`, `power_margin`,
+`mass_margin`, `launch_mass_margin`, `thermal_margin`, `schedule_margin`, `cost_margin`,
+`science_return`); `mitigationIds` reference component ids or tags that would reduce the risk.
+
+Sizing note: `prop-biprop` is a smallsat-class system (12 kg dry, 35 kg propellant capacity).

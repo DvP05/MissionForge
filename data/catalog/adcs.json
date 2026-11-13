@@ -61,11 +61,23 @@
       "failureModes": [
         {
           "id": "adcs-basic-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Reaction wheel bearing friction rises and saturates momentum early",
+          "baseProbability": 0.05,
+          "affectedMetric": "pointing_error",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "adcs-fine"
+          ]
+        },
+        {
+          "id": "adcs-basic-fm2",
+          "description": "Sun-sensor-only attitude knowledge cannot hold imaging pointing",
+          "baseProbability": 0.08,
+          "affectedMetric": "pointing_error",
+          "severity": 2,
+          "mitigationIds": [
+            "star-tracker"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-adcs-basic",
@@ -138,10 +150,20 @@
       "failureModes": [
         {
           "id": "adcs-fine-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Star tracker blinded by bright body and drops attitude solution",
+          "baseProbability": 0.04,
+          "affectedMetric": "pointing_error",
           "severity": 3,
+          "mitigationIds": [
+            "adcs-precision"
+          ]
+        },
+        {
+          "id": "adcs-fine-fm2",
+          "description": "Wheel speed zero crossings add pointing jitter",
+          "baseProbability": 0.03,
+          "affectedMetric": "pointing_error",
+          "severity": 2,
           "mitigationIds": []
         }
       ],
@@ -216,11 +238,23 @@
       "failureModes": [
         {
           "id": "adcs-precision-fm1",
-          "description": "Degraded performance",
+          "description": "Gyro drift grows between star tracker updates during long observations",
           "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "affectedMetric": "pointing_error",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "star-tracker"
+          ]
+        },
+        {
+          "id": "adcs-precision-fm2",
+          "description": "High power draw of the precision stack stresses the power budget",
+          "baseProbability": 0.03,
+          "affectedMetric": "power_margin",
+          "severity": 2,
+          "mitigationIds": [
+            "power-large"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-adcs-precision",

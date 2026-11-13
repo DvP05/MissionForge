@@ -62,11 +62,23 @@
       "failureModes": [
         {
           "id": "ground-small-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Commercial station scheduling conflict removes planned contacts",
+          "baseProbability": 0.08,
+          "affectedMetric": "data_buffer",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "ground-medium"
+          ]
+        },
+        {
+          "id": "ground-small-fm2",
+          "description": "Small aperture limits achievable downlink rate at long range",
+          "baseProbability": 0.06,
+          "affectedMetric": "link_margin",
+          "severity": 2,
+          "mitigationIds": [
+            "ground-large"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-ground-small",
@@ -141,11 +153,21 @@
       "failureModes": [
         {
           "id": "ground-medium-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Network-wide contact allocation shrinks during busy periods",
+          "baseProbability": 0.04,
+          "affectedMetric": "data_buffer",
           "severity": 3,
           "mitigationIds": []
+        },
+        {
+          "id": "ground-medium-fm2",
+          "description": "Station outage during a critical downlink",
+          "baseProbability": 0.025,
+          "affectedMetric": "link_margin",
+          "severity": 3,
+          "mitigationIds": [
+            "ground-large"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-ground-medium",
@@ -220,10 +242,18 @@
       "failureModes": [
         {
           "id": "ground-large-fm1",
-          "description": "Degraded performance",
+          "description": "Deep-space antenna maintenance window overlaps planned contacts",
           "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "affectedMetric": "data_buffer",
           "severity": 3,
+          "mitigationIds": []
+        },
+        {
+          "id": "ground-large-fm2",
+          "description": "Operations cost grows past the mission-year allotment",
+          "baseProbability": 0.03,
+          "affectedMetric": "cost_margin",
+          "severity": 2,
           "mitigationIds": []
         }
       ],

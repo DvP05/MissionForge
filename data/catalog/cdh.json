@@ -61,9 +61,19 @@
       "failureModes": [
         {
           "id": "cdh-basic-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Limited storage overflows when downlink contacts are missed",
+          "baseProbability": 0.08,
+          "affectedMetric": "data_buffer",
+          "severity": 3,
+          "mitigationIds": [
+            "cdh-standard"
+          ]
+        },
+        {
+          "id": "cdh-basic-fm2",
+          "description": "Single-core processor misses real-time deadlines under load",
+          "baseProbability": 0.04,
+          "affectedMetric": "data_buffer",
           "severity": 3,
           "mitigationIds": []
         }
@@ -138,10 +148,20 @@
       "failureModes": [
         {
           "id": "cdh-standard-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Radiation upset corrupts stored science frames",
+          "baseProbability": 0.03,
+          "affectedMetric": "data_buffer",
           "severity": 3,
+          "mitigationIds": [
+            "cdh-large"
+          ]
+        },
+        {
+          "id": "cdh-standard-fm2",
+          "description": "Watchdog resets interrupt a downlink in progress",
+          "baseProbability": 0.02,
+          "affectedMetric": "link_margin",
+          "severity": 2,
           "mitigationIds": []
         }
       ],
@@ -215,11 +235,21 @@
       "failureModes": [
         {
           "id": "cdh-large-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Large flash storage develops bad blocks over a long mission",
+          "baseProbability": 0.025,
+          "affectedMetric": "data_buffer",
           "severity": 3,
           "mitigationIds": []
+        },
+        {
+          "id": "cdh-large-fm2",
+          "description": "Higher power draw reduces margin for payload operations",
+          "baseProbability": 0.03,
+          "affectedMetric": "power_margin",
+          "severity": 2,
+          "mitigationIds": [
+            "power-large"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-cdh-large",

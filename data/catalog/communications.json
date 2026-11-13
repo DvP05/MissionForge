@@ -119,11 +119,24 @@
       "failureModes": [
         {
           "id": "comms-xband-lowgain-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Low antenna gain leaves little link margin at long range",
+          "baseProbability": 0.09,
+          "affectedMetric": "link_margin",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "comms-xband-medium"
+          ]
+        },
+        {
+          "id": "comms-xband-lowgain-fm2",
+          "description": "Very low data rate lets the onboard buffer fill between contacts",
+          "baseProbability": 0.12,
+          "affectedMetric": "data_buffer",
+          "severity": 3,
+          "mitigationIds": [
+            "comms-xband-medium",
+            "cdh-large"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-comms-xband-lowgain",
@@ -254,11 +267,23 @@
       "failureModes": [
         {
           "id": "comms-xband-medium-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Transmitter amplifier overheats during long contacts and cuts output",
+          "baseProbability": 0.03,
+          "affectedMetric": "link_margin",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "thermal-active"
+          ]
+        },
+        {
+          "id": "comms-xband-medium-fm2",
+          "description": "Pointing error pushes the antenna off boresight and drops link margin",
+          "baseProbability": 0.04,
+          "affectedMetric": "link_margin",
+          "severity": 3,
+          "mitigationIds": [
+            "adcs-fine"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-comms-xband-medium",
@@ -396,11 +421,23 @@
       "failureModes": [
         {
           "id": "comms-xband-highgain-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Gimbal bearing sticks and loses antenna tracking",
+          "baseProbability": 0.025,
+          "affectedMetric": "link_margin",
+          "severity": 4,
+          "mitigationIds": [
+            "comms-xband-medium"
+          ]
+        },
+        {
+          "id": "comms-xband-highgain-fm2",
+          "description": "Narrow beam needs precise pointing; small errors cost margin",
+          "baseProbability": 0.05,
+          "affectedMetric": "pointing_error",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "adcs-precision"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-comms-xband-highgain",
@@ -538,11 +575,23 @@
       "failureModes": [
         {
           "id": "comms-kaband-highgain-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Rain or atmospheric attenuation at Ka band cuts the downlink rate",
+          "baseProbability": 0.06,
+          "affectedMetric": "link_margin",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "comms-xband-highgain"
+          ]
+        },
+        {
+          "id": "comms-kaband-highgain-fm2",
+          "description": "Tight beamwidth makes the link sensitive to attitude jitter",
+          "baseProbability": 0.04,
+          "affectedMetric": "pointing_error",
+          "severity": 3,
+          "mitigationIds": [
+            "adcs-precision"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-comms-kaband-highgain",

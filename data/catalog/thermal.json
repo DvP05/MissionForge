@@ -52,11 +52,23 @@
       "failureModes": [
         {
           "id": "thermal-passive-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Passive insulation cannot hold electronics above minimum temperature in eclipse",
+          "baseProbability": 0.06,
+          "affectedMetric": "battery_soc",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "thermal-heaters"
+          ]
+        },
+        {
+          "id": "thermal-passive-fm2",
+          "description": "Solar heating at perihelion exceeds the passive design range",
+          "baseProbability": 0.04,
+          "affectedMetric": "thermal_margin",
+          "severity": 3,
+          "mitigationIds": [
+            "thermal-active"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-thermal-passive",
@@ -120,11 +132,21 @@
       "failureModes": [
         {
           "id": "thermal-heaters-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Heater thermostat sticks on and drains the battery",
+          "baseProbability": 0.03,
+          "affectedMetric": "battery_soc",
           "severity": 3,
           "mitigationIds": []
+        },
+        {
+          "id": "thermal-heaters-fm2",
+          "description": "Heater circuit open leaves a propulsion line unprotected",
+          "baseProbability": 0.02,
+          "affectedMetric": "delta_v",
+          "severity": 4,
+          "mitigationIds": [
+            "prop-monoprop"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-thermal-heaters",
@@ -190,11 +212,21 @@
       "failureModes": [
         {
           "id": "thermal-active-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
-          "severity": 3,
+          "description": "Louvre or pump fails and the radiator cannot reject payload heat",
+          "baseProbability": 0.025,
+          "affectedMetric": "thermal_margin",
+          "severity": 4,
           "mitigationIds": []
+        },
+        {
+          "id": "thermal-active-fm2",
+          "description": "Active loop power draw erodes the power margin in eclipse",
+          "baseProbability": 0.04,
+          "affectedMetric": "power_margin",
+          "severity": 2,
+          "mitigationIds": [
+            "power-large"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-thermal-active",

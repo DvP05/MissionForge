@@ -40,10 +40,20 @@
       "failureModes": [
         {
           "id": "launch-rideshare-leo-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
-          "severity": 3,
+          "description": "Rideshare slot slips or the shared orbit is not the planned one, forcing a re-plan",
+          "baseProbability": 0.06,
+          "affectedMetric": "schedule_margin",
+          "severity": 2,
+          "mitigationIds": [
+            "launch-small-dedicated"
+          ]
+        },
+        {
+          "id": "launch-rideshare-leo-fm2",
+          "description": "Launch environment (shared-adapter vibration) exceeds the qualified spacecraft envelope",
+          "baseProbability": 0.015,
+          "affectedMetric": "launch_mass_margin",
+          "severity": 4,
           "mitigationIds": []
         }
       ],
@@ -97,10 +107,20 @@
       "failureModes": [
         {
           "id": "launch-small-dedicated-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
-          "severity": 3,
+          "description": "Dedicated small-lift vehicle fails to deliver the planned injection energy",
+          "baseProbability": 0.04,
+          "affectedMetric": "launch_mass_margin",
+          "severity": 5,
+          "mitigationIds": [
+            "launch-medium"
+          ]
+        },
+        {
+          "id": "launch-small-dedicated-fm2",
+          "description": "Launch delay pushes departure out of the preset window",
+          "baseProbability": 0.05,
+          "affectedMetric": "schedule_margin",
+          "severity": 2,
           "mitigationIds": []
         }
       ],
@@ -154,9 +174,19 @@
       "failureModes": [
         {
           "id": "launch-medium-fm1",
-          "description": "Degraded performance",
+          "description": "Upper-stage underperformance leaves the spacecraft short of planned injection energy",
           "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "affectedMetric": "delta_v",
+          "severity": 5,
+          "mitigationIds": [
+            "prop-biprop"
+          ]
+        },
+        {
+          "id": "launch-medium-fm2",
+          "description": "Fairing or adapter mismatch forces late mass or volume trimming",
+          "baseProbability": 0.01,
+          "affectedMetric": "launch_mass_margin",
           "severity": 3,
           "mitigationIds": []
         }
@@ -212,11 +242,23 @@
       "failureModes": [
         {
           "id": "launch-heavy-rideshare-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Multi-payload manifest reshuffle changes injection orbit and arrival date",
+          "baseProbability": 0.05,
+          "affectedMetric": "schedule_margin",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "launch-medium"
+          ]
+        },
+        {
+          "id": "launch-heavy-rideshare-fm2",
+          "description": "Injection dispersion consumes part of the onboard delta-v reserve",
+          "baseProbability": 0.03,
+          "affectedMetric": "delta_v",
+          "severity": 3,
+          "mitigationIds": [
+            "prop-monoprop"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-launch-heavy-rideshare",

@@ -76,10 +76,20 @@
       "failureModes": [
         {
           "id": "inst-wide-camera-fm1",
-          "description": "Degraded performance",
+          "description": "Detector hot pixels accumulate and degrade image quality",
+          "baseProbability": 0.04,
+          "affectedMetric": "science_return",
+          "severity": 2,
+          "mitigationIds": [
+            "inst-hires-camera"
+          ]
+        },
+        {
+          "id": "inst-wide-camera-fm2",
+          "description": "Shutter wear reduces frame rate late in the mission",
           "baseProbability": 0.02,
-          "affectedMetric": "reliability",
-          "severity": 3,
+          "affectedMetric": "data_buffer",
+          "severity": 2,
           "mitigationIds": []
         }
       ],
@@ -178,11 +188,24 @@
       "failureModes": [
         {
           "id": "inst-hires-camera-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "High data rate overwhelms onboard storage faster than the link can drain",
+          "baseProbability": 0.1,
+          "affectedMetric": "data_buffer",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "cdh-large",
+            "comms-xband-medium"
+          ]
+        },
+        {
+          "id": "inst-hires-camera-fm2",
+          "description": "Tight pointing requirement smears frames when attitude jitter rises",
+          "baseProbability": 0.06,
+          "affectedMetric": "pointing_error",
+          "severity": 3,
+          "mitigationIds": [
+            "adcs-precision"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-inst-hires-camera",
@@ -270,11 +293,21 @@
       "failureModes": [
         {
           "id": "inst-vnir-spectrometer-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Detector calibration drifts and biases reflectance spectra",
+          "baseProbability": 0.05,
+          "affectedMetric": "science_return",
           "severity": 3,
           "mitigationIds": []
+        },
+        {
+          "id": "inst-vnir-spectrometer-fm2",
+          "description": "Slit alignment shifts after launch loads and lowers spectral resolution",
+          "baseProbability": 0.03,
+          "affectedMetric": "pointing_error",
+          "severity": 3,
+          "mitigationIds": [
+            "adcs-fine"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-inst-vnir-spectrometer",
@@ -361,9 +394,19 @@
       "failureModes": [
         {
           "id": "inst-thermal-ir-fm1",
-          "description": "Degraded performance",
+          "description": "Cooler warm-up raises detector noise during long runs",
+          "baseProbability": 0.04,
+          "affectedMetric": "science_return",
+          "severity": 2,
+          "mitigationIds": [
+            "thermal-active"
+          ]
+        },
+        {
+          "id": "inst-thermal-ir-fm2",
+          "description": "Radiometric calibration target contaminated",
           "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "affectedMetric": "science_return",
           "severity": 3,
           "mitigationIds": []
         }
@@ -453,10 +496,20 @@
       "failureModes": [
         {
           "id": "inst-magnetometer-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Spacecraft magnetic noise contaminates the field measurement",
+          "baseProbability": 0.07,
+          "affectedMetric": "science_return",
           "severity": 3,
+          "mitigationIds": [
+            "bus-espa"
+          ]
+        },
+        {
+          "id": "inst-magnetometer-fm2",
+          "description": "Boom deployment fails and the sensor stays near the bus",
+          "baseProbability": 0.02,
+          "affectedMetric": "science_return",
+          "severity": 4,
           "mitigationIds": []
         }
       ],

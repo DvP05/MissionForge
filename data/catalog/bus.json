@@ -73,11 +73,23 @@
       "failureModes": [
         {
           "id": "bus-12u-fm1",
-          "description": "Degraded performance",
-          "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "description": "Small-bus thermal swings exceed the limited radiator area",
+          "baseProbability": 0.05,
+          "affectedMetric": "battery_soc",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "thermal-heaters"
+          ]
+        },
+        {
+          "id": "bus-12u-fm2",
+          "description": "Payload mass or volume grows beyond the tight cubesat envelope",
+          "baseProbability": 0.07,
+          "affectedMetric": "mass_margin",
+          "severity": 2,
+          "mitigationIds": [
+            "bus-27u"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-bus-12u",
@@ -163,11 +175,23 @@
       "failureModes": [
         {
           "id": "bus-27u-fm1",
-          "description": "Degraded performance",
+          "description": "Deployable mechanism fails to latch and loses array output",
+          "baseProbability": 0.03,
+          "affectedMetric": "battery_soc",
+          "severity": 4,
+          "mitigationIds": [
+            "power-medium"
+          ]
+        },
+        {
+          "id": "bus-27u-fm2",
+          "description": "Structural resonance couples with a payload and degrades pointing",
           "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "affectedMetric": "pointing_error",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "adcs-fine"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-bus-27u",
@@ -253,11 +277,23 @@
       "failureModes": [
         {
           "id": "bus-espa-fm1",
-          "description": "Degraded performance",
+          "description": "Larger bus harness faults cause intermittent subsystem resets",
           "baseProbability": 0.02,
-          "affectedMetric": "reliability",
+          "affectedMetric": "data_buffer",
           "severity": 3,
-          "mitigationIds": []
+          "mitigationIds": [
+            "cdh-standard"
+          ]
+        },
+        {
+          "id": "bus-espa-fm2",
+          "description": "Added mass erodes the launch mass margin",
+          "baseProbability": 0.04,
+          "affectedMetric": "mass_margin",
+          "severity": 2,
+          "mitigationIds": [
+            "launch-medium"
+          ]
         }
       ],
       "sourceRecordId": "ILLUSTRATIVE-bus-espa",
