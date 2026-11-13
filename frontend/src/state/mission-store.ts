@@ -66,6 +66,10 @@ export interface MissionStoreState {
   hydrate: (missionId: string) => HydrateOutcome;
   selectComponent: (category: ComponentCategory, componentId: string) => void;
   updateObjective: (objectiveId: string, patch: Partial<Omit<ScienceObjective, "id">>) => void;
+  /** Adds an objective (e.g. an optional one from the scenario template); no-op if the id exists. */
+  addObjective: (objective: ScienceObjective) => void;
+  /** Removes an objective; the last remaining objective is never removed. */
+  removeObjective: (objectiveId: string) => void;
   updateOperations: (patch: Partial<OperationsPlan>) => void;
   updateConstraints: (patch: Partial<MissionConstraints>) => void;
   commitRevision: () => void;
@@ -76,8 +80,12 @@ export interface MissionStoreState {
   reset: () => void;
 }
 
+/**
+ * Mission-scoped state reset by loadTemplate/hydrate/reset. `hydration` is
+ * deliberately NOT here: a mounted workspace renders from it, so resetting it
+ * would strand the guard on "loading" (no effect re-runs to restore it).
+ */
 const EMPTY = {
-  hydration: null as HydrationRecord | null,
   mission: null,
   designRevision: 0,
   analysis: null,
@@ -91,11 +99,14 @@ export const useMissionStore = create<MissionStoreState>()((set, get) => {
   const edit = (change: (m: MissionState) => MissionState) => {
     const { mission } = get();
     if (!mission) return;
-    set({ mission: change(mission), dirty: true });
+    const next = change(mission);
+    if (next === mission) return;
+    set({ mission: next, dirty: true });
   };
 
   return {
     ...EMPTY,
+    hydration: null,
 
     async loadTemplate(scenarioId, seed) {
       const result = await apiGet("/api/templates/{scenario_id}/default-mission", {
@@ -166,6 +177,22 @@ export const useMissionStore = create<MissionStoreState>()((set, get) => {
           o.id === objectiveId ? { ...o, ...patch } : o,
         ),
       }));
+    },
+
+    addObjective(objective) {
+      edit((m) =>
+        m.scienceObjectives.some((o) => o.id === objective.id)
+          ? m
+          : { ...m, scienceObjectives: [...m.scienceObjectives, objective] },
+      );
+    },
+
+    removeObjective(objectiveId) {
+      edit((m) =>
+        m.scienceObjectives.length <= 1
+          ? m
+          : { ...m, scienceObjectives: m.scienceObjectives.filter((o) => o.id !== objectiveId) },
+      );
     },
 
     updateOperations(patch) {
