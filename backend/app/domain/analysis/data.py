@@ -1,8 +1,8 @@
 """Onboard data ledger (architecture section 7.5). Pure, deterministic.
 
-Units: bits, seconds, bit/s. Events are processed chronologically by start time
-(observations before contacts on a tie). Generated data is credited at the
-observation start, which is a gameplay simplification (see ASSUMPTIONS).
+Units: bits, seconds, bit/s. Time is split into piecewise-constant segments at every
+observation/contact boundary; within a segment generation and downlink run concurrently,
+so a contact only ever sees bits generated up to the current time.
 """
 
 from dataclasses import dataclass, field
@@ -26,9 +26,9 @@ ASSUMPTIONS: tuple[str, ...] = (
     "PROTOCOL_EFFICIENCY = 0.9 is a gameplay-estimate constant (R13).",
     "Contact rate = min(planned, comms max_data_rate) if link margin at that rate >= 0, else 0.",
     "Contact bits = rate x duration x protocol efficiency x ground availability, never more "
-    "than the bits buffered at the contact start.",
-    "Observation data is credited to the buffer at its start time; events run in start order "
-    "(observations first on a tie).",
+    "than the bits available (buffered plus generated so far) at that moment.",
+    "Observations generate uniformly over their window (rate x duty x compression); "
+    "generation and downlink proceed concurrently where windows overlap.",
     "Buffer clamps at capacity; excess is lost and reported as overflow_bits.",
     "margin_fraction = (downlinked - generated) / generated; 0 when nothing is generated.",
 )
@@ -104,46 +104,60 @@ def data_ledger(
     eff = require_fraction(protocol_eff, "protocol_eff")
     comp = require_positive(compression, "compression")
 
-    events: list[tuple[float, int, int]] = []  # (start, kind 0=obs 1=contact, index)
+    # (start, end, generation bit/s)
+    obs_w: list[tuple[float, float, float]] = []
+    generated = 0.0
     for i, o in enumerate(observations):
-        events.append((_nonneg(o.start_s, f"observations[{i}].start_s"), 0, i))
+        start = _nonneg(o.start_s, f"observations[{i}].start_s")
+        dur = _nonneg(o.duration_s, f"observations[{i}].duration_s")
+        g = (
+            _nonneg(o.data_rate_bps, f"observations[{i}].data_rate_bps")
+            * require_fraction(o.duty_cycle, f"observations[{i}].duty_cycle")
+            * comp
+        )
+        obs_w.append((start, start + dur, g))
+        generated += g * dur
+
+    # (start, end, downlink bit/s)
+    con_w: list[tuple[float, float, float]] = []
+    rates: list[float] = []
+    capacities: list[float] = []
     for i, c in enumerate(contacts):
-        events.append((_nonneg(c.start_s, f"contacts[{i}].start_s"), 1, i))
-    events.sort()
+        start = _nonneg(c.start_s, f"contacts[{i}].start_s")
+        dur = _nonneg(c.duration_s, f"contacts[{i}].duration_s")
+        rate = contact_rate_bps(c.planned_rate_bps, c.max_rate_bps, c.link_margin_db)
+        avail = require_fraction(c.availability_fraction, f"contacts[{i}].availability_fraction")
+        eff_rate = rate * eff * avail
+        con_w.append((start, start + dur, eff_rate))
+        rates.append(rate)
+        capacities.append(eff_rate * dur)
 
-    buf = 0.0
-    generated = downlinked = overflow = peak = 0.0
-    timeline: list[tuple[float, float]] = []
-    results: list[ContactResult] = []
-    for t, kind, i in events:
-        if kind == 0:
-            o = observations[i]
-            gen = (
-                _nonneg(o.data_rate_bps, f"observations[{i}].data_rate_bps")
-                * _nonneg(o.duration_s, f"observations[{i}].duration_s")
-                * require_fraction(o.duty_cycle, f"observations[{i}].duty_cycle")
-                * comp
-            )
-            generated += gen
-            stored = min(gen, cap - buf)
-            overflow += gen - stored
-            buf += stored
-            peak = max(peak, buf)
-        else:
-            c = contacts[i]
-            rate = contact_rate_bps(c.planned_rate_bps, c.max_rate_bps, c.link_margin_db)
-            capacity = (
-                rate
-                * _nonneg(c.duration_s, f"contacts[{i}].duration_s")
-                * eff
-                * require_fraction(c.availability_fraction, f"contacts[{i}].availability_fraction")
-            )
-            sent = min(capacity, buf)
-            buf = max(0.0, buf - sent)
-            downlinked += sent
-            results.append(ContactResult(t, rate, capacity, sent))
-        timeline.append((t, buf))
+    times = sorted({t for w in (*obs_w, *con_w) for t in w[:2]})
+    sent_by = [0.0] * len(contacts)
+    buf = downlinked = overflow = peak = 0.0
+    timeline: list[tuple[float, float]] = [(times[0], 0.0)] if times else []
+    for t0, t1 in zip(times, times[1:], strict=False):
+        dt = t1 - t0
+        gen = sum(g for s0, e0, g in obs_w if s0 <= t0 and t1 <= e0)
+        active = [(i, d) for i, (s0, e0, d) in enumerate(con_w) if s0 <= t0 and t1 <= e0]
+        drain = sum(d for _, d in active)
+        wanted = drain * dt
+        sent = min(wanted, buf + gen * dt)  # cannot send bits that do not exist yet
+        new = buf + gen * dt - sent
+        stored = min(new, cap)
+        overflow += new - stored
+        buf = stored
+        downlinked += sent
+        if wanted > 0.0:
+            for i, d in active:
+                sent_by[i] += sent * d / drain
+        peak = max(peak, buf)
+        timeline.append((t1, buf))
 
+    results = tuple(
+        ContactResult(con_w[i][0], rates[i], capacities[i], sent_by[i])
+        for i in sorted(range(len(contacts)), key=lambda k: con_w[k][0])
+    )
     return DataLedger(
         generated_bits=generated,
         downlinked_bits=downlinked,
@@ -151,7 +165,7 @@ def data_ledger(
         peak_buffer_bits=peak,
         overflow_bits=overflow,
         margin_fraction=(downlinked - generated) / generated if generated > 0.0 else 0.0,
-        per_contact=tuple(results),
+        per_contact=results,
         end_buffer_bits=buf,
     )
 

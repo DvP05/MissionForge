@@ -1,5 +1,5 @@
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, NamedTuple
 
 import pytest
 
@@ -42,7 +42,7 @@ def test_zero_contacts_means_nothing_downlinked_and_no_div_by_zero() -> None:
     led = data_ledger([obs(0.0)], [], 1.0e6)
     assert led.generated_bits == 1000.0
     assert led.downlinked_bits == 0.0
-    assert led.end_buffer_bits == 1000.0
+    assert led.end_buffer_bits == pytest.approx(1000.0)
     assert led.margin_fraction == -1.0
 
 
@@ -59,17 +59,39 @@ def test_cannot_downlink_data_not_yet_generated() -> None:
     assert led.per_contact[0].downlinked_bits == 0.0
 
 
+def test_contact_at_same_instant_as_observation_sees_only_generated_so_far() -> None:
+    # obs 0..100 s at 10 bit/s; contact 0..100 s could carry 81 bit/s but only 10 bit/s exist
+    led = data_ledger([obs(0.0)], [con(0.0, planned=90.0)], 1.0e6)
+    assert led.downlinked_bits == pytest.approx(1000.0)  # everything, as it is generated
+    assert led.end_buffer_bits == pytest.approx(0.0, abs=1e-9)
+    # slower contact (5 bit/s x 0.9 = 4.5 bit/s) lags generation: 450 sent, 550 buffered
+    led2 = data_ledger([obs(0.0)], [con(0.0, planned=5.0)], 1.0e6)
+    assert led2.downlinked_bits == pytest.approx(450.0)
+    assert led2.end_buffer_bits == pytest.approx(550.0)
+
+
+def test_contact_inside_observation_window_gets_only_bits_so_far() -> None:
+    # obs 0..1000 s at 10 bit/s; contact 100..200 s at 81 bit/s: at t=100 only 1000 bit exist
+    led = data_ledger([obs(0.0, dur=1000.0)], [con(100.0, planned=90.0)], 1.0e6)
+    assert led.generated_bits == pytest.approx(10000.0)
+    # sent = 1000 buffered + 10 bit/s x 100 s generated during the contact
+    assert led.downlinked_bits == pytest.approx(2000.0)
+    assert led.per_contact[0].downlinked_bits == pytest.approx(2000.0)
+    assert led.per_contact[0].capacity_bits == pytest.approx(90.0 * 100.0 * 0.9)
+
+
 def test_downlink_limited_by_capacity_then_buffer() -> None:
-    led = data_ledger([obs(0.0)], [con(10.0, planned=5.0)], 1.0e6)
+    led = data_ledger([obs(0.0)], [con(200.0, planned=5.0)], 1.0e6)
     assert led.downlinked_bits == pytest.approx(5.0 * 100.0 * 0.9)
     assert led.end_buffer_bits == pytest.approx(1000.0 - 450.0)
-    led2 = data_ledger([obs(0.0)], [con(10.0, planned=100.0)], 1.0e6)
-    assert led2.downlinked_bits == 1000.0 and led2.end_buffer_bits == 0.0
-    assert led2.margin_fraction == 0.0
+    led2 = data_ledger([obs(0.0)], [con(200.0, planned=100.0)], 1.0e6)
+    assert led2.downlinked_bits == pytest.approx(1000.0)
+    assert led2.end_buffer_bits == pytest.approx(0.0, abs=1e-9)
+    assert led2.margin_fraction == pytest.approx(0.0, abs=1e-12)
 
 
 def test_negative_margin_contact_contributes_nothing() -> None:
-    led = data_ledger([obs(0.0)], [con(10.0, margin=-0.01)], 1.0e6)
+    led = data_ledger([obs(0.0)], [con(200.0, margin=-0.01)], 1.0e6)
     assert led.downlinked_bits == 0.0 and led.per_contact[0].rate_bps == 0.0
 
 
@@ -77,16 +99,33 @@ def test_rate_capped_by_hardware_and_availability_applied() -> None:
     assert contact_rate_bps(50.0, 20.0, 1.0) == 20.0
     assert contact_rate_bps(10.0, 20.0, 0.0) == 10.0
     assert contact_rate_bps(10.0, 20.0, -1e-9) == 0.0
-    led = data_ledger([obs(0.0, rate=1000.0)], [con(1.0, planned=50.0, mx=20.0, avail=0.5)], 1e9)
+    led = data_ledger([obs(0.0, rate=1000.0)], [con(200.0, planned=50.0, mx=20.0, avail=0.5)], 1e9)
     assert led.downlinked_bits == pytest.approx(20.0 * 100.0 * 0.9 * 0.5)
 
 
 def test_buffer_clamps_and_overflow_flagged() -> None:
     led = data_ledger([obs(0.0), obs(200.0)], [], 1500.0)
     assert led.generated_bits == 2000.0
-    assert led.peak_buffer_bits == 1500.0 and led.overflow_bits == 500.0
+    assert led.peak_buffer_bits == 1500.0 and led.overflow_bits == pytest.approx(500.0)
     assert all(b <= 1500.0 for _, b in led.buffer_timeline)
-    assert led.end_buffer_bits + led.overflow_bits + led.downlinked_bits == led.generated_bits
+    total = led.end_buffer_bits + led.overflow_bits + led.downlinked_bits
+    assert total == pytest.approx(led.generated_bits)
+
+
+def test_overflow_avoided_by_concurrent_downlink() -> None:
+    # 1000 s window at 10 bit/s into a 6000 bit buffer overflows (10000 bit) without a contact,
+    # but a concurrent 20 bit/s (x0.9 = 18) contact keeps up with generation
+    no_contact = data_ledger([obs(0.0, dur=1000.0)], [], 6000.0)
+    assert no_contact.overflow_bits == pytest.approx(4000.0)
+    with_contact = data_ledger([obs(0.0, dur=1000.0)], [con(0.0, dur=1000.0, planned=20.0)], 6000.0)
+    assert with_contact.overflow_bits == 0.0
+    assert with_contact.peak_buffer_bits == pytest.approx(0.0, abs=1e-9)
+
+
+def test_no_false_overflow_from_full_window_credit() -> None:
+    # 1000 bit total into a 600 bit buffer; a 15 bit/s contact (13.5) covers the whole window
+    led = data_ledger([obs(0.0)], [con(0.0, planned=15.0)], 600.0)
+    assert led.overflow_bits == 0.0 and led.downlinked_bits == pytest.approx(1000.0)
 
 
 def test_no_overflow_when_downlink_frees_room_in_time() -> None:
@@ -98,7 +137,7 @@ def test_events_are_processed_chronologically_regardless_of_input_order() -> Non
     a = data_ledger([obs(200.0), obs(0.0)], [con(150.0, planned=100.0)], 1e6)
     b = data_ledger([obs(0.0), obs(200.0)], [con(150.0, planned=100.0)], 1e6)
     assert a == b
-    assert [t for t, _ in a.buffer_timeline] == [0.0, 150.0, 200.0]
+    assert [t for t, _ in a.buffer_timeline] == [0.0, 100.0, 150.0, 200.0, 250.0, 300.0]
 
 
 def test_compression_and_duty_cycle_scale_generation() -> None:
@@ -107,7 +146,7 @@ def test_compression_and_duty_cycle_scale_generation() -> None:
 
 
 def test_buffer_end_formula_single_pair() -> None:
-    led = data_ledger([obs(0.0)], [con(1.0, planned=2.0)], 1e6)
+    led = data_ledger([obs(0.0)], [con(200.0, planned=2.0)], 1e6)
     assert led.buffer_timeline[-1][1] == pytest.approx(max(0.0, 1000.0 - 2.0 * 100.0 * 0.9))
 
 
@@ -136,7 +175,16 @@ NOW = datetime(2026, 11, 13, 12, 0, tzinfo=UTC)
 CATALOG = load_catalog(DEFAULT_CATALOG_DIR)
 
 
-def _neo(comms_id: str) -> tuple[Any, Any, Any, list[ObservationEvent], list[ContactEvent], float]:
+class NeoCase(NamedTuple):
+    state: Any
+    template: Any
+    ground: Any
+    observations: list[ObservationEvent]
+    contacts: list[ContactEvent]
+    storage_bits: float
+
+
+def _neo(comms_id: str) -> NeoCase:
     tpl = {t.scenario_id: t for t in list_templates(DEFAULT_MISSIONS_DIR)}["neo-rendezvous"]
     state = default_mission_state(
         "neo-rendezvous", mission_id="m-1", seed=42, now=NOW, templates_dir=DEFAULT_MISSIONS_DIR
@@ -160,25 +208,28 @@ def _neo(comms_id: str) -> tuple[Any, Any, Any, list[ObservationEvent], list[Con
         range_m=tpl.reference_earth_range_m,
     )
     storage = CATALOG.get(state.architecture.cdh_id).parameters["storage"].value
-    return state, tpl, ground, observations, contacts, storage
+    return NeoCase(state, tpl, ground, observations, contacts, storage)
 
 
 def test_neo_link_margins_reproduce_template_numbers() -> None:
-    state, tpl, ground, *_ = _neo("comms-xband-lowgain")
-    planned = state.operations.downlink_plan[0].data_rate_bits_per_second
+    case = _neo("comms-xband-lowgain")
+    planned = case.state.operations.downlink_plan[0].data_rate_bits_per_second
     assert planned == 50_000.0
     for cid, expected in (("comms-xband-medium", 6.71), ("comms-xband-lowgain", -22.31)):
         li = link_input_from_components(
-            CATALOG.get(cid), ground, range_m=tpl.reference_earth_range_m, bit_rate_bps=planned
+            CATALOG.get(cid),
+            case.ground,
+            range_m=case.template.reference_earth_range_m,
+            bit_rate_bps=planned,
         )
         assert link_budget(li).margin_db == pytest.approx(expected, abs=0.01)
 
 
 def test_neo_data_return_shortfall_and_fix_via_domain_ledger() -> None:
-    _, _, _, obs_lo, con_lo, storage = _neo("comms-xband-lowgain")
-    low = data_ledger(obs_lo, con_lo, storage)
-    state, _, _, obs_md, con_md, storage_md = _neo("comms-xband-medium")
-    med = data_ledger(obs_md, con_md, storage_md)
+    lo = _neo("comms-xband-lowgain")
+    low = data_ledger(lo.observations, lo.contacts, lo.storage_bits)
+    md = _neo("comms-xband-medium")
+    med = data_ledger(md.observations, md.contacts, md.storage_bits)
     assert low.generated_bits == pytest.approx(12.96e9, rel=1e-3)
     assert low.downlinked_bits == 0.0 and low.margin_fraction == -1.0  # shortfall
     assert med.downlinked_bits == pytest.approx(med.generated_bits)  # backlog cleared
@@ -186,11 +237,12 @@ def test_neo_data_return_shortfall_and_fix_via_domain_ledger() -> None:
     # medium's contact capacity is the template-pinned ~17.107 Gbit (>= 1.2x generated)
     capacity = sum(c.capacity_bits for c in med.per_contact)
     assert capacity == pytest.approx(17.107e9, rel=1e-3)
-    assert capacity >= med.generated_bits * (1.0 + state.constraints.data_margin_fraction)
+    margin = 1.0 + md.state.constraints.data_margin_fraction
+    assert capacity >= med.generated_bits * margin
 
 
 def test_unknown_measurement_in_plan_rejected() -> None:
-    state, *_ = _neo("comms-xband-medium")
+    state = _neo("comms-xband-medium").state
     with pytest.raises(DomainValidationError) as e:
         observation_events_from_plan(state.operations.observation_plan, {})
     assert e.value.code == "UNKNOWN_MEASUREMENT"
