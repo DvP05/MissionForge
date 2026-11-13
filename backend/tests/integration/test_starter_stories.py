@@ -73,10 +73,14 @@ def test_neo_starter_only_link_and_data_issues(
         "science-mandatory-coverage",
         "science-minimum-score",
     }
-    assert {"link-margin", "data-return"} & issues
+    status = {c.id: c.status for c in a.constraints}
+    assert status["link-margin"] == "fail"
+    assert status["data-return"] == "warning"
     assert a.feasibility == "infeasible"
     # the required measurements are collected (scheduling is sufficient): the only shortfall
     # is that nothing is returned over the failed link
+    # (0.83 = everything except the unscheduled optional context-imaging measurement)
+    assert a.science.collected_fraction >= 0.8
     assert a.science.returned_fraction == 0.0
     coverage = next(c for c in a.constraints if c.id == "science-mandatory-coverage")
     assert "collected but no data is returned" in coverage.explanation
@@ -111,4 +115,4 @@ def test_eo_starter_one_teachable_warning(
     assert a.feasibility == "marginal"
     assert not _with(a, "fail")
     assert [c.id for c in _with(a, "warning")] == ["data-return"]
-    assert a.budgets.estimated_cost_usd.value <= state.constraints.maximum_budget_usd
+    assert a.budgets.estimated_cost_usd.value <= 0.95 * state.constraints.maximum_budget_usd

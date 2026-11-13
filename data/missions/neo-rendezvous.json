@@ -18,7 +18,8 @@
     "The starter warning is a data-return shortfall (downlink capacity): generated data exceeds what the low-gain radio can return, while onboard storage is not the limiting factor.",
     "Downlink plan rates are the planned rate; the achievable rate is capped by the selected radio's maximum data rate.",
     "Optional extra objectives (thermal behaviour, magnetic/plasma environment) are listed in optionalObjectives and are not part of the starter MissionState.",
-    "Measurement targetThreshold values are the scheduled observation time each requirement needs (seconds, gameplay-estimate); the starter plan schedules slightly more than required, so the only starter shortfall is data return."
+    "Measurement targetThreshold values are the scheduled observation time each requirement needs (seconds, gameplay-estimate); the starter plan schedules slightly more than required, so the only starter shortfall is data return.",
+    "The shape-model requirement still targets about 2 m resolution (illustrative); its targetThreshold field carries the scheduled observation time the engine checks, not the resolution."
   ],
   "optionalObjectives": [
     {
@@ -66,7 +67,7 @@
         "requiredMeasurements": [
           {
             "id": "meas-shape-model",
-            "description": "Global shape model from multi-angle imaging",
+            "description": "Global shape model from multi-angle imaging (target about 2 m resolution)",
             "instrumentCapability": "shape-model",
             "coverageWeight": 0.7,
             "required": true,
