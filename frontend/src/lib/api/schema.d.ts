@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Catalog */
+        get: operations["get_catalog_api_catalog_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -13,6 +30,57 @@ export interface paths {
         };
         /** Health */
         get: operations["health_api_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission/validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Validate Mission */
+        post: operations["validate_mission_api_mission_validate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Templates */
+        get: operations["list_templates_api_templates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/templates/{scenario_id}/default-mission": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Default Mission */
+        get: operations["default_mission_api_templates__scenario_id__default_mission_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -53,6 +121,14 @@ export interface components {
             /** Sourcestatus */
             sourceStatus?: ("live" | "cached" | "demo") | null;
         };
+        /** ApiResult[CatalogData] */
+        ApiResult_CatalogData_: {
+            data?: components["schemas"]["CatalogData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
         /** ApiResult[HealthData] */
         ApiResult_HealthData_: {
             data?: components["schemas"]["HealthData"] | null;
@@ -60,6 +136,193 @@ export interface components {
             meta: components["schemas"]["ApiMeta"];
             /** Ok */
             ok: boolean;
+        };
+        /** ApiResult[MissionState] */
+        ApiResult_MissionState_: {
+            data?: components["schemas"]["MissionState"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[ValidateData] */
+        ApiResult_ValidateData_: {
+            data?: components["schemas"]["ValidateData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[list[ScenarioTemplate]] */
+        ApiResult_list_ScenarioTemplate__: {
+            /** Data */
+            data?: components["schemas"]["ScenarioTemplate"][] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** BudgetAnalysis */
+        BudgetAnalysis: {
+            availableDeltaVKmPerS: components["schemas"]["Quantity"];
+            averagePowerW: components["schemas"]["Quantity"];
+            dataDownlinkedBits: components["schemas"]["Quantity"];
+            dataGeneratedBits: components["schemas"]["Quantity"];
+            /** Datamarginfraction */
+            dataMarginFraction: number;
+            /** Deltavmarginkmpers */
+            deltaVMarginKmPerS: number;
+            dryMassKg: components["schemas"]["Quantity"];
+            /** Energymarginfraction */
+            energyMarginFraction: number;
+            estimatedCostUsd: components["schemas"]["Quantity"];
+            /** Massmarginfraction */
+            massMarginFraction: number;
+            peakPowerW: components["schemas"]["Quantity"];
+            propellantMassKg: components["schemas"]["Quantity"];
+            requiredDeltaVKmPerS: components["schemas"]["Quantity"];
+            wetMassKg: components["schemas"]["Quantity"];
+        };
+        /** CatalogComponent */
+        CatalogComponent: {
+            /** Capabilities */
+            capabilities?: string[];
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "launch" | "bus" | "propulsion" | "power" | "adcs" | "communications" | "thermal" | "cdh" | "instrument" | "ground";
+            /** Compatiblewith */
+            compatibleWith?: components["schemas"]["CompatibilityRule"][];
+            /** Description */
+            description: string;
+            /** Failuremodes */
+            failureModes?: components["schemas"]["FailureMode"][];
+            /** Id */
+            id: string;
+            /**
+             * Isillustrative
+             * @default false
+             */
+            isIllustrative: boolean;
+            /** Name */
+            name: string;
+            /** Parameters */
+            parameters: {
+                [key: string]: components["schemas"]["Quantity"];
+            };
+            provenance: components["schemas"]["Provenance"];
+            /** Sourcerecordid */
+            sourceRecordId: string;
+            /** Tags */
+            tags?: string[];
+        };
+        /** CatalogData */
+        CatalogData: {
+            /** Catalogversion */
+            catalogVersion: string;
+            /** Groups */
+            groups: components["schemas"]["CatalogGroup"][];
+            /** Sources */
+            sources: components["schemas"]["CatalogSource"][];
+        };
+        /** CatalogGroup */
+        CatalogGroup: {
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "launch" | "bus" | "propulsion" | "power" | "adcs" | "communications" | "thermal" | "cdh" | "instrument" | "ground";
+            /** Components */
+            components: components["schemas"]["CatalogComponent"][];
+        };
+        /** CatalogSource */
+        CatalogSource: {
+            /** Componentcount */
+            componentCount: number;
+            /**
+             * Fidelity
+             * @enum {string}
+             */
+            fidelity: "source-backed" | "derived" | "gameplay-estimate" | "not-modelled";
+            /** Sourcename */
+            sourceName: string;
+            /** Sourceurl */
+            sourceUrl?: string | null;
+            /** Sourceversion */
+            sourceVersion?: string | null;
+        };
+        /** CompatibilityRule */
+        CompatibilityRule: {
+            /** Category */
+            category: string;
+            /** Ids */
+            ids?: string[] | null;
+            /** Tags */
+            tags?: string[] | null;
+        };
+        /** ConstraintResult */
+        ConstraintResult: {
+            actual?: components["schemas"]["Quantity"] | null;
+            /** Explanation */
+            explanation: string;
+            /** Id */
+            id: string;
+            /** Impactedsubsystems */
+            impactedSubsystems?: string[];
+            /** Label */
+            label: string;
+            limit?: components["schemas"]["Quantity"] | null;
+            /** Marginfraction */
+            marginFraction?: number | null;
+            /** Severity */
+            severity: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pass" | "warning" | "fail" | "not-modelled";
+            /** Suggestedactions */
+            suggestedActions?: components["schemas"]["SuggestedAction"][];
+        };
+        /** Destination */
+        Destination: {
+            /** Bodyid */
+            bodyId: string;
+            /** Bodytype */
+            bodyType: string;
+            /** Name */
+            name: string;
+            source?: components["schemas"]["Provenance"] | null;
+        };
+        /** DownlinkPlanItem */
+        DownlinkPlanItem: {
+            /** Dataratebitspersecond */
+            dataRateBitsPerSecond: number;
+            /** Durationminutes */
+            durationMinutes: number;
+            /** Startday */
+            startDay: number;
+        };
+        /** FailureMode */
+        FailureMode: {
+            /** Affectedmetric */
+            affectedMetric: string;
+            /** Baseprobability */
+            baseProbability: number;
+            /** Description */
+            description: string;
+            /** Id */
+            id: string;
+            /** Mitigationids */
+            mitigationIds?: string[];
+            /** Severity */
+            severity: number;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
         };
         /** HealthData */
         HealthData: {
@@ -83,6 +346,388 @@ export interface components {
              */
             status: "live" | "cached" | "demo" | "unknown";
         };
+        /** MeasurementRequirement */
+        MeasurementRequirement: {
+            /** Coverageweight */
+            coverageWeight: number;
+            /** Description */
+            description: string;
+            /** Id */
+            id: string;
+            /** Instrumentcapability */
+            instrumentCapability: string;
+            /**
+             * Required
+             * @default true
+             */
+            required: boolean;
+            targetThreshold?: components["schemas"]["Quantity"] | null;
+        };
+        /** MissionAnalysis */
+        MissionAnalysis: {
+            /** Assumptions */
+            assumptions: string[];
+            budgets: components["schemas"]["BudgetAnalysis"];
+            /**
+             * Calculatedat
+             * Format: date-time
+             */
+            calculatedAt: string;
+            /** Catalogversion */
+            catalogVersion: string;
+            /** Constraints */
+            constraints: components["schemas"]["ConstraintResult"][];
+            /** Designrevision */
+            designRevision: number;
+            /** Engineversion */
+            engineVersion: string;
+            /**
+             * Feasibility
+             * @enum {string}
+             */
+            feasibility: "feasible" | "marginal" | "infeasible";
+            /** Missionid */
+            missionId: string;
+            /** Missionready */
+            missionReady: boolean;
+            reliability: components["schemas"]["ReliabilityAnalysis"];
+            science: components["schemas"]["ScienceAnalysis"];
+            score: components["schemas"]["ScoreBreakdown"];
+            /** Topdrivers */
+            topDrivers: string[];
+        };
+        /** MissionConstraints */
+        MissionConstraints: {
+            /** Datamarginfraction */
+            dataMarginFraction: number;
+            /** Deltavmarginkmpers */
+            deltaVMarginKmPerS: number;
+            /** Launchmasslimitkg */
+            launchMassLimitKg?: number | null;
+            /** Massmarginfraction */
+            massMarginFraction: number;
+            /** Maximumbudgetusd */
+            maximumBudgetUsd: number;
+            /** Minimumsciencescore */
+            minimumScienceScore?: number | null;
+            /** Minimumsuccessprobability */
+            minimumSuccessProbability?: number | null;
+            /** Powermarginfraction */
+            powerMarginFraction: number;
+        };
+        /** MissionState */
+        MissionState: {
+            architecture: components["schemas"]["SpacecraftArchitecture"];
+            constraints: components["schemas"]["MissionConstraints"];
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Designrevision */
+            designRevision: number;
+            destination: components["schemas"]["Destination"];
+            /** Missionid */
+            missionId: string;
+            operations: components["schemas"]["OperationsPlan"];
+            /** Randomseed */
+            randomSeed: number;
+            /**
+             * Scenarioid
+             * @enum {string}
+             */
+            scenarioId: "neo-rendezvous" | "lunar-polar-scout" | "earth-observation";
+            /**
+             * Schemaversion
+             * @default 1.0
+             * @constant
+             */
+            schemaVersion: "1.0";
+            /** Scienceobjectives */
+            scienceObjectives: components["schemas"]["ScienceObjective"][];
+            /** Title */
+            title: string;
+            trajectory: components["schemas"]["TrajectorySelection"];
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /** ObservationPlanItem */
+        ObservationPlanItem: {
+            /** Durationhours */
+            durationHours: number;
+            /** Dutycycle */
+            dutyCycle: number;
+            /** Measurementid */
+            measurementId: string;
+            /** Startday */
+            startDay: number;
+        };
+        /** OperationsPlan */
+        OperationsPlan: {
+            /**
+             * Autonomylevel
+             * @enum {string}
+             */
+            autonomyLevel: "ground-led" | "supervised" | "autonomous";
+            /** Downlinkplan */
+            downlinkPlan: components["schemas"]["DownlinkPlanItem"][];
+            /** Missiondurationdays */
+            missionDurationDays: number;
+            /** Observationplan */
+            observationPlan: components["schemas"]["ObservationPlanItem"][];
+            /**
+             * Safemodepolicy
+             * @enum {string}
+             */
+            safeModePolicy: "conservative" | "balanced" | "aggressive";
+        };
+        /** Provenance */
+        Provenance: {
+            /** Assumptions */
+            assumptions?: string[];
+            /**
+             * Fidelity
+             * @enum {string}
+             */
+            fidelity: "source-backed" | "derived" | "gameplay-estimate" | "not-modelled";
+            /** Notes */
+            notes?: string | null;
+            /** Publishedat */
+            publishedAt?: string | null;
+            /** Retrievedat */
+            retrievedAt?: string | null;
+            /** Sourcename */
+            sourceName: string;
+            /** Sourceurl */
+            sourceUrl?: string | null;
+            /** Sourceversion */
+            sourceVersion?: string | null;
+        };
+        /** Quantity */
+        Quantity: {
+            provenance: components["schemas"]["Provenance"];
+            uncertainty?: components["schemas"]["Uncertainty"] | null;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "kg" | "m" | "s" | "day" | "km" | "km/s" | "m/s" | "W" | "Wh" | "J" | "bit/s" | "bit" | "Hz" | "dB" | "dBW" | "K" | "USD" | "USD_2026" | "%" | "rad" | "deg" | "fraction";
+            /** Value */
+            value: number;
+        };
+        /** ReliabilityAnalysis */
+        ReliabilityAnalysis: {
+            /** Nominalreliability */
+            nominalReliability: number;
+            /** Riskindex */
+            riskIndex: number;
+            /** Singlepointfailures */
+            singlePointFailures: string[];
+        };
+        /** ScenarioTemplate */
+        ScenarioTemplate: {
+            /** Fidelitynotes */
+            fidelityNotes: string[];
+            missionState: components["schemas"]["TemplateMissionState"];
+            /** Narrative */
+            narrative: string;
+            /** Optionalobjectives */
+            optionalObjectives?: components["schemas"]["ScienceObjective"][];
+            /** Referenceearthrangem */
+            referenceEarthRangeM: number;
+            /**
+             * Scenarioid
+             * @enum {string}
+             */
+            scenarioId: "neo-rendezvous" | "lunar-polar-scout" | "earth-observation";
+            /** Scenarioversion */
+            scenarioVersion: string;
+            /** Title */
+            title: string;
+            /** Topconstraints */
+            topConstraints: string[];
+        };
+        /** ScienceAnalysis */
+        ScienceAnalysis: {
+            /** Collectedfraction */
+            collectedFraction: number;
+            /** Coveragescore */
+            coverageScore: number;
+            /** Missingrequirements */
+            missingRequirements: string[];
+            /** Returnedfraction */
+            returnedFraction: number;
+            /** Weightedobjectivecoverage */
+            weightedObjectiveCoverage: {
+                [key: string]: number;
+            };
+        };
+        /** ScienceObjective */
+        ScienceObjective: {
+            /** Id */
+            id: string;
+            /** Priority */
+            priority: number;
+            /** Question */
+            question: string;
+            /** Requiredmeasurements */
+            requiredMeasurements: components["schemas"]["MeasurementRequirement"][];
+            /** Title */
+            title: string;
+        };
+        /** ScoreBreakdown */
+        ScoreBreakdown: {
+            /** Dimensions */
+            dimensions: components["schemas"]["ScoreDimension"][];
+            /** Total */
+            total: number;
+        };
+        /** ScoreDimension */
+        ScoreDimension: {
+            /** Explanation */
+            explanation: string;
+            /**
+             * Id
+             * @enum {string}
+             */
+            id: "scientific-return" | "mission-execution" | "engineering-robustness" | "resource-stewardship" | "operations-quality";
+            /** Score */
+            score: number;
+            /** Weight */
+            weight: number;
+        };
+        /** SpacecraftArchitecture */
+        SpacecraftArchitecture: {
+            /** Adcsid */
+            adcsId: string;
+            /** Busid */
+            busId: string;
+            /** Cdhid */
+            cdhId: string;
+            /** Communicationsid */
+            communicationsId: string;
+            /** Groundsegmentid */
+            groundSegmentId: string;
+            /** Instrumentids */
+            instrumentIds: string[];
+            /** Launchvehicleid */
+            launchVehicleId: string;
+            /** Powerid */
+            powerId: string;
+            /** Propulsionid */
+            propulsionId: string;
+            /** Thermalid */
+            thermalId: string;
+        };
+        /** SuggestedAction */
+        SuggestedAction: {
+            /** Actionid */
+            actionId: string;
+            /** Expectedeffect */
+            expectedEffect: string;
+            /** Label */
+            label: string;
+        };
+        /**
+         * TemplateMissionState
+         * @description MissionState minus missionId / createdAt / updatedAt / randomSeed.
+         */
+        TemplateMissionState: {
+            architecture: components["schemas"]["SpacecraftArchitecture"];
+            constraints: components["schemas"]["MissionConstraints"];
+            /**
+             * Designrevision
+             * @default 0
+             */
+            designRevision: number;
+            destination: components["schemas"]["Destination"];
+            operations: components["schemas"]["OperationsPlan"];
+            /**
+             * Scenarioid
+             * @enum {string}
+             */
+            scenarioId: "neo-rendezvous" | "lunar-polar-scout" | "earth-observation";
+            /**
+             * Schemaversion
+             * @default 1.0
+             * @constant
+             */
+            schemaVersion: "1.0";
+            /** Scienceobjectives */
+            scienceObjectives: components["schemas"]["ScienceObjective"][];
+            /** Title */
+            title: string;
+            trajectory: components["schemas"]["TrajectorySelection"];
+        };
+        /** TrajectorySelection */
+        TrajectorySelection: {
+            /** Arrivaldate */
+            arrivalDate?: string | null;
+            /** Arrivalvinfinitykmpers */
+            arrivalVInfinityKmPerS?: number | null;
+            /** C3Km2Pers2 */
+            c3Km2PerS2?: number | null;
+            /**
+             * Departuredate
+             * Format: date
+             */
+            departureDate: string;
+            /** Departurevinfinitykmpers */
+            departureVInfinityKmPerS?: number | null;
+            /** Missiondeltavkmpers */
+            missionDeltaVKmPerS?: number | null;
+            /** Optionid */
+            optionId: string;
+            /**
+             * Provider
+             * @enum {string}
+             */
+            provider: "jpl-mdesign" | "scenario-preset" | "manual-estimate";
+            /** Rawsourceref */
+            rawSourceRef?: string | null;
+            /** Timeofflightdays */
+            timeOfFlightDays?: number | null;
+        };
+        /** Uncertainty */
+        Uncertainty: {
+            /**
+             * Distribution
+             * @enum {string}
+             */
+            distribution: "normal" | "uniform" | "triangular" | "interval";
+            /** Max */
+            max?: number | null;
+            /** Min */
+            min?: number | null;
+            /** Mode */
+            mode?: number | null;
+            /** Sigma */
+            sigma?: number | null;
+        };
+        /** ValidateData */
+        ValidateData: {
+            analysis: components["schemas"]["MissionAnalysis"];
+        };
+        /** ValidateRequest */
+        ValidateRequest: {
+            missionState: components["schemas"]["MissionState"];
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Context */
+            ctx?: Record<string, never>;
+            /** Input */
+            input?: unknown;
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -92,6 +737,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    get_catalog_api_catalog_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_CatalogData_"];
+                };
+            };
+        };
+    };
     health_api_health_get: {
         parameters: {
             query?: never;
@@ -108,6 +773,92 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_HealthData_"];
+                };
+            };
+        };
+    };
+    validate_mission_api_mission_validate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ValidateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_ValidateData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_templates_api_templates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_list_ScenarioTemplate__"];
+                };
+            };
+        };
+    };
+    default_mission_api_templates__scenario_id__default_mission_get: {
+        parameters: {
+            query?: {
+                seed?: number;
+            };
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_MissionState_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

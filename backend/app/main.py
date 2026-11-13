@@ -1,22 +1,31 @@
-import logging
 import uuid
 from collections.abc import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
-from app.api.routes import health
+from app.api.errors import register_error_handlers
+from app.api.middleware import BodySizeLimitMiddleware
+from app.api.routes import catalog, health, missions, templates
 from app.config import get_settings
-from app.schemas.api import ApiError, ApiMeta, ApiResult
-
-logger = logging.getLogger("missionforge")
+from app.services.catalog_service import CatalogService
+from app.services.mission_service import MissionService
+from app.services.template_service import TemplateService
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title=settings.app_name, version=settings.app_version)
 
+    # Services own the I/O: the catalogue and templates are loaded once, here.
+    catalogs = CatalogService.from_directory()
+    template_service = TemplateService.from_directory()
+    app.state.catalog_service = catalogs
+    app.state.template_service = template_service
+    app.state.mission_service = MissionService(catalogs, template_service, settings.engine_version)
+
+    # Added innermost-first: size limit, then CORS, then the request id (outermost).
+    app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.max_request_bytes)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
@@ -34,26 +43,12 @@ def create_app() -> FastAPI:
         response.headers["X-Request-ID"] = request.state.request_id
         return response
 
-    @app.exception_handler(Exception)
-    async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-        logger.exception("Unhandled error", exc_info=exc)
-        request_id = getattr(request.state, "request_id", None) or str(uuid.uuid4())
-        body = ApiResult[None](
-            ok=False,
-            error=ApiError(
-                code="INTERNAL_ERROR",
-                message="An unexpected error occurred.",
-                retryable=False,
-            ),
-            meta=ApiMeta(request_id=request_id),
-        )
-        return JSONResponse(
-            status_code=500,
-            content=body.model_dump(mode="json", by_alias=True),
-            headers={"X-Request-ID": request_id},
-        )
+    register_error_handlers(app, settings.cors_origins)
 
     app.include_router(health.router, prefix="/api")
+    app.include_router(catalog.router, prefix="/api")
+    app.include_router(templates.router, prefix="/api")
+    app.include_router(missions.router, prefix="/api")
     return app
 
 

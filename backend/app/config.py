@@ -29,6 +29,9 @@ class Settings(BaseSettings):
 
     cors_origins: list[str] = ["http://localhost:3000"]
 
+    # Request body limit (architecture 13): bodies above this are rejected with 413.
+    max_request_bytes: int = 256 * 1024
+
 
 @lru_cache
 def get_settings() -> Settings:
