@@ -1,0 +1,559 @@
+{
+  "category": "communications",
+  "components": [
+    {
+      "id": "comms-xband-lowgain",
+      "name": "Archetype: X-band low-gain link",
+      "category": "communications",
+      "description": "Weak link; low gain patch antenna, small downlink capacity.",
+      "tags": [
+        "x-band",
+        "low-gain"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 1.2,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "tx_power": {
+          "value": 5.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "antenna_gain": {
+          "value": 10.0,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Value is dBi (isotropic reference); Unit enum only offers dB."
+            ]
+          }
+        },
+        "frequency": {
+          "value": 8400000000.0,
+          "unit": "Hz",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "required_ebn0": {
+          "value": 2.5,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "implementation_loss": {
+          "value": 2.0,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "max_data_rate": {
+          "value": 8000.0,
+          "unit": "bit/s",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Maximum supported downlink rate; achievable rate comes from the link budget."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 15.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "cost": {
+          "value": 500000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "comms-xband-lowgain-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-comms-xband-lowgain",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "comms-xband-medium",
+      "name": "Archetype: X-band medium-gain link",
+      "category": "communications",
+      "description": "Medium-gain antenna.",
+      "tags": [
+        "x-band",
+        "medium-gain"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 3.5,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "tx_power": {
+          "value": 10.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "antenna_gain": {
+          "value": 25.0,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Value is dBi (isotropic reference); Unit enum only offers dB."
+            ]
+          }
+        },
+        "frequency": {
+          "value": 8400000000.0,
+          "unit": "Hz",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "required_ebn0": {
+          "value": 2.5,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "implementation_loss": {
+          "value": 2.0,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "max_data_rate": {
+          "value": 100000.0,
+          "unit": "bit/s",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Maximum supported downlink rate; achievable rate comes from the link budget."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 30.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "cost": {
+          "value": 1500000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "comms-xband-medium-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-comms-xband-medium",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "comms-xband-highgain",
+      "name": "Archetype: X-band high-gain link",
+      "category": "communications",
+      "description": "Strong link with a steerable dish.",
+      "tags": [
+        "x-band",
+        "high-gain"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 7.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "tx_power": {
+          "value": 20.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "antenna_gain": {
+          "value": 38.0,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Value is dBi (isotropic reference); Unit enum only offers dB."
+            ]
+          }
+        },
+        "frequency": {
+          "value": 8400000000.0,
+          "unit": "Hz",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "required_ebn0": {
+          "value": 2.5,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "implementation_loss": {
+          "value": 2.0,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "max_data_rate": {
+          "value": 1000000.0,
+          "unit": "bit/s",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Maximum supported downlink rate; achievable rate comes from the link budget."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 60.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "cost": {
+          "value": 3000000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [
+        {
+          "category": "bus",
+          "tags": [
+            "smallsat-class"
+          ]
+        }
+      ],
+      "failureModes": [
+        {
+          "id": "comms-xband-highgain-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-comms-xband-highgain",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "comms-kaband-highgain",
+      "name": "Archetype: Ka-band high-gain link",
+      "category": "communications",
+      "description": "Very high rate link needing a larger bus.",
+      "tags": [
+        "ka-band",
+        "high-gain"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 9.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "tx_power": {
+          "value": 15.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "antenna_gain": {
+          "value": 48.0,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Value is dBi (isotropic reference); Unit enum only offers dB."
+            ]
+          }
+        },
+        "frequency": {
+          "value": 32000000000.0,
+          "unit": "Hz",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "required_ebn0": {
+          "value": 2.5,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "implementation_loss": {
+          "value": 2.5,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "max_data_rate": {
+          "value": 5000000.0,
+          "unit": "bit/s",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Maximum supported downlink rate; achievable rate comes from the link budget."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 70.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "cost": {
+          "value": 5000000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [
+        {
+          "category": "bus",
+          "tags": [
+            "large"
+          ]
+        }
+      ],
+      "failureModes": [
+        {
+          "id": "comms-kaband-highgain-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-comms-kaband-highgain",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    }
+  ]
+}

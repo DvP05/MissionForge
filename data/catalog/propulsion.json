@@ -1,0 +1,390 @@
+{
+  "category": "propulsion",
+  "components": [
+    {
+      "id": "prop-cold-gas",
+      "name": "Archetype: cold-gas thruster set",
+      "category": "propulsion",
+      "description": "Simple low-performance cold-gas system.",
+      "tags": [
+        "cold-gas",
+        "low-thrust"
+      ],
+      "parameters": {
+        "dry_mass": {
+          "value": 3.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "isp": {
+          "value": 65.0,
+          "unit": "s",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Vacuum specific impulse used with the rocket equation, g0 = 9.80665 m/s^2."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 5.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "propellant_capacity": {
+          "value": 4.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 300000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Numeric thrust not modelled; see tags high-thrust / low-thrust."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "prop-cold-gas-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-prop-cold-gas",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+          "Numeric thrust not modelled; see tags high-thrust / low-thrust."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "prop-monoprop",
+      "name": "Archetype: monopropellant system",
+      "category": "propulsion",
+      "description": "Chemical monopropellant system.",
+      "tags": [
+        "chemical",
+        "monoprop",
+        "high-thrust"
+      ],
+      "parameters": {
+        "dry_mass": {
+          "value": 8.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "isp": {
+          "value": 220.0,
+          "unit": "s",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Vacuum specific impulse used with the rocket equation, g0 = 9.80665 m/s^2."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 15.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "propellant_capacity": {
+          "value": 30.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 800000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Numeric thrust not modelled; see tags high-thrust / low-thrust."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "prop-monoprop-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-prop-monoprop",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+          "Numeric thrust not modelled; see tags high-thrust / low-thrust."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "prop-biprop",
+      "name": "Archetype: bipropellant system",
+      "category": "propulsion",
+      "description": "Chemical bipropellant system with higher Isp.",
+      "tags": [
+        "chemical",
+        "biprop",
+        "high-thrust"
+      ],
+      "parameters": {
+        "dry_mass": {
+          "value": 22.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "isp": {
+          "value": 300.0,
+          "unit": "s",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Vacuum specific impulse used with the rocket equation, g0 = 9.80665 m/s^2."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 20.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "propellant_capacity": {
+          "value": 90.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 2500000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Numeric thrust not modelled; see tags high-thrust / low-thrust."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [
+        {
+          "category": "bus",
+          "tags": [
+            "smallsat-class"
+          ]
+        }
+      ],
+      "failureModes": [
+        {
+          "id": "prop-biprop-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-prop-biprop",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+          "Numeric thrust not modelled; see tags high-thrust / low-thrust."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "prop-electric-ion",
+      "name": "Archetype: gridded-ion electric system",
+      "category": "propulsion",
+      "description": "Electric propulsion: very high Isp, low thrust, needs array power.",
+      "tags": [
+        "electric",
+        "ion",
+        "low-thrust"
+      ],
+      "parameters": {
+        "dry_mass": {
+          "value": 18.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "isp": {
+          "value": 1800.0,
+          "unit": "s",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Vacuum specific impulse used with the rocket equation, g0 = 9.80665 m/s^2."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 120.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "propellant_capacity": {
+          "value": 25.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 3500000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Numeric thrust not modelled; see tags high-thrust / low-thrust."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [
+        {
+          "category": "power",
+          "tags": [
+            "high-power"
+          ]
+        }
+      ],
+      "failureModes": [
+        {
+          "id": "prop-electric-ion-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-prop-electric-ion",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+          "Numeric thrust not modelled; see tags high-thrust / low-thrust."
+        ]
+      },
+      "isIllustrative": true
+    }
+  ]
+}

@@ -1,0 +1,407 @@
+{
+  "category": "power",
+  "components": [
+    {
+      "id": "power-small",
+      "name": "Archetype: small solar array + battery",
+      "category": "power",
+      "description": "Body-mounted/small deployable array.",
+      "tags": [
+        "solar"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 6.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "array_power_at_1au": {
+          "value": 60.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "End-of-life array power at 1 AU, normal incidence; engine scales by 1/d^2."
+            ]
+          }
+        },
+        "battery_capacity": {
+          "value": 40.0,
+          "unit": "Wh",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Energy in Wh (not W, not J)."
+            ]
+          }
+        },
+        "usable_dod": {
+          "value": 0.3,
+          "unit": "fraction",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "eps_efficiency": {
+          "value": 0.88,
+          "unit": "fraction",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 600000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "power-small-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-power-small",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "power-medium",
+      "name": "Archetype: medium solar array + battery",
+      "category": "power",
+      "description": "Deployable array for a cubesat-class mission.",
+      "tags": [
+        "solar"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 14.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "array_power_at_1au": {
+          "value": 150.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "End-of-life array power at 1 AU, normal incidence; engine scales by 1/d^2."
+            ]
+          }
+        },
+        "battery_capacity": {
+          "value": 90.0,
+          "unit": "Wh",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Energy in Wh (not W, not J)."
+            ]
+          }
+        },
+        "usable_dod": {
+          "value": 0.4,
+          "unit": "fraction",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "eps_efficiency": {
+          "value": 0.9,
+          "unit": "fraction",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 1400000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "power-medium-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-power-medium",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "power-large",
+      "name": "Archetype: large solar array + battery",
+      "category": "power",
+      "description": "Large deployable array for electric propulsion.",
+      "tags": [
+        "solar",
+        "high-power"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 32.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "array_power_at_1au": {
+          "value": 400.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "End-of-life array power at 1 AU, normal incidence; engine scales by 1/d^2."
+            ]
+          }
+        },
+        "battery_capacity": {
+          "value": 200.0,
+          "unit": "Wh",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Energy in Wh (not W, not J)."
+            ]
+          }
+        },
+        "usable_dod": {
+          "value": 0.5,
+          "unit": "fraction",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "eps_efficiency": {
+          "value": 0.92,
+          "unit": "fraction",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 3500000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "power-large-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-power-large",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "power-xl",
+      "name": "Archetype: extra-large solar array + battery",
+      "category": "power",
+      "description": "Very large array for power-hungry designs.",
+      "tags": [
+        "solar",
+        "high-power"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 60.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "array_power_at_1au": {
+          "value": 800.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "End-of-life array power at 1 AU, normal incidence; engine scales by 1/d^2."
+            ]
+          }
+        },
+        "battery_capacity": {
+          "value": 400.0,
+          "unit": "Wh",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Energy in Wh (not W, not J)."
+            ]
+          }
+        },
+        "usable_dod": {
+          "value": 0.5,
+          "unit": "fraction",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "eps_efficiency": {
+          "value": 0.92,
+          "unit": "fraction",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 7000000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "power-xl-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-power-xl",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    }
+  ]
+}

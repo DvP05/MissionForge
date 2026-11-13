@@ -1,0 +1,474 @@
+{
+  "category": "instrument",
+  "components": [
+    {
+      "id": "inst-wide-camera",
+      "name": "Archetype: wide-angle camera",
+      "category": "instrument",
+      "description": "Context imager for shape and visible imaging.",
+      "tags": [
+        "imager"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 1.2,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 4.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "data_rate": {
+          "value": 1500000.0,
+          "unit": "bit/s",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Generated data rate while the instrument is operating, not downlinked data."
+            ]
+          }
+        },
+        "pointing_requirement": {
+          "value": 0.5,
+          "unit": "deg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 800000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [
+        "visible-imaging",
+        "shape-model"
+      ],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "inst-wide-camera-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-inst-wide-camera",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "inst-hires-camera",
+      "name": "Archetype: high-resolution camera",
+      "category": "instrument",
+      "description": "Narrow-field camera; deliberately high data rate.",
+      "tags": [
+        "imager",
+        "high-data-rate"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 6.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 15.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "data_rate": {
+          "value": 20000000.0,
+          "unit": "bit/s",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Generated data rate while the instrument is operating, not downlinked data."
+            ]
+          }
+        },
+        "pointing_requirement": {
+          "value": 0.05,
+          "unit": "deg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 3500000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [
+        "high-res-imaging",
+        "visible-imaging",
+        "shape-model"
+      ],
+      "compatibleWith": [
+        {
+          "category": "bus",
+          "ids": [
+            "bus-27u",
+            "bus-espa"
+          ]
+        }
+      ],
+      "failureModes": [
+        {
+          "id": "inst-hires-camera-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-inst-hires-camera",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "inst-vnir-spectrometer",
+      "name": "Archetype: VNIR imaging spectrometer",
+      "category": "instrument",
+      "description": "Visible/near-IR spectrometer for composition.",
+      "tags": [
+        "spectrometer"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 3.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 8.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "data_rate": {
+          "value": 3000000.0,
+          "unit": "bit/s",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Generated data rate while the instrument is operating, not downlinked data."
+            ]
+          }
+        },
+        "pointing_requirement": {
+          "value": 0.1,
+          "unit": "deg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 2200000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [
+        "vnir-spectroscopy",
+        "multispectral-imaging"
+      ],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "inst-vnir-spectrometer-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-inst-vnir-spectrometer",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "inst-thermal-ir",
+      "name": "Archetype: thermal infrared radiometer",
+      "category": "instrument",
+      "description": "Surface temperature and thermal inertia.",
+      "tags": [
+        "radiometer"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 2.5,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 6.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "data_rate": {
+          "value": 500000.0,
+          "unit": "bit/s",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Generated data rate while the instrument is operating, not downlinked data."
+            ]
+          }
+        },
+        "pointing_requirement": {
+          "value": 0.2,
+          "unit": "deg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 1800000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [
+        "thermal-infrared"
+      ],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "inst-thermal-ir-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-inst-thermal-ir",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "inst-magnetometer",
+      "name": "Archetype: boom magnetometer",
+      "category": "instrument",
+      "description": "Magnetometer for field and plasma environment.",
+      "tags": [
+        "fields"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 0.8,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 1.5,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "data_rate": {
+          "value": 2000.0,
+          "unit": "bit/s",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Generated data rate while the instrument is operating, not downlinked data."
+            ]
+          }
+        },
+        "pointing_requirement": {
+          "value": 1.0,
+          "unit": "deg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 500000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [
+        "magnetometry",
+        "plasma-environment"
+      ],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "inst-magnetometer-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-inst-magnetometer",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "category": "bus",
+  "components": [
+    {
+      "id": "bus-a", "name": "bus-a", "category": "bus", "description": "fixture", "tags": [],
+      "parameters": {
+        "mass": {"value": 20.0, "unit": "kg", "provenance": {"fidelity": "gameplay-estimate", "sourceName": "fixture", "assumptions": ["fixture"]}}
+      },
+      "capabilities": [], "compatibleWith": [], "failureModes": [], "sourceRecordId": "x",
+      "provenance": {"fidelity": "gameplay-estimate", "sourceName": "fixture", "assumptions": ["fixture"]},
+      "isIllustrative": true
+    }
+  ]
+}

@@ -1,0 +1,242 @@
+{
+  "category": "ground",
+  "components": [
+    {
+      "id": "ground-small",
+      "name": "Archetype: small commercial ground station",
+      "category": "ground",
+      "description": "Small dish network.",
+      "tags": [
+        "commercial"
+      ],
+      "parameters": {
+        "station_gain": {
+          "value": 35.0,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Value is dBi (isotropic reference)."
+            ]
+          }
+        },
+        "noise_temperature": {
+          "value": 150.0,
+          "unit": "K",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "contact_availability": {
+          "value": 0.1,
+          "unit": "fraction",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 500000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "`cost` is per mission-year of station service."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "ground-small-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-ground-small",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+          "`cost` is per mission-year of station service."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "ground-medium",
+      "name": "Archetype: medium ground network",
+      "category": "ground",
+      "description": "Mid-size dishes, better coverage.",
+      "tags": [
+        "network"
+      ],
+      "parameters": {
+        "station_gain": {
+          "value": 50.0,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Value is dBi (isotropic reference)."
+            ]
+          }
+        },
+        "noise_temperature": {
+          "value": 80.0,
+          "unit": "K",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "contact_availability": {
+          "value": 0.2,
+          "unit": "fraction",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 3000000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "`cost` is per mission-year of station service."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "ground-medium-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-ground-medium",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+          "`cost` is per mission-year of station service."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "ground-large",
+      "name": "Archetype: large deep-space-class ground network",
+      "category": "ground",
+      "description": "Large dishes with cryogenic receivers.",
+      "tags": [
+        "deep-space"
+      ],
+      "parameters": {
+        "station_gain": {
+          "value": 62.0,
+          "unit": "dB",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Value is dBi (isotropic reference)."
+            ]
+          }
+        },
+        "noise_temperature": {
+          "value": 40.0,
+          "unit": "K",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "contact_availability": {
+          "value": 0.33,
+          "unit": "fraction",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 12000000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "`cost` is per mission-year of station service."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "ground-large-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-ground-large",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+          "`cost` is per mission-year of station service."
+        ]
+      },
+      "isIllustrative": true
+    }
+  ]
+}

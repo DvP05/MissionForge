@@ -1,0 +1,274 @@
+{
+  "category": "bus",
+  "components": [
+    {
+      "id": "bus-12u",
+      "name": "Archetype: 12U-class bus",
+      "category": "bus",
+      "description": "Compact cubesat-class bus for light payloads.",
+      "tags": [
+        "cubesat-class"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 20.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "structure_mass": {
+          "value": 4.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Included in `mass`; do not add it again (no double-counted structure)."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 15.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "max_payload_mass": {
+          "value": 8.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 1500000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "bus-12u-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-bus-12u",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "bus-27u",
+      "name": "Archetype: 27U-class bus",
+      "category": "bus",
+      "description": "Larger cubesat-class bus with room for a medium payload.",
+      "tags": [
+        "smallsat-class",
+        "mid"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 45.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "structure_mass": {
+          "value": 9.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Included in `mass`; do not add it again (no double-counted structure)."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 30.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "max_payload_mass": {
+          "value": 20.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 4000000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "bus-27u-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-bus-27u",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "bus-espa",
+      "name": "Archetype: ESPA-class bus",
+      "category": "bus",
+      "description": "Small-satellite bus in the 180 kg class.",
+      "tags": [
+        "smallsat-class",
+        "large"
+      ],
+      "parameters": {
+        "mass": {
+          "value": 180.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "structure_mass": {
+          "value": 36.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Included in `mass`; do not add it again (no double-counted structure)."
+            ]
+          }
+        },
+        "power_w": {
+          "value": 80.0,
+          "unit": "W",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "Average electrical power while operating."
+            ]
+          }
+        },
+        "max_payload_mass": {
+          "value": 70.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 12000000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "bus-espa-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-bus-espa",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3)."
+        ]
+      },
+      "isIllustrative": true
+    }
+  ]
+}

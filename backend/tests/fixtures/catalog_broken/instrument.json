@@ -1,0 +1,15 @@
+{
+  "category": "instrument",
+  "components": [
+    {
+      "id": "inst-a", "name": "inst-a", "category": "instrument", "description": "fixture", "tags": [],
+      "parameters": {
+        "mass": {"value": 1.0, "unit": "kg", "provenance": {"fidelity": "gameplay-estimate", "sourceName": "fixture", "assumptions": ["fixture"]}}
+      },
+      "capabilities": [], "compatibleWith": [{"category": "bus", "ids": ["bus-does-not-exist"]}],
+      "failureModes": [], "sourceRecordId": "x",
+      "provenance": {"fidelity": "gameplay-estimate", "sourceName": "fixture", "assumptions": ["fixture"]},
+      "isIllustrative": true
+    }
+  ]
+}

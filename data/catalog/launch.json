@@ -1,0 +1,234 @@
+{
+  "category": "launch",
+  "components": [
+    {
+      "id": "launch-rideshare-leo",
+      "name": "Archetype: shared rideshare launch",
+      "category": "launch",
+      "description": "Secondary-payload slot on a shared launch with a generic hand-off orbit.",
+      "tags": [
+        "rideshare"
+      ],
+      "parameters": {
+        "launch_mass_limit": {
+          "value": 150.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "C3 launch-energy envelope not modelled (Tier 3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 1200000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "C3 launch-energy envelope not modelled (Tier 3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "launch-rideshare-leo-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-launch-rideshare-leo",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+          "C3 launch-energy envelope not modelled (Tier 3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "launch-small-dedicated",
+      "name": "Archetype: small dedicated launch",
+      "category": "launch",
+      "description": "Dedicated small launcher with moderate mass margin.",
+      "tags": [
+        "dedicated"
+      ],
+      "parameters": {
+        "launch_mass_limit": {
+          "value": 300.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "C3 launch-energy envelope not modelled (Tier 3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 7000000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "C3 launch-energy envelope not modelled (Tier 3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "launch-small-dedicated-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-launch-small-dedicated",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+          "C3 launch-energy envelope not modelled (Tier 3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "launch-medium",
+      "name": "Archetype: medium launch",
+      "category": "launch",
+      "description": "Dedicated medium-class launch with generous mass margin.",
+      "tags": [
+        "dedicated"
+      ],
+      "parameters": {
+        "launch_mass_limit": {
+          "value": 800.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "C3 launch-energy envelope not modelled (Tier 3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 25000000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "C3 launch-energy envelope not modelled (Tier 3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "launch-medium-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-launch-medium",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+          "C3 launch-energy envelope not modelled (Tier 3)."
+        ]
+      },
+      "isIllustrative": true
+    },
+    {
+      "id": "launch-heavy-rideshare",
+      "name": "Archetype: heavy rideshare launch",
+      "category": "launch",
+      "description": "Large shared launch with a high-energy secondary slot.",
+      "tags": [
+        "rideshare",
+        "high-energy"
+      ],
+      "parameters": {
+        "launch_mass_limit": {
+          "value": 1500.0,
+          "unit": "kg",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "C3 launch-energy envelope not modelled (Tier 3)."
+            ]
+          }
+        },
+        "cost": {
+          "value": 18000000.0,
+          "unit": "USD",
+          "provenance": {
+            "fidelity": "gameplay-estimate",
+            "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+            "assumptions": [
+              "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+              "C3 launch-energy envelope not modelled (Tier 3)."
+            ]
+          }
+        }
+      },
+      "capabilities": [],
+      "compatibleWith": [],
+      "failureModes": [
+        {
+          "id": "launch-heavy-rideshare-fm1",
+          "description": "Degraded performance",
+          "baseProbability": 0.02,
+          "affectedMetric": "reliability",
+          "severity": 3,
+          "mitigationIds": []
+        }
+      ],
+      "sourceRecordId": "ILLUSTRATIVE-launch-heavy-rideshare",
+      "provenance": {
+        "fidelity": "gameplay-estimate",
+        "sourceName": "MISSIONFORGE illustrative archetype v0.1.0",
+        "assumptions": [
+          "Illustrative small-spacecraft magnitude; not from any real product or datasheet (R3).",
+          "C3 launch-energy envelope not modelled (Tier 3)."
+        ]
+      },
+      "isIllustrative": true
+    }
+  ]
+}

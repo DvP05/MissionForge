@@ -1,0 +1,1 @@
+{"catalogVersion": "0.1.0", "generatedAt": "2026-11-13", "files": ["bus.json", "instrument.json"], "note": "broken fixture: instrument references a bus id that does not exist"}

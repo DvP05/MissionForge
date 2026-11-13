@@ -1,0 +1,17 @@
+{
+  "catalogVersion": "0.1.0",
+  "generatedAt": "2026-11-13",
+  "files": [
+    "launch.json",
+    "bus.json",
+    "propulsion.json",
+    "power.json",
+    "adcs.json",
+    "communications.json",
+    "thermal.json",
+    "cdh.json",
+    "instrument.json",
+    "ground.json"
+  ],
+  "note": "All values are gameplay-estimate illustrative archetypes (R3) and await human source audit; nothing is source-backed."
+}
