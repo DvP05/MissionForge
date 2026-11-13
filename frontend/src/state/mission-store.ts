@@ -47,6 +47,18 @@ export type LoadOutcome =
   | { ok: true; missionId: string; saved: boolean }
   | { ok: false; code: string; message: string; retryable: boolean };
 
+/** One committed design change, kept for this session only (drawer "recent changes"). */
+export interface ChangeLogEntry {
+  revision: number;
+  category: ComponentCategory;
+  /** Previous selection (null when an instrument was added). */
+  fromId: string | null;
+  /** New selection (null when an instrument was removed). */
+  toId: string | null;
+}
+
+const CHANGE_LOG_LIMIT = 20;
+
 export type HydrateOutcome =
   | { ok: true }
   | { ok: false; reason: "not-found" | "corrupt" | "unavailable"; message: string };
@@ -65,6 +77,10 @@ export interface MissionStoreState {
   dirty: boolean;
   /** Last persistence failure, if any (UI keeps working in memory). */
   saveError: StorageError | null;
+  /** Component changes made since the last commit (becomes changeLog entries on commit). */
+  pendingChanges: Omit<ChangeLogEntry, "revision">[];
+  /** Committed component changes this session, newest first. */
+  changeLog: ChangeLogEntry[];
 
   loadTemplate: (scenarioId: ScenarioId, seed?: number) => Promise<LoadOutcome>;
   hydrate: (missionId: string) => HydrateOutcome;
@@ -97,6 +113,8 @@ const EMPTY = {
   status: "idle" as AnalysisStatus,
   dirty: false,
   saveError: null,
+  pendingChanges: [] as Omit<ChangeLogEntry, "revision">[],
+  changeLog: [] as ChangeLogEntry[],
 };
 
 export const useMissionStore = create<MissionStoreState>()((set, get) => {
@@ -160,7 +178,16 @@ export const useMissionStore = create<MissionStoreState>()((set, get) => {
     },
 
     selectComponent(category, componentId) {
+      const mission = get().mission;
+      if (!mission) return;
+      let change: Omit<ChangeLogEntry, "revision">;
       if (category === "instrument") {
+        const has = mission.architecture.instrumentIds.includes(componentId);
+        change = {
+          category,
+          fromId: has ? componentId : null,
+          toId: has ? null : componentId,
+        };
         edit((m) => {
           const ids = m.architecture.instrumentIds;
           const next = ids.includes(componentId)
@@ -168,10 +195,14 @@ export const useMissionStore = create<MissionStoreState>()((set, get) => {
             : [...ids, componentId];
           return { ...m, architecture: { ...m.architecture, instrumentIds: next } };
         });
-        return;
+      } else {
+        const field = SINGLE_SELECT_FIELD[category];
+        const fromId = mission.architecture[field];
+        if (fromId === componentId) return;
+        change = { category, fromId, toId: componentId };
+        edit((m) => ({ ...m, architecture: { ...m.architecture, [field]: componentId } }));
       }
-      const field = SINGLE_SELECT_FIELD[category];
-      edit((m) => ({ ...m, architecture: { ...m.architecture, [field]: componentId } }));
+      set((s) => ({ pendingChanges: [...s.pendingChanges, change] }));
     },
 
     updateObjective(objectiveId, patch) {
@@ -218,11 +249,16 @@ export const useMissionStore = create<MissionStoreState>()((set, get) => {
     },
 
     commitRevision() {
-      const { mission, dirty, analysis } = get();
+      const { mission, dirty, analysis, pendingChanges, changeLog } = get();
       if (!mission || !dirty) return;
       const next = { ...mission, designRevision: mission.designRevision + 1 };
       const saved = saveMission(next);
       set({
+        pendingChanges: [],
+        changeLog: [
+          ...pendingChanges.map((c) => ({ ...c, revision: next.designRevision })).reverse(),
+          ...changeLog,
+        ].slice(0, CHANGE_LOG_LIMIT),
         mission: next,
         designRevision: next.designRevision,
         dirty: false,
@@ -252,3 +288,8 @@ export const useMissionStore = create<MissionStoreState>()((set, get) => {
     },
   };
 });
+
+// Test hook: lets Playwright exercise store rules directly. Never exposed in production builds.
+if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
+  (window as unknown as { __missionStore?: typeof useMissionStore }).__missionStore = useMissionStore;
+}
