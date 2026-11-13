@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - run: uv python install 3.12
+      - run: uv sync --frozen
+      - run: uv run python -m ruff check .
+      - run: uv run python -m mypy app
+      - run: uv run python -m pytest -q
+      - run: uv run python -m scripts.validate_catalog
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: corepack enable
+      - id: pnpm-store
+        run: echo "path=$(corepack pnpm@10.18.3 store path --silent)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('frontend/pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-${{ runner.os }}-
+      - run: corepack pnpm@10.18.3 install --frozen-lockfile
+      - run: corepack pnpm@10.18.3 lint
+      - run: corepack pnpm@10.18.3 typecheck
+      - run: corepack pnpm@10.18.3 build
+
+  api-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: corepack enable
+      - run: uv python install 3.12
+        working-directory: backend
+      - run: uv sync --frozen
+        working-directory: backend
+      - run: corepack pnpm@10.18.3 install --frozen-lockfile
+        working-directory: frontend
+      - run: bash scripts/gen_api_types.sh
+      - name: Committed OpenAPI and TS types are current
+        run: git diff --exit-code -- backend/openapi.json frontend/src/lib/api/schema.d.ts
+
+  e2e:
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    env:
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: corepack enable
+      - run: uv python install 3.12
+        working-directory: backend
+      - run: uv sync --frozen
+        working-directory: backend
+      - run: corepack pnpm@10.18.3 install --frozen-lockfile
+        working-directory: frontend
+      - run: corepack pnpm@10.18.3 exec playwright install --with-deps chromium
+        working-directory: frontend
+      - run: corepack pnpm@10.18.3 test:e2e
+        working-directory: frontend
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
+          if-no-files-found: ignore
