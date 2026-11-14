@@ -1,5 +1,5 @@
 import { useMissionStore } from "@/state/mission-store";
-import { analysisProvenance } from "@/components/budgets/tile-model";
+import { analysisFailed, analysisProvenance } from "@/components/budgets/tile-model";
 import { ConstraintCard, type Constraint } from "./ConstraintCard";
 
 const RANK: Record<Constraint["status"], number> = { fail: 0, warning: 1, "not-modelled": 2, pass: 3 };
@@ -25,7 +25,7 @@ export function ConstraintPanel({
       {analysis ? (
         <ul className="space-y-3">
           {ordered(analysis.constraints).map((c) => (
-            <ConstraintCard key={c.id} constraint={c} selected={c.id === selectedId} marginProvenance={analysisProvenance(analysis)} onExplain={onExplain} />
+            <ConstraintCard key={c.id} constraint={c} selected={c.id === selectedId} marginProvenance={analysisFailed(analysis) ? null : analysisProvenance(analysis)} onExplain={onExplain} />
           ))}
         </ul>
       ) : (

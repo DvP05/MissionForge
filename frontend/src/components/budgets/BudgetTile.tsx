@@ -15,7 +15,6 @@ export function BudgetTile({
   changed: boolean;
   reason: string;
 }) {
-  const allMissing = tile.rows.every((r) => r.text === null);
   return (
     <section
       data-testid={`budget-tile-${tile.id}`}
@@ -45,7 +44,7 @@ export function BudgetTile({
               label={row.label}
               text={row.text}
               provenance={row.provenance}
-              reason={allMissing && i > 0 ? "" : (row.reason ?? reason)}
+              reason={row.reason ?? reason}
               was={differs ? (before.text ?? "—") : null}
             />
           );

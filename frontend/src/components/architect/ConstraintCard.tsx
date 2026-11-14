@@ -51,8 +51,8 @@ export function ConstraintCard({
   onExplain,
 }: {
   constraint: Constraint;
-  /** Engine provenance for the margin scalar (the API gives none). */
-  marginProvenance: Provenance;
+  /** Engine provenance for the margin scalar (the API gives none); null when the analysis failed. */
+  marginProvenance: Provenance | null;
   selected: boolean;
   onExplain: (id: string) => void;
 }) {
@@ -89,8 +89,8 @@ export function ConstraintCard({
             ) : (
               <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 {formatFraction(constraint.marginFraction)}
-                <FidelityBadge fidelity={marginProvenance.fidelity} />
-                <ProvenancePopover provenance={marginProvenance} label={`${constraint.label} margin`} />
+                {marginProvenance ? <FidelityBadge fidelity={marginProvenance.fidelity} /> : null}
+                {marginProvenance ? <ProvenancePopover provenance={marginProvenance} label={`${constraint.label} margin`} /> : null}
               </span>
             )}
           </dd>

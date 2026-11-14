@@ -199,6 +199,44 @@
         "title": "ApiResult[MissionState]",
         "type": "object"
       },
+      "ApiResult_TradeStudyResult_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TradeStudyResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[TradeStudyResult]",
+        "type": "object"
+      },
       "ApiResult_ValidateData_": {
         "additionalProperties": false,
         "properties": {
@@ -1782,6 +1820,71 @@
         "title": "TemplateMissionState",
         "type": "object"
       },
+      "TradeAlternative": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis": {
+            "$ref": "#/components/schemas/MissionAnalysis"
+          },
+          "deltas": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Deltas",
+            "type": "object"
+          }
+        },
+        "required": [
+          "analysis",
+          "deltas"
+        ],
+        "title": "TradeAlternative",
+        "type": "object"
+      },
+      "TradeStudyRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "alternatives": {
+            "items": {
+              "$ref": "#/components/schemas/MissionState"
+            },
+            "maxItems": 3,
+            "minItems": 1,
+            "title": "Alternatives",
+            "type": "array"
+          },
+          "baseMissionState": {
+            "$ref": "#/components/schemas/MissionState"
+          }
+        },
+        "required": [
+          "baseMissionState",
+          "alternatives"
+        ],
+        "title": "TradeStudyRequest",
+        "type": "object"
+      },
+      "TradeStudyResult": {
+        "additionalProperties": false,
+        "properties": {
+          "alternatives": {
+            "items": {
+              "$ref": "#/components/schemas/TradeAlternative"
+            },
+            "title": "Alternatives",
+            "type": "array"
+          },
+          "baseAnalysis": {
+            "$ref": "#/components/schemas/MissionAnalysis"
+          }
+        },
+        "required": [
+          "baseAnalysis",
+          "alternatives"
+        ],
+        "title": "TradeStudyResult",
+        "type": "object"
+      },
       "TrajectorySelection": {
         "additionalProperties": false,
         "properties": {
@@ -2062,6 +2165,45 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/mission/trade-study": {
+      "post": {
+        "description": "Compare 1-3 alternatives against a base design (architecture 11.2). Nothing is mutated.",
+        "operationId": "trade_study_api_mission_trade_study_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TradeStudyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_TradeStudyResult_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Trade Study"
       }
     },
     "/api/mission/validate": {

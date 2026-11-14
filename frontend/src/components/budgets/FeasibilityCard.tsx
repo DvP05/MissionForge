@@ -6,7 +6,7 @@ import { ProvenancePopover } from "@/components/common/ProvenancePopover";
 import { StatusPill } from "@/components/common/StatusPill";
 import type { MissionAnalysis } from "@/state/mission-store";
 import { countConstraintStatuses } from "@/state/selectors";
-import { analysisProvenance } from "./tile-model";
+import { analysisFailed, analysisProvenance } from "./tile-model";
 
 const LABEL = { feasible: "Feasible", marginal: "Marginal", infeasible: "Infeasible" } as const;
 
@@ -40,6 +40,8 @@ export function FeasibilityCard({
   }
   const counts = countConstraintStatuses(analysis);
   const provenance = analysisProvenance(analysis);
+  // A failed analysis has no engine result to label: no derived badge on the verdict.
+  const failed = analysisFailed(analysis);
   return (
     <section
       data-testid="budget-tile-feasibility"
@@ -60,8 +62,8 @@ export function FeasibilityCard({
             {analysis.missionReady ? "Mission-ready" : "Not mission-ready"}
           </StatusPill>
         </span>
-        <FidelityBadge fidelity={provenance.fidelity} />
-        <ProvenancePopover provenance={provenance} label="feasibility" />
+        {failed ? null : <FidelityBadge fidelity={provenance.fidelity} />}
+        {failed ? null : <ProvenancePopover provenance={provenance} label="feasibility" />}
       </div>
       <ul className="flex flex-wrap gap-3 text-xs text-muted" aria-label="Constraint tally">
         {(["fail", "warning", "pass", "not-modelled"] as const).map((s) => (

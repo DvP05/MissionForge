@@ -38,6 +38,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/mission/trade-study": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Trade Study
+         * @description Compare 1-3 alternatives against a base design (architecture 11.2). Nothing is mutated.
+         */
+        post: operations["trade_study_api_mission_trade_study_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/mission/validate": {
         parameters: {
             query?: never;
@@ -140,6 +160,14 @@ export interface components {
         /** ApiResult[MissionState] */
         ApiResult_MissionState_: {
             data?: components["schemas"]["MissionState"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[TradeStudyResult] */
+        ApiResult_TradeStudyResult_: {
+            data?: components["schemas"]["TradeStudyResult"] | null;
             error?: components["schemas"]["ApiError"] | null;
             meta: components["schemas"]["ApiMeta"];
             /** Ok */
@@ -662,6 +690,26 @@ export interface components {
             title: string;
             trajectory: components["schemas"]["TrajectorySelection"];
         };
+        /** TradeAlternative */
+        TradeAlternative: {
+            analysis: components["schemas"]["MissionAnalysis"];
+            /** Deltas */
+            deltas: {
+                [key: string]: number;
+            };
+        };
+        /** TradeStudyRequest */
+        TradeStudyRequest: {
+            /** Alternatives */
+            alternatives: components["schemas"]["MissionState"][];
+            baseMissionState: components["schemas"]["MissionState"];
+        };
+        /** TradeStudyResult */
+        TradeStudyResult: {
+            /** Alternatives */
+            alternatives: components["schemas"]["TradeAlternative"][];
+            baseAnalysis: components["schemas"]["MissionAnalysis"];
+        };
         /** TrajectorySelection */
         TrajectorySelection: {
             /** Arrivaldate */
@@ -773,6 +821,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_HealthData_"];
+                };
+            };
+        };
+    };
+    trade_study_api_mission_trade_study_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TradeStudyRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_TradeStudyResult_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

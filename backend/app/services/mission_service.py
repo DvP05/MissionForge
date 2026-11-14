@@ -1,13 +1,17 @@
 """Mission validation + analysis orchestration (no HTTP types here)."""
 
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Literal
 
 from app.domain.analysis.orchestrator import analyze_mission
+from app.domain.analysis.trade import compute_deltas
 from app.domain.mission.validation import validate_mission_state
 from app.schemas.analysis import MissionAnalysis
 from app.schemas.mission import MissionState, ValidationIssue
+from app.schemas.optimization import TradeAlternative, TradeStudyResult
 from app.services.catalog_service import CatalogService
 from app.services.template_service import TemplateService
 
@@ -27,6 +31,23 @@ class ValidationOutcome:
     analysis: MissionAnalysis | None = None
     missing_components: tuple[MissingComponent, ...] = field(default_factory=tuple)
     issues: tuple[ValidationIssue, ...] = field(default_factory=tuple)
+
+
+@dataclass(frozen=True)
+class DesignRef:
+    """Which design of a trade study an outcome refers to (base has no index)."""
+
+    role: Literal["base", "alternative"]
+    index: int | None = None
+
+
+@dataclass(frozen=True)
+class TradeOutcome:
+    """Either a result, or the first design that failed validation with its outcome."""
+
+    result: TradeStudyResult | None = None
+    failed_design: DesignRef | None = None
+    failure: ValidationOutcome | None = None
 
 
 class MissionService:
@@ -68,3 +89,29 @@ class MissionService:
             now=now,
         )
         return ValidationOutcome(analysis=analysis)
+
+    def trade_study(
+        self,
+        base: MissionState,
+        alternatives: Sequence[MissionState],
+        now: datetime,
+    ) -> TradeOutcome:
+        """Run the R22 validate flow on every design, then diff each alternative against base."""
+        designs: list[tuple[DesignRef, MissionState]] = [(DesignRef("base"), base)]
+        designs += [(DesignRef("alternative", i), alt) for i, alt in enumerate(alternatives)]
+        analyses: list[MissionAnalysis] = []
+        for ref, state in designs:
+            outcome = self.validate(state, now)
+            if outcome.analysis is None:
+                return TradeOutcome(failed_design=ref, failure=outcome)
+            analyses.append(outcome.analysis)
+        base_analysis, *alt_analyses = analyses
+        return TradeOutcome(
+            result=TradeStudyResult(
+                base_analysis=base_analysis,
+                alternatives=[
+                    TradeAlternative(analysis=a, deltas=compute_deltas(base_analysis, a))
+                    for a in alt_analyses
+                ],
+            )
+        )

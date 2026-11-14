@@ -49,7 +49,7 @@ export function analysisProvenance(a: MissionAnalysis): Provenance {
   };
 }
 
-function q(key: string, label: string, quantity: Quantity | undefined): TileRow {
+export function quantityRow(key: string, label: string, quantity: Quantity | undefined): TileRow {
   // A not-modelled Quantity is a placeholder (e.g. failed analysis): never shown as a number.
   if (quantity && quantity.provenance.fidelity === "not-modelled") {
     return {
@@ -70,7 +70,7 @@ function q(key: string, label: string, quantity: Quantity | undefined): TileRow 
   };
 }
 
-function scalar(
+export function scalarRow(
   a: MissionAnalysis,
   key: string,
   label: string,
@@ -98,37 +98,37 @@ export function buildTiles(a: MissionAnalysis): TileModel[] {
       id: "mass",
       title: "Mass",
       rows: [
-        q("wet", "Wet mass", b.wetMassKg),
-        q("dry", "Dry mass", b.dryMassKg),
-        q("prop", "Propellant", b.propellantMassKg),
-        scalar(a, "margin", "Mass margin", b.massMarginFraction, formatFraction),
+        quantityRow("wet", "Wet mass", b.wetMassKg),
+        quantityRow("dry", "Dry mass", b.dryMassKg),
+        quantityRow("prop", "Propellant", b.propellantMassKg),
+        scalarRow(a, "margin", "Mass margin", b.massMarginFraction, formatFraction),
       ],
     },
     {
       id: "power",
       title: "Power and energy",
       rows: [
-        q("avg", "Average power", b.averagePowerW),
-        q("peak", "Peak power", b.peakPowerW),
-        scalar(a, "margin", "Energy margin", b.energyMarginFraction, formatFraction),
+        quantityRow("avg", "Average power", b.averagePowerW),
+        quantityRow("peak", "Peak power", b.peakPowerW),
+        scalarRow(a, "margin", "Energy margin", b.energyMarginFraction, formatFraction),
       ],
     },
     {
       id: "deltav",
       title: "Delta-v",
       rows: [
-        q("avail", "Available", b.availableDeltaVKmPerS),
-        q("req", "Required", b.requiredDeltaVKmPerS),
-        scalar(a, "margin", "Margin after reserve", b.deltaVMarginKmPerS, (v) => `${formatNumber(v)} km/s`),
+        quantityRow("avail", "Available", b.availableDeltaVKmPerS),
+        quantityRow("req", "Required", b.requiredDeltaVKmPerS),
+        scalarRow(a, "margin", "Margin after reserve", b.deltaVMarginKmPerS, (v) => `${formatNumber(v)} km/s`),
       ],
     },
     {
       id: "data",
       title: "Data",
       rows: [
-        q("gen", "Generated", b.dataGeneratedBits),
-        q("down", "Downlinked", b.dataDownlinkedBits),
-        scalar(a, "margin", "Downlink margin", b.dataMarginFraction, formatFraction),
+        quantityRow("gen", "Generated", b.dataGeneratedBits),
+        quantityRow("down", "Downlinked", b.dataDownlinkedBits),
+        scalarRow(a, "margin", "Downlink margin", b.dataMarginFraction, formatFraction),
       ],
     },
     { id: "cost", title: "Cost", rows: [q("cost", "Estimated cost", b.estimatedCostUsd)] },
@@ -136,9 +136,9 @@ export function buildTiles(a: MissionAnalysis): TileModel[] {
       id: "science",
       title: "Science",
       rows: [
-        scalar(a, "coverage", "Coverage score", a.science.coverageScore, (v) => `${formatNumber(v)} %`),
-        scalar(a, "returned", "Data returned", a.science.returnedFraction, formatFraction),
-        scalar(a, "collected", "Data collected", a.science.collectedFraction, formatFraction),
+        scalarRow(a, "coverage", "Coverage score", a.science.coverageScore, (v) => `${formatNumber(v)} %`),
+        scalarRow(a, "returned", "Data returned", a.science.returnedFraction, formatFraction),
+        scalarRow(a, "collected", "Data collected", a.science.collectedFraction, formatFraction),
       ],
     },
   ];
