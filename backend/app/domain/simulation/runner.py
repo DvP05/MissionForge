@@ -122,11 +122,31 @@ def _validate(sim: SimulationInput, catalog: Catalog) -> None:
         )
 
 
+def _state_digest(state: MissionState) -> str:
+    """sha256 of the canonical MissionState JSON (R37): content, not just id + revision."""
+    canonical = json.dumps(
+        state.model_dump(mode="json", by_alias=True),
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+        allow_nan=False,
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 def _run_id(sim: SimulationInput, scenario_version: str, decisions: Mapping[str, str]) -> str:
+    """Deterministic run id (R37).
+
+    Key = mission id, design revision, sha256 of the canonical MissionState JSON, seed, event
+    set, engine/catalogue/scenario versions, experimental flag and the sorted player
+    decisions. The content digest keeps two different designs that share an id + revision
+    (e.g. edits in two tabs) from colliding in the run store or the browser run cache.
+    """
     state = sim.mission_state
     key = [
         state.mission_id,
         state.design_revision,
+        _state_digest(state),
         sim.random_seed,
         sim.scenario_event_set_id,
         sim.engine_version,

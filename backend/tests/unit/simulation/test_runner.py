@@ -401,3 +401,18 @@ def test_limitations_reuse_assumption_constants(
     limits = _run(sim_input_for, catalog).final_report.limitations
     assert set(PHASE_ASSUMPTIONS) <= set(limits) and set(TELEMETRY_ASSUMPTIONS) <= set(limits)
     assert len(limits) == len(set(limits))
+
+
+def test_run_id_depends_on_mission_content_r37(sim_input_for: SimFactory, catalog: Catalog) -> None:
+    """R37: two different designs at the same mission id + revision never share a runId."""
+    fine = make_state(communications_id=MEDIUM, adcs_id="adcs-fine")
+    precision = make_state(communications_id=MEDIUM, adcs_id="adcs-precision")
+    assert (fine.mission_id, fine.design_revision) == (
+        precision.mission_id,
+        precision.design_revision,
+    )
+    a = _run(sim_input_for, catalog, fine)
+    b = _run(sim_input_for, catalog, precision)
+    assert a.run_id != b.run_id
+    again = _run(sim_input_for, catalog, make_state(communications_id=MEDIUM, adcs_id="adcs-fine"))
+    assert again.run_id == a.run_id
