@@ -57,7 +57,7 @@ export function MissionControl({ data, startDay }: { data: RunData; startDay: nu
         /> : null}
       <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
         <div className="min-w-0 space-y-4">
-          <SchematicPanel phase={phase} day={pb.day} />
+          <SchematicPanel run={run} phase={phase} day={pb.day} />
           <TelemetryCards samples={run.telemetry} day={pb.day} linkLimit={linkLimit} />
         </div>
         <EventLog events={shown} decisions={run.decisions} />
