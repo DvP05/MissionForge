@@ -24,8 +24,9 @@ class Settings(BaseSettings):
     jpl_cache_ttl_m_seconds: int = 21600
 
     mission_schema_version: str = "1.0"
-    engine_version: str = "0.1.0"
-    catalog_version: str = "0.1.0"
+    # R40: there is no engine/catalogue version setting. The engine version is
+    # app.domain.analysis.orchestrator.ENGINE_VERSION and the catalogue version is the
+    # loaded catalogue's own `version`, so an env var can never make them disagree.
 
     cors_origins: list[str] = ["http://localhost:3000"]
 

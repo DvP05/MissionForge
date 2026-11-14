@@ -3,6 +3,7 @@ from typing import Literal
 from fastapi import APIRouter, Request
 
 from app.config import get_settings
+from app.domain.analysis.orchestrator import ENGINE_VERSION
 from app.schemas.api import ApiMeta, ApiResult, ContractModel
 
 
@@ -28,8 +29,8 @@ def health(request: Request) -> ApiResult[HealthData]:
     data = HealthData(
         app_name=settings.app_name,
         app_version=settings.app_version,
-        engine_version=settings.engine_version,
-        catalog_version=settings.catalog_version,
+        engine_version=ENGINE_VERSION,  # R40: single source
+        catalog_version=request.app.state.catalog_service.version,
         schema_version=settings.mission_schema_version,
         jpl_adapter=JplAdapterStatus(status="unknown"),
     )

@@ -19,6 +19,7 @@ from app.api.routes import (
     templates,
 )
 from app.config import DEFAULT_SCENARIOS_DIR, get_settings
+from app.domain.analysis.orchestrator import ENGINE_VERSION
 from app.domain.simulation.anomalies import load_event_sets
 from app.services.analyst_service import AnalystService
 from app.services.catalog_service import CatalogService
@@ -41,14 +42,14 @@ def create_app() -> FastAPI:
     template_service = TemplateService.from_directory()
     app.state.catalog_service = catalogs
     app.state.template_service = template_service
-    mission_service = MissionService(catalogs, template_service, settings.engine_version)
+    mission_service = MissionService(catalogs, template_service, ENGINE_VERSION)
     app.state.mission_service = mission_service
     app.state.simulation_service = SimulationService(
         mission_service,
         catalogs.catalog,
         template_service,
         load_event_sets(DEFAULT_SCENARIOS_DIR),
-        engine_version=settings.engine_version,
+        engine_version=ENGINE_VERSION,
         app_version=settings.app_version,
     )
 
@@ -56,13 +57,13 @@ def create_app() -> FastAPI:
     profile = load_profile()
     app.state.graph_service = GraphService(mission_service, catalogs)
     app.state.robustness_service = RobustnessService(
-        mission_service, catalogs, template_service, settings.engine_version, profile
+        mission_service, catalogs, template_service, ENGINE_VERSION, profile
     )
     app.state.optimization_service = OptimizationService(
-        mission_service, catalogs, template_service, settings.engine_version, profile
+        mission_service, catalogs, template_service, ENGINE_VERSION, profile
     )
     app.state.analyst_service = AnalystService(
-        mission_service, catalogs, template_service, settings.engine_version
+        mission_service, catalogs, template_service, ENGINE_VERSION
     )
     app.state.science_service = ScienceService(load_science_models())
     app.state.schedule_service = ScheduleService(mission_service, catalogs)

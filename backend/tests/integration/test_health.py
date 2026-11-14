@@ -45,3 +45,21 @@ def test_cors_limited_to_frontend_origin() -> None:
     assert ok.headers.get("access-control-allow-origin") == "http://localhost:3000"
     bad = client.get("/api/health", headers={"Origin": "http://evil.example"})
     assert "access-control-allow-origin" not in bad.headers
+
+
+def test_health_versions_ignore_env_overrides(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """R40: ENGINE_VERSION / CATALOG_VERSION env vars cannot change reported versions."""
+    from fastapi.testclient import TestClient
+
+    from app.config import get_settings
+    from app.main import create_app
+
+    monkeypatch.setenv("ENGINE_VERSION", "9.9.9")
+    monkeypatch.setenv("CATALOG_VERSION", "9.9.9")
+    get_settings.cache_clear()
+    try:
+        data = TestClient(create_app()).get("/api/health").json()["data"]
+    finally:
+        get_settings.cache_clear()
+    assert data["engineVersion"] == "0.1.0"
+    assert data["catalogVersion"] == "0.1.0"

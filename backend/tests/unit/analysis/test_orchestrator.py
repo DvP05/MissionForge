@@ -128,9 +128,11 @@ def test_golden_regen_refused_in_ci(
         test_neo_default_matches_golden(catalog, templates)
 
 
-def test_engine_version_matches_settings_default() -> None:
+def test_engine_version_has_a_single_source() -> None:
+    """R40: no engine/catalogue version setting can disagree with the engine constant."""
     assert ENGINE_VERSION == "0.1.0"
-    assert Settings.model_fields["engine_version"].default == ENGINE_VERSION
+    assert "engine_version" not in Settings.model_fields
+    assert "catalog_version" not in Settings.model_fields
 
 
 # --- NEO demo story -----------------------------------------------------------------

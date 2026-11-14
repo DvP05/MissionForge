@@ -160,7 +160,7 @@ def _failure_response(
             CATALOG_ITEM_NOT_FOUND,
             "The design references catalogue components that do not exist.",
             details={
-                "catalogVersion": settings.catalog_version,
+                "catalogVersion": request.app.state.catalog_service.version,
                 "items": [{"path": m.path, "id": m.id} for m in outcome.missing_components],
                 **extra,
             },
