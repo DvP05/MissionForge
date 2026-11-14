@@ -123,6 +123,44 @@
         "title": "ApiResult[CatalogData]",
         "type": "object"
       },
+      "ApiResult_DossierData_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DossierData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[DossierData]",
+        "type": "object"
+      },
       "ApiResult_HealthData_": {
         "additionalProperties": false,
         "properties": {
@@ -1055,6 +1093,38 @@
           "bodyType"
         ],
         "title": "Destination",
+        "type": "object"
+      },
+      "DossierData": {
+        "additionalProperties": false,
+        "description": "The Evidence Passport: the JSON package (re-importable) and the self-contained HTML.",
+        "properties": {
+          "html": {
+            "title": "Html",
+            "type": "string"
+          },
+          "package": {
+            "$ref": "#/components/schemas/MissionPackage"
+          }
+        },
+        "required": [
+          "package",
+          "html"
+        ],
+        "title": "DossierData",
+        "type": "object"
+      },
+      "DossierRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "run": {
+            "$ref": "#/components/schemas/MissionRun"
+          }
+        },
+        "required": [
+          "run"
+        ],
+        "title": "DossierRequest",
         "type": "object"
       },
       "DownlinkPlanItem": {
@@ -3560,6 +3630,45 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/mission/dossier": {
+      "post": {
+        "description": "Evidence Passport v1 (architecture 19.9). The run is re-validated by the schema; the\nbudgets are recomputed here from its snapshot and the replay is re-checked here, so the\npassport never relies on client-calculated analysis or a client claim of identity.",
+        "operationId": "export_dossier_api_mission_dossier_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DossierRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_DossierData_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Dossier"
       }
     },
     "/api/mission/import": {

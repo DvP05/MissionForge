@@ -13,6 +13,7 @@ from app.api.errors import (
     validation_fields_from_pydantic,
 )
 from app.config import Settings, get_settings
+from app.domain.dossier.export_mission_dossier import ReplayCheck, export_mission_dossier
 from app.domain.errors import DomainValidationError
 from app.domain.mission.migrations import migrate_mission
 from app.domain.simulation.runner import LaunchBlocked
@@ -117,6 +118,17 @@ class ReplayData(ContractModel):
     status: Literal["identical-replay", "version-mismatch", "diverged"]
     mismatches: list[VersionMismatchItem]
     run: MissionRun | None = None
+
+
+class DossierRequest(ContractModel):
+    run: MissionRun
+
+
+class DossierData(ContractModel):
+    """The Evidence Passport: the JSON package (re-importable) and the self-contained HTML."""
+
+    package: MissionPackage
+    html: str
 
 
 # Domain codes that are the caller's fault (422). Anything else is a server fault and stays a 500.
@@ -464,5 +476,39 @@ def replay_run(
             mismatches=_mismatch_items(outcome.mismatches),
             run=outcome.run,
         ),
+        meta=ApiMeta(request_id=request.state.request_id),
+    )
+
+
+@router.post("/mission/dossier", response_model=ApiResult[DossierData])
+def export_dossier(
+    body: DossierRequest,
+    request: Request,
+    service: Annotated[SimulationService, Depends(get_simulation_service)],
+    clock: Annotated[Clock, Depends(get_clock)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> ApiResult[DossierData]:
+    """Evidence Passport v1 (architecture 19.9). The run is re-validated by the schema; the
+    budgets are recomputed here from its snapshot and the replay is re-checked here, so the
+    passport never relies on client-calculated analysis or a client claim of identity.
+    """
+    now = clock()
+    run = body.run
+    analysis = service.run_analysis(run, now).analysis
+    replay = service.replay(run, now)
+    dossier = export_mission_dossier(
+        run,
+        service.catalog,
+        exported_at=now,
+        app_version=settings.app_version,
+        analysis=analysis,
+        replay=ReplayCheck(
+            replay.status,
+            tuple(m.field for m in replay.mismatches),
+        ),
+    )
+    return ApiResult[DossierData](
+        ok=True,
+        data=DossierData(package=dossier.package, html=dossier.html),
         meta=ApiMeta(request_id=request.state.request_id),
     )

@@ -38,6 +38,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/mission/dossier": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Export Dossier
+         * @description Evidence Passport v1 (architecture 19.9). The run is re-validated by the schema; the
+         *     budgets are recomputed here from its snapshot and the replay is re-checked here, so the
+         *     passport never relies on client-calculated analysis or a client claim of identity.
+         */
+        post: operations["export_dossier_api_mission_dossier_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/mission/import": {
         parameters: {
             query?: never;
@@ -252,6 +274,14 @@ export interface components {
         /** ApiResult[CatalogData] */
         ApiResult_CatalogData_: {
             data?: components["schemas"]["CatalogData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[DossierData] */
+        ApiResult_DossierData_: {
+            data?: components["schemas"]["DossierData"] | null;
             error?: components["schemas"]["ApiError"] | null;
             meta: components["schemas"]["ApiMeta"];
             /** Ok */
@@ -521,6 +551,19 @@ export interface components {
             /** Name */
             name: string;
             source?: components["schemas"]["Provenance"] | null;
+        };
+        /**
+         * DossierData
+         * @description The Evidence Passport: the JSON package (re-importable) and the self-contained HTML.
+         */
+        DossierData: {
+            /** Html */
+            html: string;
+            package: components["schemas"]["MissionPackage"];
+        };
+        /** DossierRequest */
+        DossierRequest: {
+            run: components["schemas"]["MissionRun"];
         };
         /** DownlinkPlanItem */
         DownlinkPlanItem: {
@@ -1366,6 +1409,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_HealthData_"];
+                };
+            };
+        };
+    };
+    export_dossier_api_mission_dossier_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DossierRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_DossierData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

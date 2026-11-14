@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 
 import { expect, test, type Page } from "@playwright/test";
@@ -384,5 +385,38 @@ test.describe("robustness and design-time limit", () => {
     await page.getByTestId("playback-play").click(); // playing reaches the first decision
     await expect(page.getByTestId("decision-card")).toBeVisible({ timeout: 60_000 });
     await expect(page.getByTestId("skip-end-confirm")).toHaveCount(0);
+  });
+});
+
+test.describe("evidence passport", () => {
+  test("export downloads the JSON and HTML files", async ({ page }) => {
+    const runId = await launchFeasible(page);
+    await page.goto(`/review/${runId}`);
+    const downloads: import("@playwright/test").Download[] = [];
+    page.on("download", (d) => downloads.push(d));
+    await page.getByTestId("export-passport").click();
+    await expect(page.getByTestId("export-passport-done")).toContainText(/evidence records/i);
+    await expect.poll(() => downloads.length).toBe(2);
+    const names = downloads.map((d) => d.suggestedFilename()).sort();
+    expect(names).toEqual([`missionforge-passport-${runId}.html`, `missionforge-passport-${runId}.json`]);
+    const json = downloads.find((d) => d.suggestedFilename().endsWith(".json"))!;
+    const html = downloads.find((d) => d.suggestedFilename().endsWith(".html"))!;
+    const pkg = JSON.parse(readFileSync((await json.path())!, "utf8"));
+    expect(pkg.packageSchemaVersion).toBe("1.0");
+    expect(pkg.runs[0].runId).toBe(runId);
+    expect(pkg.evidence.length).toBeGreaterThan(10);
+    expect(pkg.manifest.engineVersion).toBeTruthy();
+    const text = readFileSync((await html.path())!, "utf8");
+    expect(text).toContain("not a NASA/JPL product or endorsement");
+    expect(text).toContain("Sources and assumptions");
+    expect(text).not.toMatch(/<script/i);
+  });
+
+  test("a failing export says nothing was downloaded", async ({ page }) => {
+    const runId = await launchFeasible(page);
+    await page.goto(`/review/${runId}`);
+    await page.route("**/api/mission/dossier", (r) => r.abort());
+    await page.getByTestId("export-passport").click();
+    await expect(page.getByTestId("export-passport-error")).toContainText(/nothing was downloaded/i);
   });
 });

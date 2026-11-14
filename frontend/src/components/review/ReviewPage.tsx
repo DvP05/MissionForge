@@ -6,6 +6,7 @@ import { ExperimentalBadge } from "@/components/common/ExperimentalBadge";
 import { PHASE_LABEL } from "@/components/mission-control/playback";
 import { formatFraction } from "@/lib/format";
 import type { RunData } from "@/lib/persistence/run-cache";
+import { ExportDossier } from "./ExportDossier";
 import { MarginsChart } from "./MarginsChart";
 
 const H2 = "text-lg font-semibold";
@@ -167,6 +168,8 @@ export function ReviewPage({ data }: { data: RunData }) {
           ))}
         </ul>
       </Section>
+
+      <ExportDossier data={data} />
     </article>
   );
 }

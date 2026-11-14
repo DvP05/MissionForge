@@ -145,6 +145,10 @@ class SimulationService:
         self._app_version = app_version
         self._store: RunStore[StoredRun] = store if store is not None else RunStore()
 
+    @property
+    def catalog(self) -> Catalog:
+        return self._catalog
+
     def _build(
         self,
         sim_input: SimulationInput,
