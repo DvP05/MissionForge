@@ -15,6 +15,7 @@ from pydantic import Field, StrictBool, StrictInt, model_validator
 
 from app.schemas.analysis import MissionAnalysis
 from app.schemas.api import ContractModel
+from app.schemas.health import HealthFinding
 from app.schemas.mission import MissionState
 from app.schemas.operations import MissionSchedule
 from app.schemas.optimization import Archetype, MissionTraceRowOut, ScienceTraceRowOut
@@ -73,6 +74,7 @@ class ResearchEvidence(ContractModel):
     pareto: ParetoPosition | None = None
     robustness: RobustnessResult | None = None
     schedule: MissionSchedule | None = None
+    health_findings: list[HealthFinding] = Field(default_factory=list)  # Task 6.7
     not_included: list[str] = Field(default_factory=list)
 
 

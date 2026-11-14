@@ -8,12 +8,14 @@ memory (lost on restart or eviction); the client keeps its own copy (persistence
 import json
 import threading
 from collections import OrderedDict
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Generic, TypeVar
 
 from app.domain.catalog.loader import Catalog
 from app.domain.errors import DomainValidationError
+from app.domain.science_belief import ScienceModel
 from app.domain.simulation.anomalies import ScenarioEventSet, default_event_set_id
 from app.domain.simulation.runner import run_mission
 from app.schemas.mission import SCHEMA_VERSION, MissionState
@@ -136,8 +138,11 @@ class SimulationService:
         engine_version: str,
         app_version: str,
         store: RunStore[StoredRun] | None = None,
+        science_models: Mapping[str, ScienceModel] | None = None,
     ) -> None:
         self._missions = missions
+        # Task 6.5: per-scenario hypothesis models feed the blackout autonomy belief.
+        self._science_models = dict(science_models or {})
         self._catalog = catalog
         self._templates = templates
         self._event_sets = event_sets
@@ -148,6 +153,10 @@ class SimulationService:
     @property
     def catalog(self) -> Catalog:
         return self._catalog
+
+    @property
+    def engine_version(self) -> str:
+        return self._engine_version
 
     def _build(
         self,
@@ -168,8 +177,14 @@ class SimulationService:
             scenario_version=template.scenario_version,
             app_version=app_version or self._app_version,
             decisions=decisions,
+            science_model=self._science_models.get(state.scenario_id),
         )
         return StoredRun(run=run, sim_input=sim_input, decisions=dict(decisions))
+
+    def build_run(self, sim_input: SimulationInput) -> MissionRun:
+        """A run that is NOT stored (derived comparisons such as the health monitor's
+        nominal model). The input analysis must come from the server."""
+        return self._build(sim_input, {}).run
 
     def _run(self, sim_input: SimulationInput, decisions: dict[str, str]) -> StoredRun:
         stored = self._build(sim_input, decisions)

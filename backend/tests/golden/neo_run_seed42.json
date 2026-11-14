@@ -3540,7 +3540,88 @@
     }
   ],
   "decisions": [],
-  "autonomyLog": [],
+  "autonomyLog": [
+    {
+      "decisionMaker": "onboard-policy",
+      "policy": "resource-aware",
+      "belief": {
+        "hypotheses": [],
+        "observationHistory": [],
+        "entropyBits": 0.0,
+        "version": 0
+      },
+      "candidates": [
+        {
+          "actionId": "observe:0:inst-hires-camera",
+          "utility": 1.121,
+          "feasible": true,
+          "rejectionReason": null
+        }
+      ],
+      "selectedActionId": "observe:0:inst-hires-camera",
+      "reason": "Day 290, meas-shape-model: Onboard resource-aware policy during blackout selects observe:0:inst-hires-camera: highest utility 1.12."
+    },
+    {
+      "decisionMaker": "ground",
+      "policy": "resource-aware",
+      "belief": {
+        "hypotheses": [],
+        "observationHistory": [],
+        "entropyBits": 0.0,
+        "version": 0
+      },
+      "candidates": [
+        {
+          "actionId": "observe:1:inst-hires-camera",
+          "utility": 1.1068443865008646,
+          "feasible": true,
+          "rejectionReason": null
+        }
+      ],
+      "selectedActionId": "observe:1:inst-hires-camera",
+      "reason": "Day 300, meas-shape-model: Ground contact: the ground team commands observe:1:inst-hires-camera (highest utility 1.11)."
+    },
+    {
+      "decisionMaker": "onboard-policy",
+      "policy": "resource-aware",
+      "belief": {
+        "hypotheses": [],
+        "observationHistory": [],
+        "entropyBits": 0.0,
+        "version": 0
+      },
+      "candidates": [
+        {
+          "actionId": "observe:2:inst-vnir-spectrometer",
+          "utility": 1.3345382609540348,
+          "feasible": true,
+          "rejectionReason": null
+        }
+      ],
+      "selectedActionId": "observe:2:inst-vnir-spectrometer",
+      "reason": "Day 310, meas-vnir-spectra: Onboard resource-aware policy during blackout selects observe:2:inst-vnir-spectrometer: highest utility 1.33."
+    },
+    {
+      "decisionMaker": "onboard-policy",
+      "policy": "resource-aware",
+      "belief": {
+        "hypotheses": [],
+        "observationHistory": [],
+        "entropyBits": 0.0,
+        "version": 0
+      },
+      "candidates": [
+        {
+          "actionId": "observe:3:inst-vnir-spectrometer",
+          "utility": 1.3317169817245496,
+          "feasible": true,
+          "rejectionReason": null
+        }
+      ],
+      "selectedActionId": "observe:3:inst-vnir-spectrometer",
+      "reason": "Day 320, meas-vnir-spectra: Onboard resource-aware policy during blackout selects observe:3:inst-vnir-spectrometer: highest utility 1.33."
+    }
+  ],
   "scienceOutcomes": [
     {
       "objectiveId": "obj-morphology",
@@ -3607,7 +3688,8 @@
       "Pointing error is a proxy equal to the ADCS pointing accuracy (gameplay-estimate).",
       "Link margin is reported at contacts only, at the scenario reference Earth range.",
       "Nominal run: no anomalies or decisions are injected.",
-      "All catalogue values are illustrative gameplay-estimate archetypes."
+      "All catalogue values are illustrative gameplay-estimate archetypes.",
+      "Blackout autonomy is a one-step policy selector over the planned observations (observe with the assigned instrument or hold), scored with gameplay-estimate weights; it is not a POMDP planner or flight software."
     ]
   }
 }

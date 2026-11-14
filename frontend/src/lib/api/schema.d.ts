@@ -82,6 +82,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/mission/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Monitor Health */
+        post: operations["monitor_health_api_mission_health_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/mission/impact": {
         parameters: {
             query?: never;
@@ -385,6 +402,35 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Anomaly */
+        Anomaly: {
+            /** Baseline */
+            baseline: number;
+            /** Channel */
+            channel: string;
+            /** Explanation */
+            explanation: string;
+            /** Observed */
+            observed: number;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "warning" | "critical";
+            /** Subsystems */
+            subsystems: string[];
+            /** Threshold */
+            threshold: number;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "kg" | "m" | "s" | "day" | "km" | "km/s" | "m/s" | "W" | "Wh" | "J" | "bit/s" | "bit" | "Hz" | "dB" | "dBW" | "K" | "USD" | "USD_2026" | "%" | "rad" | "deg" | "fraction";
+            /** Windowend */
+            windowEnd: number;
+            /** Windowstart */
+            windowStart: number;
+        };
         /** ApiError */
         ApiError: {
             /** Code */
@@ -448,6 +494,14 @@ export interface components {
         /** ApiResult[HealthData] */
         ApiResult_HealthData_: {
             data?: components["schemas"]["HealthData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[HealthReport] */
+        ApiResult_HealthReport_: {
+            data?: components["schemas"]["HealthReport"] | null;
             error?: components["schemas"]["ApiError"] | null;
             meta: components["schemas"]["ApiMeta"];
             /** Ok */
@@ -897,6 +951,30 @@ export interface components {
             name: string;
             source?: components["schemas"]["Provenance"] | null;
         };
+        /** DetectorConfig */
+        DetectorConfig: {
+            /** Channel */
+            channel: string;
+            /** Crit */
+            crit: number;
+            /** Expected */
+            expected: number;
+            /** Hardlimit */
+            hardLimit?: number | null;
+            /** Lam */
+            lam: number;
+            /** Persistencek */
+            persistenceK: number;
+            /** Rationale */
+            rationale: string;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "kg" | "m" | "s" | "day" | "km" | "km/s" | "m/s" | "W" | "Wh" | "J" | "bit/s" | "bit" | "Hz" | "dB" | "dBW" | "K" | "USD" | "USD_2026" | "%" | "rad" | "deg" | "fraction";
+            /** Warn */
+            warn: number;
+        };
         /**
          * DossierData
          * @description The Evidence Passport: the JSON package (re-importable) and the self-contained HTML.
@@ -1013,6 +1091,17 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** HealthChannelTrace */
+        HealthChannelTrace: {
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "power-thermal" | "attitude-pointing" | "comms-data" | "propulsion";
+            config: components["schemas"]["DetectorConfig"];
+            /** Points */
+            points: components["schemas"]["HealthTracePoint"][];
+        };
         /** HealthData */
         HealthData: {
             /** Appname */
@@ -1026,6 +1115,61 @@ export interface components {
             jplAdapter: components["schemas"]["JplAdapterStatus"];
             /** Schemaversion */
             schemaVersion: string;
+        };
+        /** HealthFinding */
+        HealthFinding: {
+            anomaly: components["schemas"]["Anomaly"];
+            /** Explanation */
+            explanation: string;
+            /**
+             * Likelyfalsepositive
+             * @default false
+             */
+            likelyFalsePositive: boolean;
+            /** Recoverydecision */
+            recoveryDecision?: string | null;
+            /** Relatedeventid */
+            relatedEventId?: string | null;
+        };
+        /**
+         * HealthReport
+         * @description Health-monitor result for one run (Task 6.7); derived, recomputed on request.
+         */
+        HealthReport: {
+            /** Assumptions */
+            assumptions: string[];
+            /** Channels */
+            channels: components["schemas"]["HealthChannelTrace"][];
+            /** Findings */
+            findings: components["schemas"]["HealthFinding"][];
+            /** Nominaleventsetid */
+            nominalEventSetId: string;
+            /** Runid */
+            runId: string;
+        };
+        /** HealthRequest */
+        HealthRequest: {
+            run: components["schemas"]["MissionRun"];
+        };
+        /** HealthTracePoint */
+        HealthTracePoint: {
+            /** Ewma */
+            ewma: number;
+            /** Expected */
+            expected: number;
+            /** Missionday */
+            missionDay: number;
+            /** Observed */
+            observed: number;
+            /** Persistence */
+            persistence: number;
+            /** Residual */
+            residual: number;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "nominal" | "warning" | "critical";
         };
         /** HypothesisProbability */
         HypothesisProbability: {
@@ -1689,6 +1833,8 @@ export interface components {
          *     A section is None when it could not be computed; ``not_included`` says why.
          */
         ResearchEvidence: {
+            /** Healthfindings */
+            healthFindings?: components["schemas"]["HealthFinding"][];
             /** Missiontraceability */
             missionTraceability?: components["schemas"]["MissionTraceRowOut"][];
             /** Notincluded */
@@ -2258,6 +2404,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_GraphData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    monitor_health_api_mission_health_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HealthRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_HealthReport_"];
                 };
             };
             /** @description Validation Error */

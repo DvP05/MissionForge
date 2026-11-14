@@ -9,13 +9,16 @@ from datetime import datetime
 
 from app.domain.optimization import dominates
 from app.schemas.evidence import ParetoPosition, ResearchEvidence
+from app.schemas.health import HealthFinding
 from app.schemas.mission import MissionState
 from app.schemas.optimization import (
     MissionTraceRowOut,
     OptimizationResult,
     ScienceTraceRowOut,
 )
+from app.schemas.simulation import MissionRun
 from app.services.graph_service import GraphService
+from app.services.health_monitor_service import HealthMonitorService
 from app.services.optimization_service import OptimizationService
 from app.services.robustness_service import RobustnessService
 from app.services.schedule_service import ScheduleService
@@ -26,10 +29,6 @@ PASSPORT_PARETO_CANDIDATES = 100
 PASSPORT_ROBUSTNESS_SAMPLES = 100
 MAX_DOMINATED_BY = 5
 
-NOT_BUILT = (
-    "Onboard autonomy decisions (FR-21) and the telemetry health monitor (FR-23) are not "
-    "part of this build; decisions listed in the timeline are ground / player decisions."
-)
 BELIEF_NOTE = (
     "The science belief tracker is interactive (player-chosen observations) and is not "
     "recorded in a run, so no posterior is included here."
@@ -78,13 +77,17 @@ class ResearchEvidenceService:
         optimization: OptimizationService,
         robustness: RobustnessService,
         schedule: ScheduleService,
+        health: HealthMonitorService | None = None,
     ) -> None:
+        self._health = health
         self._graph = graph
         self._optimization = optimization
         self._robustness = robustness
         self._schedule = schedule
 
-    def build(self, state: MissionState, now: datetime) -> ResearchEvidence:
+    def build(
+        self, state: MissionState, now: datetime, run: MissionRun | None = None
+    ) -> ResearchEvidence:
         not_included: list[str] = []
         stm: list[ScienceTraceRowOut] = []
         mtm: list[MissionTraceRowOut] = []
@@ -139,12 +142,20 @@ class ResearchEvidenceService:
         if sched.result is None:
             not_included.append("Schedule: the design could not be analysed.")
 
-        not_included += [NOT_BUILT, BELIEF_NOTE]
+        health: list[HealthFinding] = []
+        if run is not None and self._health is not None:
+            report = self._health.monitor(run, now).report
+            if report is not None:
+                health = report.findings
+            else:
+                not_included.append("Health monitor: the design could not be analysed.")
+        not_included.append(BELIEF_NOTE)
         return ResearchEvidence(
             science_traceability=stm,
             mission_traceability=mtm,
             pareto=pareto,
             robustness=rob.result,
             schedule=sched.result.schedule if sched.result is not None else None,
+            health_findings=health,
             not_included=not_included,
         )

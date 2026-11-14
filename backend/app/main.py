@@ -11,6 +11,7 @@ from app.api.routes import (
     catalog,
     graph,
     health,
+    health_monitor,
     missions,
     optimization,
     robustness,
@@ -24,6 +25,7 @@ from app.domain.simulation.anomalies import load_event_sets
 from app.services.analyst_service import AnalystService
 from app.services.catalog_service import CatalogService
 from app.services.graph_service import GraphService
+from app.services.health_monitor_service import HealthMonitorService
 from app.services.mission_service import MissionService
 from app.services.optimization_service import OptimizationService
 from app.services.research_evidence_service import ResearchEvidenceService
@@ -45,6 +47,7 @@ def create_app() -> FastAPI:
     app.state.template_service = template_service
     mission_service = MissionService(catalogs, template_service, ENGINE_VERSION)
     app.state.mission_service = mission_service
+    science_models = load_science_models()
     app.state.simulation_service = SimulationService(
         mission_service,
         catalogs.catalog,
@@ -52,6 +55,7 @@ def create_app() -> FastAPI:
         load_event_sets(DEFAULT_SCENARIOS_DIR),
         engine_version=ENGINE_VERSION,
         app_version=settings.app_version,
+        science_models=science_models,
     )
 
     # Phase 6 research differentiators (graph, arena, robustness, analyst, science, schedule).
@@ -66,14 +70,16 @@ def create_app() -> FastAPI:
     app.state.analyst_service = AnalystService(
         mission_service, catalogs, template_service, ENGINE_VERSION
     )
-    app.state.science_service = ScienceService(load_science_models())
+    app.state.science_service = ScienceService(science_models)
     app.state.schedule_service = ScheduleService(mission_service, catalogs)
+    app.state.health_monitor_service = HealthMonitorService(app.state.simulation_service)
     # Phase 4 <-> 6 join: Evidence Passport v2 recomputes Phase 6 evidence for a run.
     app.state.research_evidence_service = ResearchEvidenceService(
         app.state.graph_service,
         app.state.optimization_service,
         app.state.robustness_service,
         app.state.schedule_service,
+        app.state.health_monitor_service,
     )
 
     # Added innermost-first: size limit, then CORS, then the request id (outermost).
@@ -113,6 +119,7 @@ def create_app() -> FastAPI:
     app.include_router(analyst.router, prefix="/api")
     app.include_router(science.router, prefix="/api")
     app.include_router(schedule.router, prefix="/api")
+    app.include_router(health_monitor.router, prefix="/api")
     return app
 
 

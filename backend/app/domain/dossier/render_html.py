@@ -642,10 +642,62 @@ def _schedule(research: ResearchEvidence) -> str:
     )
 
 
-def _research_sections(research: ResearchEvidence | None) -> list[str]:
+def _autonomy(run: MissionRun) -> str:
+    if not run.autonomy_log:
+        return _section("Onboard autonomy", '<p class="muted">No autonomy decisions logged.</p>')
+    rows = []
+    for d in run.autonomy_log:
+        utilities = "; ".join(
+            f"{c.action_id} {c.utility:.2f}" + ("" if c.feasible else f" ({c.rejection_reason})")
+            for c in d.candidates
+        )
+        belief = ", ".join(f"{h.hypothesis_id} {_pct(h.probability)}" for h in d.belief.hypotheses)
+        rows.append(
+            [
+                _e("ONBOARD" if d.decision_maker == "onboard-policy" else "GROUND"),
+                _e(d.policy),
+                _e(belief or "no hypothesis model"),
+                _e(utilities or "none"),
+                _e(d.selected_action_id or "hold"),
+                _e(d.reason),
+            ]
+        )
+    return _section(
+        "Onboard autonomy",
+        '<p class="muted">One-step policy selector over planned observations during '
+        "communication blackouts (gameplay-estimate weights), not a POMDP planner.</p>"
+        + _table(
+            ["Authority", "Policy", "Input belief", "Candidate utilities", "Selected", "Reason"],
+            rows,
+        ),  # fmt: skip
+    )
+
+
+def _health(research: ResearchEvidence) -> str:
+    items = [
+        f"{f.anomaly.severity.upper()} {f.anomaly.channel} day {_num(f.anomaly.window_start)}"
+        f"–{_num(f.anomaly.window_end)}: {f.anomaly.explanation} {f.explanation}"
+        for f in research.health_findings
+    ]
+    return _section(
+        "Health monitor",
+        '<p class="muted">EWMA residual against the nominal model (same design and seed, no '
+        "anomalies); transparent thresholds, not a trained detector.</p>"
+        + _ul(items, "No telemetry departed from the nominal model."),
+    )
+
+
+def _research_sections(run: MissionRun, research: ResearchEvidence | None) -> list[str]:
     if research is None:
-        return []
-    return [_traceability(research), _pareto(research), _robustness(research), _schedule(research)]
+        return [_autonomy(run)]
+    return [
+        _traceability(research),
+        _pareto(research),
+        _robustness(research),
+        _schedule(research),
+        _autonomy(run),
+        _health(research),
+    ]
 
 
 def _limitations_section(run: MissionRun, research: ResearchEvidence | None = None) -> str:
@@ -691,7 +743,7 @@ def render_html(
             _anomalies(run),
             _science(run),
             _score(run),
-            *_research_sections(research),
+            *_research_sections(run, research),
             _manifest(run, app_version, exported_at, replay),
             _ledger(records, analysis),
             _limitations_section(run, research),

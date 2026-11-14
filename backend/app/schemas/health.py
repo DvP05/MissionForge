@@ -49,3 +49,37 @@ class Anomaly(ContractModel):
         if self.window_end < self.window_start:
             raise ValueError("window_end must be >= window_start")
         return self
+
+
+class HealthTracePoint(ContractModel):
+    mission_day: NonNegativeFloat
+    observed: FiniteFloat
+    expected: FiniteFloat  # nominal-model value at this checkpoint
+    residual: FiniteFloat
+    ewma: FiniteFloat
+    persistence: StrictInt = Field(ge=0)
+    state: Literal["nominal", "warning", "critical"]
+
+
+class HealthChannelTrace(ContractModel):
+    config: DetectorConfig
+    category: Literal["power-thermal", "attitude-pointing", "comms-data", "propulsion"]
+    points: list[HealthTracePoint]
+
+
+class HealthFinding(ContractModel):
+    anomaly: Anomaly
+    related_event_id: str | None = None  # the scenario event that explains it, if any
+    recovery_decision: str | None = None  # "<event id> -> <choice id>" when one was made
+    likely_false_positive: bool = False
+    explanation: str
+
+
+class HealthReport(ContractModel):
+    """Health-monitor result for one run (Task 6.7); derived, recomputed on request."""
+
+    run_id: str
+    nominal_event_set_id: str
+    channels: list[HealthChannelTrace]
+    findings: list[HealthFinding]
+    assumptions: list[str]

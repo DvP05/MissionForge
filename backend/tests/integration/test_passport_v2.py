@@ -72,8 +72,10 @@ def test_package_carries_research_evidence(exported: dict[str, Any], run: dict[s
     # Schedule / data cycles
     sched = research["schedule"]
     assert sched["cycles"] and sched["accepted"]
-    # Honest about what this build does not contain
-    assert any("autonomy" in n.lower() for n in research["notIncluded"])
+    # Honest about what is not included; autonomy and health are now part of the passport
+    assert any("belief" in n.lower() for n in research["notIncluded"])
+    assert not any("autonomy" in n.lower() for n in research["notIncluded"])
+    assert isinstance(research["healthFindings"], list)
 
 
 def test_html_has_v2_sections(exported: dict[str, Any]) -> None:
@@ -85,6 +87,8 @@ def test_html_has_v2_sections(exported: dict[str, Any]) -> None:
         "Design-space position",
         "Robustness",
         "Science and downlink schedule",
+        "Onboard autonomy",
+        "Health monitor",
         "Not included",
         # v1 sections that AC-22 also lists
         "Anomalies",

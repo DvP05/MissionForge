@@ -130,7 +130,9 @@ def test_run_records_design_revision_snapshot_and_manifest(
     assert (m.schema_version, m.engine_version, m.catalog_version) == ("1.0", "0.1.0", "0.1.0")
     assert (m.scenario_version, m.app_version, m.seed) == ("0.1.0", "0.1.0", 42)
     assert m.event_set_id == run.scenario_event_set_id == "nominal-v1"
-    assert run.decisions == () and run.autonomy_log == ()
+    assert run.decisions == ()
+    # Task 6.5: every planned observation has a logged authority decision
+    assert len(run.autonomy_log) == len(run.input_snapshot.operations.observation_plan)
 
 
 def test_run_is_immutable(sim_input_for: SimFactory, catalog: Catalog) -> None:

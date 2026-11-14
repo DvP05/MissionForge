@@ -716,6 +716,39 @@ def anomaly() -> health.Anomaly:
     )
 
 
+def health_trace_point() -> health.HealthTracePoint:
+    return health.HealthTracePoint(
+        mission_day=259.0, observed=0.32, expected=0.8, residual=-0.48, ewma=-0.24,
+        persistence=2, state="critical",
+    )  # fmt: skip
+
+
+def health_channel_trace() -> health.HealthChannelTrace:
+    return health.HealthChannelTrace(
+        config=detector_config(), category="power-thermal", points=[health_trace_point()]
+    )
+
+
+def health_finding() -> health.HealthFinding:
+    return health.HealthFinding(
+        anomaly=anomaly(),
+        related_event_id="scenario-solar-event",
+        recovery_decision="scenario-solar-event -> pause-science",
+        likely_false_positive=False,
+        explanation="Explained by event scenario-solar-event.",
+    )
+
+
+def health_report() -> health.HealthReport:
+    return health.HealthReport(
+        run_id="run-1",
+        nominal_event_set_id="nominal-v1",
+        channels=[health_channel_trace()],
+        findings=[health_finding()],
+        assumptions=["nominal model"],
+    )
+
+
 def evidence_record() -> evidence.EvidenceRecord:
     return evidence.EvidenceRecord(
         id="ev-1",
@@ -788,6 +821,7 @@ def research_evidence() -> evidence.ResearchEvidence:
         pareto=pareto_position(),
         robustness=robustness_result(),
         schedule=mission_schedule(),
+        health_findings=[health_finding()],
         not_included=["Onboard autonomy is not part of this build."],
     )
 
@@ -915,6 +949,10 @@ BUILDERS: dict[str, Callable[[], BaseModel]] = {
     "analyst.Recommendation": recommendation,
     "health.DetectorConfig": detector_config,
     "health.Anomaly": anomaly,
+    "health.HealthTracePoint": health_trace_point,
+    "health.HealthChannelTrace": health_channel_trace,
+    "health.HealthFinding": health_finding,
+    "health.HealthReport": health_report,
     "evidence.MissionPackageManifest": mission_package_manifest,
     "evidence.MissionPackage": mission_package,
     "evidence.ParetoPosition": pareto_position,

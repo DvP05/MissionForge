@@ -254,6 +254,9 @@ which regenerates `openapi.json` / frontend types only when a route exposes the 
 | 2026-11-14 | `BudgetAnalysis` margin fractions (mass/energy/data) and `deltaVMarginKmPerS` become `float \| None`; snapshots, OpenAPI and TS types regenerated | controller ruling R38 |
 | 2026-11-14 | Phase 4↔6 integration: `MetricChange.before/after` and `MetricQuantiles.p10/median/p90` become `float \| None` (undefined margins, R38); `MetricQuantiles.definedSamples` added; snapshots, OpenAPI and TS types regenerated | integration ruling R42 |
 | 2026-11-14 | Evidence Passport v2 (Task 6.9): `MissionPackage.research: ResearchEvidence \| None` (derived, dropped on import, recomputed on export) with `ParetoPosition`; `ScienceTraceRowOut` / `MissionTraceRowOut` moved from the graph route into `optimization.py` (same names, same OpenAPI) | integration ruling R43 |
+| 2026-11-14 | Task 6.5: `MissionRun.autonomyLog` is now populated (contract unchanged): one `AutonomyDecision` per planned observation; authority from the flown contacts; policy from `safeModePolicy` (conservative→conservative, balanced→resource-aware, aggressive→science-first); an onboard hold removes the observation from the as-flown plan. Goldens regenerated (autonomyLog + one limitation only) | rulings R44 |
+| 2026-11-14 | Scenario decision events stay player decisions; during a blackout the choice is framed as selecting a stored contingency response executed on board (UI shows authority + countdown) | ruling R45 |
+| 2026-11-14 | Task 6.7: `HealthTracePoint`, `HealthChannelTrace`, `HealthFinding`, `HealthReport` added (`POST /api/mission/health`, nominal model = same run on `nominal-v1`); `ResearchEvidence.healthFindings` added | ruling R46 |
 
 ## Templates (Task 1.5)
 

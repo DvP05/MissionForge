@@ -1,6 +1,98 @@
 {
   "components": {
     "schemas": {
+      "Anomaly": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline": {
+            "title": "Baseline",
+            "type": "number"
+          },
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "observed": {
+            "title": "Observed",
+            "type": "number"
+          },
+          "severity": {
+            "enum": [
+              "warning",
+              "critical"
+            ],
+            "title": "Severity",
+            "type": "string"
+          },
+          "subsystems": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Subsystems",
+            "type": "array"
+          },
+          "threshold": {
+            "title": "Threshold",
+            "type": "number"
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg",
+              "fraction"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "windowEnd": {
+            "ge": 0,
+            "title": "Windowend",
+            "type": "number"
+          },
+          "windowStart": {
+            "ge": 0,
+            "title": "Windowstart",
+            "type": "number"
+          }
+        },
+        "required": [
+          "channel",
+          "unit",
+          "observed",
+          "baseline",
+          "threshold",
+          "windowStart",
+          "windowEnd",
+          "severity",
+          "subsystems",
+          "explanation"
+        ],
+        "title": "Anomaly",
+        "type": "object"
+      },
       "ApiError": {
         "additionalProperties": false,
         "properties": {
@@ -273,6 +365,44 @@
           "meta"
         ],
         "title": "ApiResult[HealthData]",
+        "type": "object"
+      },
+      "ApiResult_HealthReport_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HealthReport"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[HealthReport]",
         "type": "object"
       },
       "ApiResult_ImpactData_": {
@@ -1853,6 +1983,95 @@
         "title": "Destination",
         "type": "object"
       },
+      "DetectorConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "crit": {
+            "ge": 0,
+            "title": "Crit",
+            "type": "number"
+          },
+          "expected": {
+            "title": "Expected",
+            "type": "number"
+          },
+          "hardLimit": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hardlimit"
+          },
+          "lam": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 1.0,
+            "title": "Lam",
+            "type": "number"
+          },
+          "persistenceK": {
+            "minimum": 1.0,
+            "title": "Persistencek",
+            "type": "integer"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg",
+              "fraction"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "warn": {
+            "ge": 0,
+            "title": "Warn",
+            "type": "number"
+          }
+        },
+        "required": [
+          "channel",
+          "unit",
+          "expected",
+          "warn",
+          "crit",
+          "persistenceK",
+          "lam",
+          "rationale"
+        ],
+        "title": "DetectorConfig",
+        "type": "object"
+      },
       "DossierData": {
         "additionalProperties": false,
         "description": "The Evidence Passport: the JSON package (re-importable) and the self-contained HTML.",
@@ -2255,6 +2474,38 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "HealthChannelTrace": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "enum": [
+              "power-thermal",
+              "attitude-pointing",
+              "comms-data",
+              "propulsion"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "config": {
+            "$ref": "#/components/schemas/DetectorConfig"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/HealthTracePoint"
+            },
+            "title": "Points",
+            "type": "array"
+          }
+        },
+        "required": [
+          "config",
+          "category",
+          "points"
+        ],
+        "title": "HealthChannelTrace",
+        "type": "object"
+      },
       "HealthData": {
         "additionalProperties": false,
         "properties": {
@@ -2291,6 +2542,159 @@
           "jplAdapter"
         ],
         "title": "HealthData",
+        "type": "object"
+      },
+      "HealthFinding": {
+        "additionalProperties": false,
+        "properties": {
+          "anomaly": {
+            "$ref": "#/components/schemas/Anomaly"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "likelyFalsePositive": {
+            "default": false,
+            "title": "Likelyfalsepositive",
+            "type": "boolean"
+          },
+          "recoveryDecision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recoverydecision"
+          },
+          "relatedEventId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relatedeventid"
+          }
+        },
+        "required": [
+          "anomaly",
+          "explanation"
+        ],
+        "title": "HealthFinding",
+        "type": "object"
+      },
+      "HealthReport": {
+        "additionalProperties": false,
+        "description": "Health-monitor result for one run (Task 6.7); derived, recomputed on request.",
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "channels": {
+            "items": {
+              "$ref": "#/components/schemas/HealthChannelTrace"
+            },
+            "title": "Channels",
+            "type": "array"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/HealthFinding"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "nominalEventSetId": {
+            "title": "Nominaleventsetid",
+            "type": "string"
+          },
+          "runId": {
+            "title": "Runid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "runId",
+          "nominalEventSetId",
+          "channels",
+          "findings",
+          "assumptions"
+        ],
+        "title": "HealthReport",
+        "type": "object"
+      },
+      "HealthRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "run": {
+            "$ref": "#/components/schemas/MissionRun"
+          }
+        },
+        "required": [
+          "run"
+        ],
+        "title": "HealthRequest",
+        "type": "object"
+      },
+      "HealthTracePoint": {
+        "additionalProperties": false,
+        "properties": {
+          "ewma": {
+            "title": "Ewma",
+            "type": "number"
+          },
+          "expected": {
+            "title": "Expected",
+            "type": "number"
+          },
+          "missionDay": {
+            "ge": 0,
+            "title": "Missionday",
+            "type": "number"
+          },
+          "observed": {
+            "title": "Observed",
+            "type": "number"
+          },
+          "persistence": {
+            "minimum": 0.0,
+            "title": "Persistence",
+            "type": "integer"
+          },
+          "residual": {
+            "title": "Residual",
+            "type": "number"
+          },
+          "state": {
+            "enum": [
+              "nominal",
+              "warning",
+              "critical"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "missionDay",
+          "observed",
+          "expected",
+          "residual",
+          "ewma",
+          "persistence",
+          "state"
+        ],
+        "title": "HealthTracePoint",
         "type": "object"
       },
       "HypothesisProbability": {
@@ -4214,6 +4618,13 @@
         "additionalProperties": false,
         "description": "Phase 6 evidence recomputed server-side from the run's input snapshot (Passport v2).\n\nDerived: like ``latest_analysis`` it is ignored on import and recomputed on export.\nA section is None when it could not be computed; ``not_included`` says why.",
         "properties": {
+          "healthFindings": {
+            "items": {
+              "$ref": "#/components/schemas/HealthFinding"
+            },
+            "title": "Healthfindings",
+            "type": "array"
+          },
           "missionTraceability": {
             "items": {
               "$ref": "#/components/schemas/MissionTraceRowOut"
@@ -5742,6 +6153,44 @@
           }
         },
         "summary": "Mission Graph"
+      }
+    },
+    "/api/mission/health": {
+      "post": {
+        "operationId": "monitor_health_api_mission_health_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HealthRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_HealthReport_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Monitor Health"
       }
     },
     "/api/mission/impact": {

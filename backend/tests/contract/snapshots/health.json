@@ -180,5 +180,730 @@
     ],
     "title": "DetectorConfig",
     "type": "object"
+  },
+  "HealthChannelTrace": {
+    "$defs": {
+      "DetectorConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "crit": {
+            "ge": 0,
+            "title": "Crit",
+            "type": "number"
+          },
+          "expected": {
+            "title": "Expected",
+            "type": "number"
+          },
+          "hardLimit": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Hardlimit"
+          },
+          "lam": {
+            "exclusiveMinimum": 0,
+            "maximum": 1,
+            "title": "Lam",
+            "type": "number"
+          },
+          "persistenceK": {
+            "minimum": 1,
+            "title": "Persistencek",
+            "type": "integer"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg",
+              "fraction"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "warn": {
+            "ge": 0,
+            "title": "Warn",
+            "type": "number"
+          }
+        },
+        "required": [
+          "channel",
+          "unit",
+          "expected",
+          "warn",
+          "crit",
+          "persistenceK",
+          "lam",
+          "rationale"
+        ],
+        "title": "DetectorConfig",
+        "type": "object"
+      },
+      "HealthTracePoint": {
+        "additionalProperties": false,
+        "properties": {
+          "ewma": {
+            "title": "Ewma",
+            "type": "number"
+          },
+          "expected": {
+            "title": "Expected",
+            "type": "number"
+          },
+          "missionDay": {
+            "ge": 0,
+            "title": "Missionday",
+            "type": "number"
+          },
+          "observed": {
+            "title": "Observed",
+            "type": "number"
+          },
+          "persistence": {
+            "minimum": 0,
+            "title": "Persistence",
+            "type": "integer"
+          },
+          "residual": {
+            "title": "Residual",
+            "type": "number"
+          },
+          "state": {
+            "enum": [
+              "nominal",
+              "warning",
+              "critical"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "missionDay",
+          "observed",
+          "expected",
+          "residual",
+          "ewma",
+          "persistence",
+          "state"
+        ],
+        "title": "HealthTracePoint",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "category": {
+        "enum": [
+          "power-thermal",
+          "attitude-pointing",
+          "comms-data",
+          "propulsion"
+        ],
+        "title": "Category",
+        "type": "string"
+      },
+      "config": {
+        "$ref": "#/$defs/DetectorConfig"
+      },
+      "points": {
+        "items": {
+          "$ref": "#/$defs/HealthTracePoint"
+        },
+        "title": "Points",
+        "type": "array"
+      }
+    },
+    "required": [
+      "config",
+      "category",
+      "points"
+    ],
+    "title": "HealthChannelTrace",
+    "type": "object"
+  },
+  "HealthFinding": {
+    "$defs": {
+      "Anomaly": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline": {
+            "title": "Baseline",
+            "type": "number"
+          },
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "observed": {
+            "title": "Observed",
+            "type": "number"
+          },
+          "severity": {
+            "enum": [
+              "warning",
+              "critical"
+            ],
+            "title": "Severity",
+            "type": "string"
+          },
+          "subsystems": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Subsystems",
+            "type": "array"
+          },
+          "threshold": {
+            "title": "Threshold",
+            "type": "number"
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg",
+              "fraction"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "windowEnd": {
+            "ge": 0,
+            "title": "Windowend",
+            "type": "number"
+          },
+          "windowStart": {
+            "ge": 0,
+            "title": "Windowstart",
+            "type": "number"
+          }
+        },
+        "required": [
+          "channel",
+          "unit",
+          "observed",
+          "baseline",
+          "threshold",
+          "windowStart",
+          "windowEnd",
+          "severity",
+          "subsystems",
+          "explanation"
+        ],
+        "title": "Anomaly",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "anomaly": {
+        "$ref": "#/$defs/Anomaly"
+      },
+      "explanation": {
+        "title": "Explanation",
+        "type": "string"
+      },
+      "likelyFalsePositive": {
+        "default": false,
+        "title": "Likelyfalsepositive",
+        "type": "boolean"
+      },
+      "recoveryDecision": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Recoverydecision"
+      },
+      "relatedEventId": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Relatedeventid"
+      }
+    },
+    "required": [
+      "anomaly",
+      "explanation"
+    ],
+    "title": "HealthFinding",
+    "type": "object"
+  },
+  "HealthReport": {
+    "$defs": {
+      "Anomaly": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline": {
+            "title": "Baseline",
+            "type": "number"
+          },
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "observed": {
+            "title": "Observed",
+            "type": "number"
+          },
+          "severity": {
+            "enum": [
+              "warning",
+              "critical"
+            ],
+            "title": "Severity",
+            "type": "string"
+          },
+          "subsystems": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Subsystems",
+            "type": "array"
+          },
+          "threshold": {
+            "title": "Threshold",
+            "type": "number"
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg",
+              "fraction"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "windowEnd": {
+            "ge": 0,
+            "title": "Windowend",
+            "type": "number"
+          },
+          "windowStart": {
+            "ge": 0,
+            "title": "Windowstart",
+            "type": "number"
+          }
+        },
+        "required": [
+          "channel",
+          "unit",
+          "observed",
+          "baseline",
+          "threshold",
+          "windowStart",
+          "windowEnd",
+          "severity",
+          "subsystems",
+          "explanation"
+        ],
+        "title": "Anomaly",
+        "type": "object"
+      },
+      "DetectorConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "crit": {
+            "ge": 0,
+            "title": "Crit",
+            "type": "number"
+          },
+          "expected": {
+            "title": "Expected",
+            "type": "number"
+          },
+          "hardLimit": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Hardlimit"
+          },
+          "lam": {
+            "exclusiveMinimum": 0,
+            "maximum": 1,
+            "title": "Lam",
+            "type": "number"
+          },
+          "persistenceK": {
+            "minimum": 1,
+            "title": "Persistencek",
+            "type": "integer"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg",
+              "fraction"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "warn": {
+            "ge": 0,
+            "title": "Warn",
+            "type": "number"
+          }
+        },
+        "required": [
+          "channel",
+          "unit",
+          "expected",
+          "warn",
+          "crit",
+          "persistenceK",
+          "lam",
+          "rationale"
+        ],
+        "title": "DetectorConfig",
+        "type": "object"
+      },
+      "HealthChannelTrace": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "enum": [
+              "power-thermal",
+              "attitude-pointing",
+              "comms-data",
+              "propulsion"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "config": {
+            "$ref": "#/$defs/DetectorConfig"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/$defs/HealthTracePoint"
+            },
+            "title": "Points",
+            "type": "array"
+          }
+        },
+        "required": [
+          "config",
+          "category",
+          "points"
+        ],
+        "title": "HealthChannelTrace",
+        "type": "object"
+      },
+      "HealthFinding": {
+        "additionalProperties": false,
+        "properties": {
+          "anomaly": {
+            "$ref": "#/$defs/Anomaly"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "likelyFalsePositive": {
+            "default": false,
+            "title": "Likelyfalsepositive",
+            "type": "boolean"
+          },
+          "recoveryDecision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Recoverydecision"
+          },
+          "relatedEventId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Relatedeventid"
+          }
+        },
+        "required": [
+          "anomaly",
+          "explanation"
+        ],
+        "title": "HealthFinding",
+        "type": "object"
+      },
+      "HealthTracePoint": {
+        "additionalProperties": false,
+        "properties": {
+          "ewma": {
+            "title": "Ewma",
+            "type": "number"
+          },
+          "expected": {
+            "title": "Expected",
+            "type": "number"
+          },
+          "missionDay": {
+            "ge": 0,
+            "title": "Missionday",
+            "type": "number"
+          },
+          "observed": {
+            "title": "Observed",
+            "type": "number"
+          },
+          "persistence": {
+            "minimum": 0,
+            "title": "Persistence",
+            "type": "integer"
+          },
+          "residual": {
+            "title": "Residual",
+            "type": "number"
+          },
+          "state": {
+            "enum": [
+              "nominal",
+              "warning",
+              "critical"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "missionDay",
+          "observed",
+          "expected",
+          "residual",
+          "ewma",
+          "persistence",
+          "state"
+        ],
+        "title": "HealthTracePoint",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "description": "Health-monitor result for one run (Task 6.7); derived, recomputed on request.",
+    "properties": {
+      "assumptions": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Assumptions",
+        "type": "array"
+      },
+      "channels": {
+        "items": {
+          "$ref": "#/$defs/HealthChannelTrace"
+        },
+        "title": "Channels",
+        "type": "array"
+      },
+      "findings": {
+        "items": {
+          "$ref": "#/$defs/HealthFinding"
+        },
+        "title": "Findings",
+        "type": "array"
+      },
+      "nominalEventSetId": {
+        "title": "Nominaleventsetid",
+        "type": "string"
+      },
+      "runId": {
+        "title": "Runid",
+        "type": "string"
+      }
+    },
+    "required": [
+      "runId",
+      "nominalEventSetId",
+      "channels",
+      "findings",
+      "assumptions"
+    ],
+    "title": "HealthReport",
+    "type": "object"
+  },
+  "HealthTracePoint": {
+    "additionalProperties": false,
+    "properties": {
+      "ewma": {
+        "title": "Ewma",
+        "type": "number"
+      },
+      "expected": {
+        "title": "Expected",
+        "type": "number"
+      },
+      "missionDay": {
+        "ge": 0,
+        "title": "Missionday",
+        "type": "number"
+      },
+      "observed": {
+        "title": "Observed",
+        "type": "number"
+      },
+      "persistence": {
+        "minimum": 0,
+        "title": "Persistence",
+        "type": "integer"
+      },
+      "residual": {
+        "title": "Residual",
+        "type": "number"
+      },
+      "state": {
+        "enum": [
+          "nominal",
+          "warning",
+          "critical"
+        ],
+        "title": "State",
+        "type": "string"
+      }
+    },
+    "required": [
+      "missionDay",
+      "observed",
+      "expected",
+      "residual",
+      "ewma",
+      "persistence",
+      "state"
+    ],
+    "title": "HealthTracePoint",
+    "type": "object"
   }
 }

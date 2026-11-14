@@ -156,11 +156,14 @@ class FlownPlan:
     duty_changed_by: Mapping[int, str]  # planned observation index -> event that scaled it
     cancelled_observations: int
     cancelled_contacts: int
+    # planned observation index -> reason the onboard policy held it (Task 6.5)
+    held_onboard: Mapping[int, str] = field(default_factory=dict)
 
     @property
     def changed(self) -> bool:
         return bool(
             self.skipped_observations
+            or self.held_onboard
             or self.missed_contacts
             or self.rate_changed_by
             or self.duty_changed_by
@@ -177,8 +180,12 @@ def _window_hit(applied: Sequence[AppliedEffect], key: str, day: float) -> str |
     return None
 
 
-def flown_plan(state: MissionState, run: RunState) -> FlownPlan:
+def flown_plan(
+    state: MissionState, run: RunState, onboard_held: Mapping[int, str] | None = None
+) -> FlownPlan:
     ops = state.operations
+    held_in = dict(onboard_held or {})
+    held: dict[int, str] = {}
     end = run.terminated.mission_day if run.terminated is not None else None
     obs: list[dict[str, object]] = []
     obs_idx: list[int] = []
@@ -192,6 +199,9 @@ def flown_plan(state: MissionState, run: RunState) -> FlownPlan:
         cause = _window_hit(run.applied, "science_time_lost_days", item.start_day)
         if cause is not None:
             skipped[i] = cause
+            continue
+        if i in held_in:
+            held[i] = held_in[i]
             continue
         dump_item = item.model_dump()
         for a in run.applied:
@@ -234,6 +244,7 @@ def flown_plan(state: MissionState, run: RunState) -> FlownPlan:
         duty_changed_by=duty_by,
         cancelled_observations=cancelled_obs,
         cancelled_contacts=cancelled_con,
+        held_onboard=held,
     )
 
 

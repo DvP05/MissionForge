@@ -29,6 +29,7 @@ from app.domain.analysis.orchestrator import ScenarioInputs, build_context
 from app.domain.catalog.loader import Catalog
 from app.domain.catalog.resolver import resolve_architecture
 from app.domain.errors import DomainValidationError
+from app.domain.science_belief import ScienceModel
 from app.domain.simulation.anomalies import (
     AnomalyDecl,
     Occurrence,
@@ -36,6 +37,7 @@ from app.domain.simulation.anomalies import (
     evaluate_occurrences,
     resolve_event_set,
 )
+from app.domain.simulation.autonomy import AUTONOMY_LIMITATION, run_autonomy
 from app.domain.simulation.decisions import (
     FlownPlan,
     RunState,
@@ -229,6 +231,17 @@ def _effect_specs(
         out.append(EventSpec(item.start_day, "science", "warning",
                              f"Observation skipped: {item.measurement_id}", text, trig,
                              RANK_EFFECT))  # fmt: skip
+    for i, why in sorted(flown.held_onboard.items()):
+        item = ops.observation_plan[i]
+        trig = {
+            "source": "autonomy",
+            "ref": f"autonomy.observe:{i}",
+            "plan_item": f"operations.observationPlan[{i}]",
+            "measurement_id": item.measurement_id,
+        }
+        out.append(EventSpec(item.start_day, "science", "warning",
+                             f"Observation held onboard: {item.measurement_id}", why, trig,
+                             RANK_EFFECT, decision_maker="onboard-policy"))  # fmt: skip
     for i, cause in sorted(flown.missed_contacts.items()):
         c, occ = ops.downlink_plan[i], by_id[cause]
         trig = {
@@ -332,6 +345,7 @@ def run_mission(
     scenario_version: str,
     app_version: str,
     decisions: Mapping[str, str] | None = None,
+    science_model: ScienceModel | None = None,
 ) -> MissionRun:
     """Deterministic mission run. ``app_version`` comes from settings, passed in explicitly.
 
@@ -380,10 +394,18 @@ def run_mission(
             f"decision event(s) {', '.join(cancelled)} do not happen: the mission ended earlier",
         )
     flown = flown_plan(state, run_state)
+    end = run_state.terminated.mission_day if run_state.terminated is not None else None
+    # Task 6.5: command authority from the flown contacts; the onboard policy may hold
+    # observations during a blackout, which the as-flown plan (and science) then reflects.
+    autonomy = run_autonomy(
+        state, analysis, catalog, ctx, flown.state,
+        science_model=science_model, seed=sim_input.random_seed, end_day=end,
+    )  # fmt: skip
+    if autonomy.held:
+        flown = flown_plan(state, run_state, autonomy.held)
     fctx = build_context(flown.state, catalog, scenario=scenario) if flown.changed else ctx
     by_id = {o.event_id: o for o in occurred}
     term = _termination(run_state, by_id, flown, schedule)
-    end = run_state.terminated.mission_day if run_state.terminated is not None else None
 
     nominal_specs = [
         *milestone_specs(state, schedule),
@@ -448,6 +470,15 @@ def run_mission(
         app_version=app_version,
     )
     transitions = _transitions(schedule, end)
+    report = final_report(
+        analysis, outcomes, experimental=sim_input.experimental, ratio=ratio,
+        science=fctx.science, returned_scale=scale, incidents=incidents,
+        termination=term[1] if term is not None else None, nominal=event_set.nominal,
+    )  # fmt: skip
+    if autonomy.log:
+        report = report.model_copy(
+            update={"limitations": (*report.limitations, AUTONOMY_LIMITATION)}
+        )
     return MissionRun(
         run_id=_run_id(sim_input, scenario_version, chosen),
         mission_id=state.mission_id,
@@ -464,13 +495,10 @@ def run_mission(
         events=events,
         telemetry=telemetry,
         decisions=run_state.records,
+        autonomy_log=autonomy.log,
         science_outcomes=outcomes,
-        final_report=final_report(
-            analysis, outcomes, experimental=sim_input.experimental, ratio=ratio,
-            science=fctx.science, returned_scale=scale, incidents=incidents,
-            termination=term[1] if term is not None else None, nominal=event_set.nominal,
-        ),
-    )  # fmt: skip
+        final_report=report,
+    )
 
 
 __all__ = ["LaunchBlocked", "run_mission"]

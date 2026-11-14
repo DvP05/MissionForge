@@ -9,6 +9,7 @@ from fastapi import Request
 from app.services.analyst_service import AnalystService
 from app.services.catalog_service import CatalogService
 from app.services.graph_service import GraphService
+from app.services.health_monitor_service import HealthMonitorService
 from app.services.mission_service import MissionService
 from app.services.optimization_service import OptimizationService
 from app.services.research_evidence_service import ResearchEvidenceService
@@ -63,6 +64,10 @@ def get_schedule_service(request: Request) -> ScheduleService:
 
 def get_research_evidence_service(request: Request) -> ResearchEvidenceService:
     return cast(ResearchEvidenceService, request.app.state.research_evidence_service)
+
+
+def get_health_monitor_service(request: Request) -> HealthMonitorService:
+    return cast(HealthMonitorService, request.app.state.health_monitor_service)
 
 
 def _utc_now() -> datetime:

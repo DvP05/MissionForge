@@ -162,6 +162,98 @@
   },
   "MissionPackage": {
     "$defs": {
+      "Anomaly": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline": {
+            "title": "Baseline",
+            "type": "number"
+          },
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "observed": {
+            "title": "Observed",
+            "type": "number"
+          },
+          "severity": {
+            "enum": [
+              "warning",
+              "critical"
+            ],
+            "title": "Severity",
+            "type": "string"
+          },
+          "subsystems": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Subsystems",
+            "type": "array"
+          },
+          "threshold": {
+            "title": "Threshold",
+            "type": "number"
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg",
+              "fraction"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "windowEnd": {
+            "ge": 0,
+            "title": "Windowend",
+            "type": "number"
+          },
+          "windowStart": {
+            "ge": 0,
+            "title": "Windowstart",
+            "type": "number"
+          }
+        },
+        "required": [
+          "channel",
+          "unit",
+          "observed",
+          "baseline",
+          "threshold",
+          "windowStart",
+          "windowEnd",
+          "severity",
+          "subsystems",
+          "explanation"
+        ],
+        "title": "Anomaly",
+        "type": "object"
+      },
       "AutonomyDecision": {
         "additionalProperties": false,
         "properties": {
@@ -818,6 +910,53 @@
           "limitations"
         ],
         "title": "FinalReport",
+        "type": "object"
+      },
+      "HealthFinding": {
+        "additionalProperties": false,
+        "properties": {
+          "anomaly": {
+            "$ref": "#/$defs/Anomaly"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "likelyFalsePositive": {
+            "default": false,
+            "title": "Likelyfalsepositive",
+            "type": "boolean"
+          },
+          "recoveryDecision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Recoverydecision"
+          },
+          "relatedEventId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Relatedeventid"
+          }
+        },
+        "required": [
+          "anomaly",
+          "explanation"
+        ],
+        "title": "HealthFinding",
         "type": "object"
       },
       "HypothesisProbability": {
@@ -2058,6 +2197,13 @@
         "additionalProperties": false,
         "description": "Phase 6 evidence recomputed server-side from the run's input snapshot (Passport v2).\n\nDerived: like ``latest_analysis`` it is ignored on import and recomputed on export.\nA section is None when it could not be computed; ``not_included`` says why.",
         "properties": {
+          "healthFindings": {
+            "items": {
+              "$ref": "#/$defs/HealthFinding"
+            },
+            "title": "Healthfindings",
+            "type": "array"
+          },
           "missionTraceability": {
             "items": {
               "$ref": "#/$defs/MissionTraceRowOut"
@@ -3042,6 +3188,98 @@
   },
   "ResearchEvidence": {
     "$defs": {
+      "Anomaly": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline": {
+            "title": "Baseline",
+            "type": "number"
+          },
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "observed": {
+            "title": "Observed",
+            "type": "number"
+          },
+          "severity": {
+            "enum": [
+              "warning",
+              "critical"
+            ],
+            "title": "Severity",
+            "type": "string"
+          },
+          "subsystems": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Subsystems",
+            "type": "array"
+          },
+          "threshold": {
+            "title": "Threshold",
+            "type": "number"
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg",
+              "fraction"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "windowEnd": {
+            "ge": 0,
+            "title": "Windowend",
+            "type": "number"
+          },
+          "windowStart": {
+            "ge": 0,
+            "title": "Windowstart",
+            "type": "number"
+          }
+        },
+        "required": [
+          "channel",
+          "unit",
+          "observed",
+          "baseline",
+          "threshold",
+          "windowStart",
+          "windowEnd",
+          "severity",
+          "subsystems",
+          "explanation"
+        ],
+        "title": "Anomaly",
+        "type": "object"
+      },
       "BufferPoint": {
         "additionalProperties": false,
         "properties": {
@@ -3061,6 +3299,53 @@
           "bits"
         ],
         "title": "BufferPoint",
+        "type": "object"
+      },
+      "HealthFinding": {
+        "additionalProperties": false,
+        "properties": {
+          "anomaly": {
+            "$ref": "#/$defs/Anomaly"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "likelyFalsePositive": {
+            "default": false,
+            "title": "Likelyfalsepositive",
+            "type": "boolean"
+          },
+          "recoveryDecision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Recoverydecision"
+          },
+          "relatedEventId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Relatedeventid"
+          }
+        },
+        "required": [
+          "anomaly",
+          "explanation"
+        ],
+        "title": "HealthFinding",
         "type": "object"
       },
       "MetricQuantiles": {
@@ -3505,6 +3790,13 @@
     "additionalProperties": false,
     "description": "Phase 6 evidence recomputed server-side from the run's input snapshot (Passport v2).\n\nDerived: like ``latest_analysis`` it is ignored on import and recomputed on export.\nA section is None when it could not be computed; ``not_included`` says why.",
     "properties": {
+      "healthFindings": {
+        "items": {
+          "$ref": "#/$defs/HealthFinding"
+        },
+        "title": "Healthfindings",
+        "type": "array"
+      },
       "missionTraceability": {
         "items": {
           "$ref": "#/$defs/MissionTraceRowOut"

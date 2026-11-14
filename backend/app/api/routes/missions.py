@@ -516,7 +516,7 @@ def export_dossier(
         exported_at=now,
         app_version=settings.app_version,
         analysis=analysis,
-        research=research_service.build(run.input_snapshot, now),
+        research=research_service.build(run.input_snapshot, now, run),
         replay=ReplayCheck(
             replay.status,
             tuple(m.field for m in replay.mismatches),
