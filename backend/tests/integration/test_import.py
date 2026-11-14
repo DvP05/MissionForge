@@ -75,7 +75,7 @@ def test_valid_round_trip_keeps_mission_and_runs(client: TestClient) -> None:
     assert data["package"]["latestAnalysis"]["designRevision"] == state["designRevision"]
     [status] = data["replay"]
     assert status["runId"] == run["runId"]
-    assert status["status"] == "identical-replay" and status["mismatches"] == []
+    assert status["status"] == "replayable" and status["mismatches"] == []
     assert status["analysis"]["engineVersion"] == "0.1.0"
 
 
@@ -315,3 +315,24 @@ def test_replay_survives_a_javascript_json_round_trip(client: TestClient) -> Non
     assert json.dumps(stripped) != json.dumps(run)  # the transport really changed the text
     data = client.post(REPLAY, json={"run": stripped}).json()["data"]
     assert data["identical"] is True and data["status"] == "identical-replay"
+
+
+def test_replay_with_tampered_decision_is_diverged_not_version_mismatch(
+    client: TestClient,
+) -> None:
+    run = _run(client, _state(client))
+    branched = client.post(
+        f"/api/mission/run/{run['runId']}/decision",
+        json={"eventId": SOLAR, "choiceId": "pause-science"},
+    ).json()["data"]["run"]
+    for d in branched["decisions"]:
+        if d["decisionMaker"] == "player":
+            d["choiceId"] = "no-such-choice"
+    data = client.post(REPLAY, json={"run": branched}).json()["data"]
+    assert data["identical"] is False and data["status"] == "diverged"
+
+
+def test_replay_keeps_the_default_request_limit(client: TestClient) -> None:
+    big = b'{"run":"' + b"a" * (300 * 1024) + b'"}'
+    r = client.post(REPLAY, content=big, headers={"Content-Type": "application/json"})
+    assert r.status_code == 413

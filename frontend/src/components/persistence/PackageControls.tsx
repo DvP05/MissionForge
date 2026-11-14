@@ -13,6 +13,7 @@ import {
   type PreparedImport,
 } from "@/lib/persistence/package";
 import { notifyStorageChanged } from "@/lib/persistence/events";
+import { useImportNotice } from "@/state/import-notice-store";
 import { useMissionStore } from "@/state/mission-store";
 
 const BTN =
@@ -82,6 +83,9 @@ export function ImportButton() {
     store.reset();
     store.hydrate(applied.missionId);
     notifyStorageChanged();
+    useImportNotice.getState().setNotice(
+      applied.notKept.length ? { missionId: applied.missionId, total: applied.runs.length, notKept: applied.notKept } : null,
+    );
     setPanel(null);
     router.push(`/mission/${applied.missionId}`);
   };

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { useBackendHealth } from "@/components/shell/BackendHealth";
+import { useImportNotice } from "@/state/import-notice-store";
 import { StatusPill } from "@/components/common/StatusPill";
 import { STORAGE_CHANGED_EVENT, notifyStorageChanged } from "@/lib/persistence/events";
 import {
@@ -19,9 +20,9 @@ import { listCachedRuns, type RunData } from "@/lib/persistence/run-cache";
 type Check = { state: "running" } | { state: "failed"; message: string } | { state: "done"; summary: string };
 
 /**
- * Saved runs of this mission with their replay status. "Identical replay available" is shown only
- * when the server confirmed it (import check or an explicit replay); a version difference is
- * always shown as "not an identical replay".
+ * Saved runs of this mission with their replay status. "Identical replay" is shown only after an explicit
+ * replay (POST /api/mission/replay) returned identical=true. An import only says "versions match";
+ * a version difference is always shown as "not an identical replay".
  */
 export function RunsPanel({ missionId }: { missionId: string }) {
   const { state: health } = useBackendHealth();
@@ -40,7 +41,10 @@ export function RunsPanel({ missionId }: { missionId: string }) {
     return () => window.removeEventListener(STORAGE_CHANGED_EVENT, read);
   }, [missionId]);
 
-  if (runs.length === 0) return null;
+  const notice = useImportNotice((s) => s.notice);
+  const shownNotice = notice && notice.missionId === missionId ? notice : null;
+
+  if (runs.length === 0 && !shownNotice) return null;
 
   const current =
     health.kind === "online"
@@ -53,7 +57,7 @@ export function RunsPanel({ missionId }: { missionId: string }) {
 
   const mismatchBanner = runs.find((r) => {
     const rec = records[r.run.runId];
-    if (rec) return rec.status !== "identical-replay";
+    if (rec) return rec.status === "version-mismatch" || rec.status === "diverged";
     return current !== null && clientMismatches(r.run, current).length > 0;
   });
 
@@ -78,6 +82,12 @@ export function RunsPanel({ missionId }: { missionId: string }) {
       <h2 id="runs-heading" className="text-base font-semibold">
         Saved runs
       </h2>
+      {shownNotice ? (
+        <p data-testid="import-notice" role="alert" className="rounded-lg border border-accent-amber/60 p-3 text-sm">
+          {shownNotice.notKept.length} of {shownNotice.total} imported runs could not be kept in this browser (it keeps at most
+          6 runs, or storage was full): {shownNotice.notKept.join(", ")}. Your other saved runs were not touched.
+        </p>
+      ) : null}
       {mismatchBanner ? (
         <p data-testid="replay-mismatch-banner" role="alert" className="rounded-lg border border-accent-amber/60 p-3 text-sm">
           Version mismatch &mdash; not an identical replay. At least one saved run was made with different versions than this

@@ -991,7 +991,9 @@ export interface components {
         };
         /**
          * RunReplayStatus
-         * @description Per imported run: can it be replayed identically here? (versions only, no re-run).
+         * @description Per imported run: do the recorded versions match this server (so a replay can be verified)?
+         *
+         *     Versions only, nothing is re-run: "replayable" is never a claim of identity.
          */
         RunReplayStatus: {
             analysis?: components["schemas"]["MissionAnalysis"] | null;
@@ -1003,7 +1005,7 @@ export interface components {
              * Status
              * @enum {string}
              */
-            status: "identical-replay" | "version-mismatch";
+            status: "replayable" | "version-mismatch";
         };
         /** ScenarioTemplate */
         ScenarioTemplate: {

@@ -1,4 +1,5 @@
 import type { components } from "@/lib/api/schema";
+import { REPLAY_KEY_PREFIX } from "@/lib/persistence/replay";
 
 export type RunData = components["schemas"]["SimulateData"];
 
@@ -113,6 +114,17 @@ function readIndex(s: Storage): string[] {
   }
 }
 
+/** Removes a run and its replay record together, so no orphan record outlives its run. */
+function evict(s: Storage, id: string): void {
+  s.removeItem(RUN_KEY_PREFIX + id);
+  s.removeItem(REPLAY_KEY_PREFIX + id);
+}
+
+/** Imported runs live only in the browser (the server never stored them), so they cannot branch. */
+export function isImportedRun(data: RunData): boolean {
+  return (data.notes ?? []).some((n) => n.startsWith("Imported run"));
+}
+
 function writeIndex(s: Storage, ids: string[]): void {
   try {
     s.setItem(INDEX_KEY, JSON.stringify(ids));
@@ -141,7 +153,7 @@ function reconcileIndex(s: Storage): void {
     }
     const indexed = readIndex(s).filter((id) => stored.has(id));
     const order = [...[...stored].filter((id) => !indexed.includes(id)), ...indexed];
-    while (order.length > MAX_CACHED_RUNS) s.removeItem(RUN_KEY_PREFIX + (order.shift() as string));
+    while (order.length > MAX_CACHED_RUNS) evict(s, order.shift() as string);
     writeIndex(s, order);
   } catch {
     /* best effort */
@@ -157,7 +169,7 @@ function touch(s: Storage, id: string): string[] {
 
 function dropRun(s: Storage, id: string): void {
   try {
-    s.removeItem(RUN_KEY_PREFIX + id);
+    evict(s, id);
     writeIndex(s, readIndex(s).filter((x) => x !== id));
   } catch {
     /* ignore */
@@ -207,8 +219,8 @@ export function listCachedRuns(missionId: string): RunData[] {
   return out;
 }
 
-/** Best effort, least-recently-used eviction; on quota failure it drops older runs then gives up. Returns whether the run was stored. */
-export function cacheRun(data: RunData): boolean {
+/** Best effort, least-recently-used eviction; on quota failure it drops older runs then gives up. `keepOthersOnQuota` (used by import) reports failure instead of wiping other runs. Returns whether the run was stored. */
+export function cacheRun(data: RunData, opts: { keepOthersOnQuota?: boolean } = {}): boolean {
   const id = data.run.runId;
   if (!isValidRunId(id)) return false;
   const s = storage();
@@ -217,14 +229,15 @@ export function cacheRun(data: RunData): boolean {
   const json = JSON.stringify(data);
   try {
     const order = readIndex(s).filter((x) => x !== id);
-    while (order.length >= MAX_CACHED_RUNS) s.removeItem(RUN_KEY_PREFIX + (order.shift() as string));
+    while (order.length >= MAX_CACHED_RUNS) evict(s, order.shift() as string);
     s.setItem(RUN_KEY_PREFIX + id, json);
     order.push(id);
     writeIndex(s, order);
     return true;
   } catch {
+    if (opts.keepOthersOnQuota) return false; // import: never wipe other runs to make room
     try {
-      for (const other of readIndex(s).filter((x) => x !== id)) s.removeItem(RUN_KEY_PREFIX + other);
+      for (const other of readIndex(s).filter((x) => x !== id)) evict(s, other);
       s.setItem(RUN_KEY_PREFIX + id, json);
       writeIndex(s, [id]);
       return true;

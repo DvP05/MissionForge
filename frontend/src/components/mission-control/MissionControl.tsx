@@ -3,8 +3,9 @@
 import Link from "next/link";
 
 import { ExperimentalBadge } from "@/components/common/ExperimentalBadge";
-import type { RunData } from "@/lib/persistence/run-cache";
+import { isImportedRun, type RunData } from "@/lib/persistence/run-cache";
 import { DecisionCard } from "./DecisionCard";
+import { ImportedDecisionNotice } from "./ImportedDecisionNotice";
 import { EventLog } from "./EventLog";
 import { PhaseRibbon } from "./PhaseRibbon";
 import { PlaybackControls } from "./PlaybackControls";
@@ -37,7 +38,8 @@ export function MissionControl({ data, startDay }: { data: RunData; startDay: nu
       </header>
       <PhaseRibbon run={run} day={pb.day} duration={pb.duration} />
       <PlaybackControls pb={pb} />
-      {pb.pending ? <DecisionCard key={pb.pending.id} event={pb.pending} runId={run.runId} telemetry={run.telemetry} linkLimit={linkLimit} /> : null}
+      {pb.pending && isImportedRun(data) ? <ImportedDecisionNotice key={pb.pending.id} data={data} event={pb.pending} /> : null}
+      {pb.pending && !isImportedRun(data) ? <DecisionCard key={pb.pending.id} event={pb.pending} runId={run.runId} telemetry={run.telemetry} linkLimit={linkLimit} /> : null}
       <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
         <div className="min-w-0 space-y-4">
           <SchematicPanel phase={phase} day={pb.day} />

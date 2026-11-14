@@ -41,7 +41,6 @@ def create_app() -> FastAPI:
         max_bytes=settings.max_request_bytes,
         path_limits={
             "/api/mission/import": settings.max_import_bytes,
-            "/api/mission/replay": settings.max_import_bytes,
         },
     )
     app.add_middleware(

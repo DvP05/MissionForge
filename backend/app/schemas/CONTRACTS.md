@@ -286,14 +286,18 @@ Consumers must read these rules before interpreting the plain-float fields.
 ## Import and replay (Task 4.5)
 
 - `POST /api/mission/import` takes the raw `MissionPackage` JSON as the body (limit 4 MiB, `max_import_bytes`;
-  the default 256 KiB applies elsewhere). It rejects non-standard JSON (`NaN`, `Infinity`), an unsupported
+  the default 256 KiB applies elsewhere, including `/replay`). It rejects non-standard JSON (`NaN`, `Infinity`), an unsupported
   `packageSchemaVersion` / mission `schemaVersion` (never reinterpreted), more than 20 runs, duplicate run ids,
   run/mission mismatches and unknown catalogue components. Titles are sanitised by the schema. Nothing is stored.
 - On success the response carries the validated package (`latestAnalysis` recomputed here) plus one
-  `{runId, status, mismatches, analysis}` per run. `status` compares the run manifest (engine, catalogue,
+  `{runId, status, mismatches, analysis}` per run. `status` is `replayable` (versions match; replay can be
+  verified, never a claim of identity) or `version-mismatch`; only `/replay` with `identical:true` proves identity. It compares the run manifest (engine, catalogue,
   scenario, schema versions, event-set availability) with this server; `analysis` is the snapshot re-analysed by
   the current engine (derived, may differ from the recorded run when versions differ).
 - `POST /api/mission/replay` re-runs `run.inputSnapshot` with its seed, event set and recorded player decisions.
   `identical` is true only after comparing the re-run to the recorded run (canonical JSON, numbers by value so a
   JS round trip's `275` equals `275.0`). A version difference returns `version-mismatch` without re-running.
   `manifest.appVersion` is a metadata stamp and does not make a run non-identical.
+- `latestAnalysis` is derived and replaced on import; the frozen `MissionPackage` forbids extra fields, so a
+  `derived` marker cannot be added to it. This is documented here only.
+- `/api/mission/replay` keeps the default 256 KiB request limit; only `/api/mission/import` has the 4 MiB limit.

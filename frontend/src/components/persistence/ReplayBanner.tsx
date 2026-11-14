@@ -9,7 +9,7 @@ export function ReplayBanner({ data }: { data: RunData }) {
   const { state } = useBackendHealth();
   const record = loadReplayRecord(data.run.runId);
   let reason: string | null = null;
-  if (record && record.status !== "identical-replay") {
+  if (record && (record.status === "version-mismatch" || record.status === "diverged")) {
     reason = record.mismatches.length ? describeMismatches(record.mismatches) : "the re-run differed";
   } else if (!record && state.kind === "online") {
     const hint = clientMismatches(data.run, {

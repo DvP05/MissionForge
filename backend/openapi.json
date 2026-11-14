@@ -2518,7 +2518,7 @@
       },
       "RunReplayStatus": {
         "additionalProperties": false,
-        "description": "Per imported run: can it be replayed identically here? (versions only, no re-run).",
+        "description": "Per imported run: do the recorded versions match this server (so a replay can be verified)?\n\nVersions only, nothing is re-run: \"replayable\" is never a claim of identity.",
         "properties": {
           "analysis": {
             "anyOf": [
@@ -2543,7 +2543,7 @@
           },
           "status": {
             "enum": [
-              "identical-replay",
+              "replayable",
               "version-mismatch"
             ],
             "title": "Status",

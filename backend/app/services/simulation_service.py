@@ -278,9 +278,8 @@ class SimulationService:
             # app release does not make an otherwise identical run look different.
             rebuilt = self._build(sim_input, decisions, app_version=run.manifest.app_version).run
         except DomainValidationError as exc:
-            return ReplayOutcome(
-                "version-mismatch", (VersionMismatch("replay", exc.code, "rejected"),)
-            )
+            # Versions matched, so a rejected re-run means the recorded data is inconsistent.
+            return ReplayOutcome("diverged", (VersionMismatch("replay", exc.code, "rejected"),))
         if canonical_run_json(rebuilt) == canonical_run_json(run):
             return ReplayOutcome("identical-replay", (), rebuilt)
         return ReplayOutcome(

@@ -1,10 +1,10 @@
 import { API_BASE_URL, apiGet } from "@/lib/api-client";
 import type { components } from "@/lib/api/schema";
-import { cacheRun, listCachedRuns, type RunData } from "@/lib/persistence/run-cache";
+import { MAX_CACHED_RUN_COUNT, cacheRun, listCachedRuns, type RunData } from "@/lib/persistence/run-cache";
 import {
   saveReplayRecord,
   type VersionMismatch,
-  type ReplayStatus,
+  type RecordStatus,
 } from "@/lib/persistence/replay";
 import { isValidMissionId, loadMission, saveMission } from "@/lib/persistence/storage";
 import { useRunStore } from "@/state/run-store";
@@ -173,10 +173,17 @@ export async function prepareImport(file: File): Promise<PreparedImport | Import
 export interface AppliedImport {
   ok: true;
   missionId: string;
-  runs: { runId: string; status: ReplayStatus; mismatches: VersionMismatch[]; stored: boolean }[];
+  runs: { runId: string; status: RecordStatus; mismatches: VersionMismatch[]; stored: boolean }[];
+  /** Runs in the package that this browser could not keep (cache bound, no analysis, or quota). */
+  notKept: string[];
 }
 
-/** Writes the validated mission and its runs; the mission is written first so a quota failure changes nothing. */
+/**
+ * Writes the validated mission and its runs. The mission goes first, so a quota failure there
+ * changes nothing. The browser keeps at most MAX_CACHED_RUN_COUNT runs: only the last ones that
+ * fit are written (so the package never evicts its own runs), a quota failure keeps every
+ * existing run, and whatever could not be kept is reported in `notKept` for the UI to show.
+ */
 export function applyImport(prepared: PreparedImport): AppliedImport | ImportFailure {
   const { package: pkg, replay } = prepared.data;
   const saved = saveMission(pkg.mission);
@@ -187,13 +194,15 @@ export function applyImport(prepared: PreparedImport): AppliedImport | ImportFai
     );
   }
   const statusById = new Map(replay.map((r) => [r.runId, r]));
+  const all = pkg.runs ?? [];
+  const writable = all.filter((r) => statusById.get(r.runId)?.analysis);
+  const allowed = new Set(writable.slice(-MAX_CACHED_RUN_COUNT).map((r) => r.runId));
   const runs: AppliedImport["runs"] = [];
-  for (const run of pkg.runs ?? []) {
+  for (const run of all) {
     const st = statusById.get(run.runId);
     if (!st) continue;
-    saveReplayRecord(run.runId, { status: st.status, mismatches: st.mismatches, source: "import" });
     let stored = false;
-    if (st.analysis) {
+    if (st.analysis && allowed.has(run.runId)) {
       const data: RunData = {
         analysis: st.analysis,
         run,
@@ -205,10 +214,13 @@ export function applyImport(prepared: PreparedImport): AppliedImport | ImportFai
             ? ["Imported run. Its analysis was recalculated by this engine and may differ from the original."]
             : ["Imported run."],
       };
-      stored = cacheRun(data);
-      if (stored) useRunStore.setState((s) => ({ runs: { ...s.runs, [run.runId]: data } }));
+      stored = cacheRun(data, { keepOthersOnQuota: true });
+      if (stored) {
+        saveReplayRecord(run.runId, { status: st.status, mismatches: st.mismatches, source: "import" });
+        useRunStore.setState((s) => ({ runs: { ...s.runs, [run.runId]: data } }));
+      }
     }
     runs.push({ runId: run.runId, status: st.status, mismatches: st.mismatches, stored });
   }
-  return { ok: true, missionId: pkg.mission.missionId, runs };
+  return { ok: true, missionId: pkg.mission.missionId, runs, notKept: runs.filter((r) => !r.stored).map((r) => r.runId) };
 }

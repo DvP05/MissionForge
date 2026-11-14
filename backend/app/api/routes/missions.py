@@ -90,10 +90,13 @@ class VersionMismatchItem(ContractModel):
 
 
 class RunReplayStatus(ContractModel):
-    """Per imported run: can it be replayed identically here? (versions only, no re-run)."""
+    """Per imported run: do the recorded versions match this server (so a replay can be verified)?
+
+    Versions only, nothing is re-run: "replayable" is never a claim of identity.
+    """
 
     run_id: str
-    status: Literal["identical-replay", "version-mismatch"]
+    status: Literal["replayable", "version-mismatch"]
     mismatches: list[VersionMismatchItem]
     # The run's design re-analysed by THIS engine (derived, may differ from the recorded
     # run when versions differ). Null when the design no longer validates here.
@@ -427,7 +430,7 @@ async def import_package(
         statuses.append(
             RunReplayStatus(
                 run_id=run.run_id,
-                status="version-mismatch" if mismatches else "identical-replay",
+                status="version-mismatch" if mismatches else "replayable",
                 mismatches=_mismatch_items(mismatches),
                 analysis=analysis,
             )

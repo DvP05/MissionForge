@@ -85,7 +85,8 @@ test.describe("persistence", () => {
     await expect(page.getByTestId("workspace-title")).toBeVisible();
     expect(await storeMission(page)).toEqual(original);
     await expect(page.getByTestId(`run-row-${runId}`)).toBeVisible();
-    await expect(page.getByTestId(`run-status-${runId}`)).toHaveText(/identical replay available/i);
+    await expect(page.getByTestId(`run-status-${runId}`)).toHaveText(/versions match.*replay can be verified/i);
+    await expect(page.getByText(/identical replay/i)).toHaveCount(0); // not proven until Verify replay
     await expect(page.getByTestId("replay-mismatch-banner")).toHaveCount(0);
     // reload keeps it
     await page.reload();
@@ -174,7 +175,7 @@ test.describe("persistence", () => {
     await expect(page.getByTestId("save-status")).toContainText(/not saved/i);
     const prompt = page.getByTestId("storage-export-prompt");
     await expect(prompt).toContainText(/export a package/i);
-    // still interactive: another edit works and the prompt's export yields the in-memory design
+    // the page still works, and the prompt's export yields the in-memory (unsaved) design
     const [download] = await Promise.all([page.waitForEvent("download"), page.getByTestId("storage-export-button").click()]);
     const pkg = JSON.parse(readFileSync(await download.path(), "utf8")) as Json;
     expect(pkg.mission.designRevision).toBe(1);
@@ -225,11 +226,11 @@ test.describe("replay", () => {
     const status = page.getByTestId(`run-status-${runId}`);
     await expect(status).toContainText(/not an identical replay/i);
     await expect(status).toContainText(/engineVersion: recorded 9\.9\.9/);
-    await expect(page.getByText(/identical replay available/i)).toHaveCount(0);
+    await expect(page.getByText(/^identical replay/i)).toHaveCount(0);
     // explicit replay does not claim identity either
     await page.getByTestId(`run-verify-${runId}`).click();
     await expect(page.getByTestId(`run-replay-result-${runId}`)).toContainText(/not an identical replay/i);
-    await expect(page.getByText(/identical replay available/i)).toHaveCount(0);
+    await expect(page.getByText(/^identical replay/i)).toHaveCount(0);
     await page.goto(`/control/${runId}`);
     await expect(page.getByTestId("run-version-banner")).toContainText(/not an identical replay/i);
   });
@@ -244,9 +245,10 @@ test.describe("replay", () => {
     await page.goto("/");
     await upload(page, "same-versions.json", JSON.stringify(pkg));
     await page.waitForURL(new RegExp(`/mission/${missionId}$`));
-    await expect(page.getByTestId(`run-status-${runId}`)).toHaveText(/identical replay available/i);
+    await expect(page.getByTestId(`run-status-${runId}`)).toHaveText(/replay can be verified/i);
     await page.getByTestId(`run-verify-${runId}`).click();
     await expect(page.getByTestId(`run-replay-result-${runId}`)).toContainText(/^Identical replay: re-running reproduced all/);
+    await expect(page.getByTestId(`run-status-${runId}`)).toHaveText(/identical replay \(verified/i);
 
     // The server's re-run equals the recorded run: ids, order, telemetry, decisions.
     const res = await page.request.post("http://127.0.0.1:8000/api/mission/replay", { data: { run: recorded } });
@@ -259,5 +261,65 @@ test.describe("replay", () => {
     expect(rebuilt.telemetry).toEqual(recorded.telemetry);
     expect(rebuilt.decisions).toEqual(recorded.decisions);
     expect(rebuilt).toEqual(recorded);
+  });
+
+  test("tampered telemetry with matching versions imports as replayable but Verify says diverged", async ({ page }) => {
+    const { missionId, runId } = await launchFeasible(page);
+    await page.goto(`/mission/${missionId}`);
+    const pkg = await exportPackage(page);
+    pkg.runs[0].telemetry[0].value += 1;
+    await page.evaluate(() => window.localStorage.clear());
+    await page.goto("/");
+    await upload(page, "tampered.json", JSON.stringify(pkg));
+    await page.waitForURL(new RegExp(`/mission/${missionId}$`));
+    await expect(page.getByTestId(`run-status-${runId}`)).toHaveText(/replay can be verified/i);
+    await expect(page.getByText(/^identical replay/i)).toHaveCount(0);
+    await page.getByTestId(`run-verify-${runId}`).click();
+    await expect(page.getByTestId(`run-replay-result-${runId}`)).toContainText(/not an identical replay/i);
+    await expect(page.getByTestId("replay-mismatch-banner")).toBeVisible();
+    await expect(page.getByText(/^identical replay/i)).toHaveCount(0);
+  });
+});
+
+test.describe("imported runs", () => {
+  test("an imported run offers re-simulate instead of a decision that would 404", async ({ page }) => {
+    const { missionId, runId } = await launchFeasible(page);
+    await page.goto(`/mission/${missionId}`);
+    const pkg = await exportPackage(page);
+    await page.evaluate(() => window.localStorage.clear());
+    await page.goto("/");
+    await upload(page, "imported.json", JSON.stringify(pkg));
+    await page.waitForURL(new RegExp(`/mission/${missionId}$`));
+    await page.goto(`/control/${runId}`);
+    await page.getByTestId("playback-play").click();
+    const notice = page.getByTestId("imported-decision-notice");
+    await expect(notice).toBeVisible({ timeout: 60_000 });
+    await expect(notice).toContainText(/imported .* re-simulate to make decisions/i);
+    await expect(page.getByTestId("decision-card")).toHaveCount(0);
+    await notice.getByTestId("resimulate-run").click();
+    await expect(page.getByTestId("decision-card")).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId("imported-decision-notice")).toHaveCount(0);
+  });
+
+  test("runs beyond the browser cache are reported, never silently dropped", async ({ page }) => {
+    const { missionId } = await launchFeasible(page);
+    await page.goto(`/mission/${missionId}`);
+    const pkg = await exportPackage(page);
+    const runs: Json[] = [];
+    for (let seed = 1; seed <= 8; seed += 1) {
+      const res = await page.request.post("http://127.0.0.1:8000/api/mission/simulate", {
+        data: { missionState: pkg.mission, randomSeed: seed },
+      });
+      runs.push(((await res.json()) as Json).data.run);
+    }
+    pkg.runs = runs;
+    await page.evaluate(() => window.localStorage.clear());
+    await page.goto("/");
+    await upload(page, "many.json", JSON.stringify(pkg));
+    await page.waitForURL(new RegExp(`/mission/${missionId}$`));
+    await expect(page.getByTestId("import-notice")).toContainText(/2 of 8 imported runs could not be kept/i);
+    await expect(page.locator("[data-testid^='run-row-']")).toHaveCount(6);
+    const keys = await page.evaluate(() => Object.keys(window.localStorage).filter((k) => k.startsWith("missionforge:replay:")));
+    expect(keys.length).toBe(6); // no orphan replay records for dropped runs
   });
 });
