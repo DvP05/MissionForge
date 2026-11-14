@@ -481,6 +481,44 @@
         "title": "ApiResult[ImportData]",
         "type": "object"
       },
+      "ApiResult_MissionPackage_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MissionPackage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[MissionPackage]",
+        "type": "object"
+      },
       "ApiResult_MissionState_": {
         "additionalProperties": false,
         "properties": {
@@ -6057,6 +6095,25 @@
           }
         },
         "summary": "Get Catalog"
+      }
+    },
+    "/api/demo/package": {
+      "get": {
+        "description": "The seeded demo mission package (Task 7.5): works with no network at all.\n\nThe client still sends it through POST /api/mission/import like any other package.",
+        "operationId": "demo_package_api_demo_package_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_MissionPackage_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Demo Package"
       }
     },
     "/api/health": {

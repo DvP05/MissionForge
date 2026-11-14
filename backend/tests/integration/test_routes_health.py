@@ -70,3 +70,11 @@ def test_nominal_run_has_no_findings_and_is_deterministic(client: TestClient) ->
     b = client.post(HEALTH, json={"run": run}).json()["data"]
     assert a == b
     assert a["findings"] == []  # telemetry equals the nominal model: residual 0 everywhere
+
+
+def test_unknown_component_in_the_run_design_is_a_422(client: TestClient) -> None:
+    run = _run(client, "neo-rendezvous", "comms-xband-medium")
+    run["inputSnapshot"]["architecture"]["busId"] = "bus-does-not-exist"
+    body = client.post(HEALTH, json={"run": run}).json()
+    assert body["ok"] is False
+    assert body["error"]["code"] == "CATALOG_ITEM_NOT_FOUND"

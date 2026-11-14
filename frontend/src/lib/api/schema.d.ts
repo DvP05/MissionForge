@@ -21,6 +21,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/demo/package": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Demo Package
+         * @description The seeded demo mission package (Task 7.5): works with no network at all.
+         *
+         *     The client still sends it through POST /api/mission/import like any other package.
+         */
+        get: operations["demo_package_api_demo_package_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -518,6 +540,14 @@ export interface components {
         /** ApiResult[ImportData] */
         ApiResult_ImportData_: {
             data?: components["schemas"]["ImportData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[MissionPackage] */
+        ApiResult_MissionPackage_: {
+            data?: components["schemas"]["MissionPackage"] | null;
             error?: components["schemas"]["ApiError"] | null;
             meta: components["schemas"]["ApiMeta"];
             /** Ok */
@@ -2327,6 +2357,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_CatalogData_"];
+                };
+            };
+        };
+    };
+    demo_package_api_demo_package_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_MissionPackage_"];
                 };
             };
         };

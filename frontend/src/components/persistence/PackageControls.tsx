@@ -12,6 +12,7 @@ import {
   type ImportFailure,
   type PreparedImport,
 } from "@/lib/persistence/package";
+import { apiGet } from "@/lib/api-client";
 import { notifyStorageChanged } from "@/lib/persistence/events";
 import { useImportNotice } from "@/state/import-notice-store";
 import { useMissionStore } from "@/state/mission-store";
@@ -90,6 +91,29 @@ export function ImportButton() {
     router.push(`/mission/${applied.missionId}`);
   };
 
+  const check = async (file: File) => {
+    setPanel({ kind: "busy" });
+    const prepared = await prepareImport(file);
+    if (!prepared.ok) setPanel({ kind: "error", failure: prepared });
+    else if (prepared.conflict) setPanel({ kind: "conflict", prepared });
+    else finish(prepared);
+  };
+
+  /** Task 7.5: the seeded demo snapshot, served by the backend, checked like any import. */
+  const loadDemo = async () => {
+    setPanel({ kind: "busy" });
+    const res = await apiGet("/api/demo/package");
+    if (!res.ok || !res.data) {
+      setPanel({
+        kind: "error",
+        failure: { ok: false, code: "DEMO_UNAVAILABLE", message: "The saved demo mission could not be loaded from the engine." },
+      });
+      return;
+    }
+    const file = new File([JSON.stringify(res.data)], "demo-saved.json", { type: "application/json" });
+    await check(file);
+  };
+
   return (
     <div className="space-y-2">
       <input
@@ -102,11 +126,7 @@ export function ImportButton() {
           const file = e.target.files?.[0];
           e.target.value = "";
           if (!file) return;
-          setPanel({ kind: "busy" });
-          const prepared = await prepareImport(file);
-          if (!prepared.ok) setPanel({ kind: "error", failure: prepared });
-          else if (prepared.conflict) setPanel({ kind: "conflict", prepared });
-          else finish(prepared);
+          await check(file);
         }}
       />
       <button
@@ -117,6 +137,15 @@ export function ImportButton() {
         onClick={() => inputRef.current?.click()}
       >
         {panel?.kind === "busy" ? "Checking file…" : "Import package"}
+      </button>
+      <button
+        type="button"
+        data-testid="load-demo"
+        className={`${BTN} ml-2`}
+        disabled={panel?.kind === "busy"}
+        onClick={loadDemo}
+      >
+        Load saved demo mission
       </button>
       {panel?.kind === "error" ? (
         <div data-testid="import-error" role="alert" className="max-w-xl space-y-2 rounded-lg border border-accent-amber/60 p-3 text-sm">
