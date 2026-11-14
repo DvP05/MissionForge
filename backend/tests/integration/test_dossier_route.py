@@ -41,7 +41,7 @@ def test_dossier_returns_validated_package_and_html(client: TestClient) -> None:
     body = r.json()
     assert r.status_code == 200 and body["ok"] is True
     data = body["data"]
-    assert set(data) == {"package", "html"}
+    assert set(data) == {"package", "html", "replayStatus", "replayMismatches"}
     pkg = data["package"]
     assert pkg["packageSchemaVersion"] == "1.0" and pkg["exportedAt"].startswith("2026-11-14T12")
     assert pkg["runs"] == [run] and pkg["mission"] == run["inputSnapshot"]
@@ -113,3 +113,38 @@ def test_run_with_unknown_component_still_exports_with_label(client: TestClient)
     d = r.json()["data"]
     assert "Budgets were not available" in d["html"]
     assert any(e["fidelity"] == "not-modelled" for e in d["package"]["evidence"])
+
+
+def test_replay_status_is_structured(client: TestClient) -> None:
+    run = _run(client)
+    ok = client.post(DOSSIER, json={"run": run}).json()["data"]
+    assert ok["replayStatus"] == "identical-replay" and ok["replayMismatches"] == []
+    run["telemetry"][0]["value"] += 1.0
+    bad = client.post(DOSSIER, json={"run": run}).json()["data"]
+    assert bad["replayStatus"] == "diverged" and bad["replayMismatches"] == ["output"]
+
+
+def test_spoofed_title_does_not_change_replay_status(client: TestClient) -> None:
+    run = _run(client, title="Probe (identical replay)")
+    run["telemetry"][0]["value"] += 1.0
+    d = client.post(DOSSIER, json={"run": run}).json()["data"]
+    assert d["replayStatus"] == "diverged"
+
+
+def test_export_time_varies_only_exported_at_and_calculated_at() -> None:
+    run_body: dict[str, Any] = {}
+    outs = []
+    for hour in (12, 18):
+        app = create_app()
+        t = datetime(2026, 11, 14, hour, tzinfo=UTC)
+        app.dependency_overrides[get_clock] = lambda t=t: lambda: t
+        with TestClient(app) as c:
+            if not run_body:
+                run_body["run"] = _run(c)
+            outs.append(c.post(DOSSIER, json=run_body).json()["data"])
+    a, b = outs
+    for d, hr in ((a, 12), (b, 18)):
+        d["package"]["exportedAt"] = "X"
+        d["package"]["latestAnalysis"]["calculatedAt"] = "X"
+        d["html"] = d["html"].replace(f"2026-11-14T{hr}:00:00Z", "X")
+    assert a == b

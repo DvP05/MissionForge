@@ -90,18 +90,55 @@ def test_trajectory_values_are_scenario_preset_estimates(env: Env, run: MissionR
     assert any(r.subject_id == "trajectory.mission_delta_v_km_per_s" for r in traj)
 
 
-def test_jpl_trajectory_is_source_backed_only_with_a_reference(env: Env, run: MissionRun) -> None:
+@pytest.mark.parametrize(
+    ("ref", "linkable"),
+    [
+        ("https://evil.example/x", False),
+        ("https://ssd-api.jpl.nasa.gov/mdesign.api?des=1", True),
+        ("https://ssd-api.jpl.nasa.gov.evil.example/x", False),
+        ("javascript:alert(1)", False),
+        (None, False),
+    ],
+)
+def test_claimed_jpl_trajectory_is_never_source_backed(
+    env: Env, run: MissionRun, ref: str | None, linkable: bool
+) -> None:
     dump = run.model_dump()
     dump["input_snapshot"]["trajectory"]["provider"] = "jpl-mdesign"
-    dump["input_snapshot"]["trajectory"]["raw_source_ref"] = "https://example.org/jpl/ref"
-    with_ref = MissionRun.model_validate(dump)
-    traj = [r for r in build_evidence_records(with_ref, env.catalog) if "trajectory" in r.id]
-    assert traj and all(r.fidelity == "source-backed" and r.source_url for r in traj)
-    dump["input_snapshot"]["trajectory"]["raw_source_ref"] = None
-    no_ref = MissionRun.model_validate(dump)
-    traj = [r for r in build_evidence_records(no_ref, env.catalog) if "trajectory" in r.id]
-    assert all(UNAVAILABLE in " ".join(r.limitations) for r in traj)
-    assert not any(r.fidelity == "source-backed" for r in traj)
+    dump["input_snapshot"]["trajectory"]["raw_source_ref"] = ref
+    claimed = MissionRun.model_validate(dump)
+    traj = [r for r in build_evidence_records(claimed, env.catalog) if "trajectory" in r.id]
+    assert traj
+    for r in traj:
+        assert r.fidelity == "gameplay-estimate"  # R36: provider is client-supplied
+        assert "claimed JPL source — not verified by this server" in r.limitations
+        assert bool(r.source_url) == linkable
+        if not linkable:
+            assert any(x.startswith(UNAVAILABLE) for x in r.limitations)
+    html = _export(env, claimed).html
+    if ref and not linkable:
+        assert f'href="{ref}' not in html
+        assert 'href="https://evil.example' not in html
+    if linkable:
+        assert 'href="https://ssd-api.jpl.nasa.gov/mdesign.api' in html
+    # nothing in the ledger sentence claims a source-backed value
+    assert "No value in this passport is source-backed" in html
+
+
+def test_non_http_source_url_counts_as_missing(env: Env, run: MissionRun) -> None:
+    comp = env.catalog[run.input_snapshot.architecture.bus_id]
+    dump = comp.model_dump()
+    dump["parameters"]["mass"]["provenance"]["source_url"] = "javascript:alert(1)"
+    odd = {**dict(env.catalog), comp.id: type(comp).model_validate(dump)}
+    recs = build_evidence_records(run, odd)
+    r = next(x for x in recs if x.id == f"ev-component-{comp.id}-mass")
+    assert UNAVAILABLE in " ".join(r.limitations)
+    assert r.source_url is None
+
+
+def test_budget_note_names_the_recomputing_engine(env: Env, run: MissionRun) -> None:
+    html = _export(env, run).html
+    assert f"recomputed at export by engine {run.engine_version}" in html
 
 
 def test_derived_budgets_are_engine_derived(env: Env, run: MissionRun) -> None:

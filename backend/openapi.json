@@ -1105,11 +1105,29 @@
           },
           "package": {
             "$ref": "#/components/schemas/MissionPackage"
+          },
+          "replayMismatches": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Replaymismatches",
+            "type": "array"
+          },
+          "replayStatus": {
+            "enum": [
+              "identical-replay",
+              "version-mismatch",
+              "diverged"
+            ],
+            "title": "Replaystatus",
+            "type": "string"
           }
         },
         "required": [
           "package",
-          "html"
+          "html",
+          "replayStatus",
+          "replayMismatches"
         ],
         "title": "DossierData",
         "type": "object"

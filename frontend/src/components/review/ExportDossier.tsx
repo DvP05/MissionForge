@@ -28,13 +28,18 @@ export function ExportDossier({ data }: { data: RunData }) {
       setError(`${res.error?.message ?? "The passport could not be created."} Nothing was downloaded.`);
       return;
     }
-    const jsonName = `missionforge-passport-${runId}.json`;
-    const htmlName = `missionforge-passport-${runId}.html`;
+    const safeId = runId.replace(/[^A-Za-z0-9-]/g, "-");
+    const jsonName = `missionforge-passport-${safeId}.json`;
+    const htmlName = `missionforge-passport-${safeId}.html`;
     downloadBlob(new Blob([JSON.stringify(res.data.package, null, 2)], { type: "application/json" }), jsonName);
     downloadBlob(new Blob([res.data.html], { type: "text/html" }), htmlName);
     setDone({
       evidence: res.data.package.evidence?.length ?? 0,
-      replay: /identical replay\)/i.test(res.data.html) ? "verified identical on the server" : "not verified as identical",
+      // Structured server field only: the HTML contains player text and is never scraped.
+      replay:
+        res.data.replayStatus === "identical-replay"
+          ? "verified identical on the server"
+          : `not an identical replay (${res.data.replayStatus})`,
       files: [jsonName, htmlName],
     });
   }

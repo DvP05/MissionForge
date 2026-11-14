@@ -560,6 +560,13 @@ export interface components {
             /** Html */
             html: string;
             package: components["schemas"]["MissionPackage"];
+            /** Replaymismatches */
+            replayMismatches: string[];
+            /**
+             * Replaystatus
+             * @enum {string}
+             */
+            replayStatus: "identical-replay" | "version-mismatch" | "diverged";
         };
         /** DossierRequest */
         DossierRequest: {

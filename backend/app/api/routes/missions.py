@@ -129,6 +129,9 @@ class DossierData(ContractModel):
 
     package: MissionPackage
     html: str
+    # Structured replay result of the server-side check (the UI must use this, never the HTML).
+    replay_status: Literal["identical-replay", "version-mismatch", "diverged"]
+    replay_mismatches: list[str]
 
 
 # Domain codes that are the caller's fault (422). Anything else is a server fault and stays a 500.
@@ -509,6 +512,11 @@ def export_dossier(
     )
     return ApiResult[DossierData](
         ok=True,
-        data=DossierData(package=dossier.package, html=dossier.html),
+        data=DossierData(
+            package=dossier.package,
+            html=dossier.html,
+            replay_status=replay.status,
+            replay_mismatches=[m.field for m in replay.mismatches],
+        ),
         meta=ApiMeta(request_id=request.state.request_id),
     )

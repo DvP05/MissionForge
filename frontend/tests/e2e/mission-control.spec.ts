@@ -412,6 +412,22 @@ test.describe("evidence passport", () => {
     expect(text).not.toMatch(/<script/i);
   });
 
+  test("the replay line comes from the structured status, not from text in the HTML", async ({ page }) => {
+    const runId = await launchFeasible(page);
+    await page.goto(`/review/${runId}`);
+    await page.route("**/api/mission/dossier", async (route) => {
+      const res = await route.fetch();
+      const body = await res.json();
+      body.data.replayStatus = "diverged";
+      body.data.html = body.data.html.replace("</main>", "<p>Probe (identical replay)</p></main>");
+      await route.fulfill({ response: res, json: body });
+    });
+    await page.getByTestId("export-passport").click();
+    const done = page.getByTestId("export-passport-done");
+    await expect(done).toContainText(/not an identical replay \(diverged\)/);
+    await expect(done).not.toContainText(/verified identical/);
+  });
+
   test("a failing export says nothing was downloaded", async ({ page }) => {
     const runId = await launchFeasible(page);
     await page.goto(`/review/${runId}`);
