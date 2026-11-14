@@ -258,6 +258,7 @@ which regenerates `openapi.json` / frontend types only when a route exposes the 
 | 2026-11-14 | Scenario decision events stay player decisions; during a blackout the choice is framed as selecting a stored contingency response executed on board (UI shows authority + countdown) | ruling R45 |
 | 2026-11-14 | Task 6.7: `HealthTracePoint`, `HealthChannelTrace`, `HealthFinding`, `HealthReport` added (`POST /api/mission/health`, nominal model = same run on `nominal-v1`); `ResearchEvidence.healthFindings` added | ruling R46 |
 | 2026-11-14 | Task 6.6 step 3: the greedy schedule is NOT fed into run outputs; the engine data ledger stays the single source of returned data (the onboard policy reads its buffer). The schedule is evidence (Passport v2, schedule board) | ruling R47 (no contract change) |
+| 2026-11-14 | Phase 5: `space_data.py` (`JplMissionOption` with server `sourceRef`, `SourceInfo`, `NeoAccessibleData`, `NeoDetailData`). A `jpl-mdesign` trajectory is source-backed only when the server verifies its `rawSourceRef` and values against an option it served (live, cache or a real captured snapshot); synthetic snapshot options stay gameplay-estimate and are labelled NOT JPL data | ruling R48 (supersedes R36) |
 
 ## Templates (Task 1.5)
 

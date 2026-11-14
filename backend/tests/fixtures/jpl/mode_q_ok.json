@@ -1,0 +1,43 @@
+{
+ "_comment": "SYNTHETIC FIXTURE for tests: shaped like the JPL Mission Design API, values invented, NOT JPL data.",
+ "signature": {
+  "source": "NASA/JPL Small-Body Mission Design API",
+  "version": "1.2"
+ },
+ "object": {
+  "designation": "2031 SY1",
+  "name": "(2031 SY1) Synthetic-1",
+  "orbit_class": "APO",
+  "absolute_magnitude": 24.1,
+  "is_near_earth_object": "Y"
+ },
+ "fields": [
+  "MJD0",
+  "MJDF",
+  "tof",
+  "c3_dep",
+  "vinf_dep",
+  "vinf_arr",
+  "dv_tot"
+ ],
+ "selectedMissions": [
+  [
+   62926.0,
+   63201.0,
+   275.0,
+   14.0,
+   3.74,
+   0.5,
+   4.62
+  ],
+  [
+   62956.0,
+   63216.0,
+   260.0,
+   16.2,
+   4.02,
+   0.61,
+   4.95
+  ]
+ ]
+}

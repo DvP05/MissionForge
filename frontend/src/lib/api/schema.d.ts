@@ -386,6 +386,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/space-data/neo-accessible": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Neo Accessible */
+        get: operations["neo_accessible_api_space_data_neo_accessible_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space-data/neo/{designation}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Neo Detail */
+        get: operations["neo_detail_api_space_data_neo__designation__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/templates": {
         parameters: {
             query?: never;
@@ -556,6 +590,22 @@ export interface components {
         /** ApiResult[MissionState] */
         ApiResult_MissionState_: {
             data?: components["schemas"]["MissionState"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[NeoAccessibleData] */
+        ApiResult_NeoAccessibleData_: {
+            data?: components["schemas"]["NeoAccessibleData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[NeoDetailData] */
+        ApiResult_NeoDetailData_: {
+            data?: components["schemas"]["NeoDetailData"] | null;
             error?: components["schemas"]["ApiError"] | null;
             meta: components["schemas"]["ApiMeta"];
             /** Ok */
@@ -1250,6 +1300,48 @@ export interface components {
              */
             status: "live" | "cached" | "demo" | "unknown";
         };
+        /** JplMissionOption */
+        JplMissionOption: {
+            /** Absolutemagnitude */
+            absoluteMagnitude?: number | null;
+            /**
+             * Arrivaldate
+             * Format: date
+             */
+            arrivalDate: string;
+            /** Arrivalvinfinitykmpers */
+            arrivalVInfinityKmPerS: number;
+            /** C3Km2Pers2 */
+            c3Km2PerS2: number;
+            /**
+             * Departuredate
+             * Format: date
+             */
+            departureDate: string;
+            /** Departurevinfinitykmpers */
+            departureVInfinityKmPerS: number;
+            /** Designation */
+            designation: string;
+            /** Isbinary */
+            isBinary: boolean;
+            /** Isnearearthobject */
+            isNearEarthObject: boolean;
+            /** Ispotentiallyhazardous */
+            isPotentiallyHazardous: boolean;
+            /** Name */
+            name: string;
+            /** Orbitclass */
+            orbitClass: string;
+            /** Orbitconditioncode */
+            orbitConditionCode?: number | null;
+            source: components["schemas"]["Provenance"];
+            /** Sourceref */
+            sourceRef: string;
+            /** Timeofflightdays */
+            timeOfFlightDays: number;
+            /** Totaldeltavkmpers */
+            totalDeltaVKmPerS: number;
+        };
         /** MeasurementRequirement */
         MeasurementRequirement: {
             /** Coverageweight */
@@ -1560,6 +1652,20 @@ export interface components {
             requirementIds: string[];
             /** Subsystemids */
             subsystemIds: string[];
+        };
+        /** NeoAccessibleData */
+        NeoAccessibleData: {
+            /** Options */
+            options: components["schemas"]["JplMissionOption"][];
+            source: components["schemas"]["SourceInfo"];
+        };
+        /** NeoDetailData */
+        NeoDetailData: {
+            /** Designation */
+            designation: string;
+            /** Options */
+            options: components["schemas"]["JplMissionOption"][];
+            source: components["schemas"]["SourceInfo"];
         };
         /** NextObservationOut */
         NextObservationOut: {
@@ -2149,6 +2255,27 @@ export interface components {
             randomSeed: number;
             /** Scenarioeventsetid */
             scenarioEventSetId?: string | null;
+        };
+        /** SourceInfo */
+        SourceInfo: {
+            /** Note */
+            note: string;
+            /** Retrievedat */
+            retrievedAt?: string | null;
+            /** Signatureversion */
+            signatureVersion?: string | null;
+            /**
+             * Skippedrows
+             * @default 0
+             */
+            skippedRows: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "live" | "cached" | "demo";
+            /** Synthetic */
+            synthetic: boolean;
         };
         /** SpacecraftArchitecture */
         SpacecraftArchitecture: {
@@ -2903,6 +3030,70 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_BeliefData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    neo_accessible_api_space_data_neo_accessible_get: {
+        parameters: {
+            query?: {
+                years?: string;
+                criterion?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_NeoAccessibleData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    neo_detail_api_space_data_neo__designation__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                designation: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_NeoDetailData_"];
                 };
             };
             /** @description Validation Error */

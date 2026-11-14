@@ -1,0 +1,844 @@
+{
+  "JplMissionOption": {
+    "$defs": {
+      "Provenance": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "fidelity": {
+            "enum": [
+              "source-backed",
+              "derived",
+              "gameplay-estimate",
+              "not-modelled"
+            ],
+            "title": "Fidelity",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Publishedat"
+          },
+          "retrievedAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Retrievedat"
+          },
+          "sourceName": {
+            "title": "Sourcename",
+            "type": "string"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceurl"
+          },
+          "sourceVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceversion"
+          }
+        },
+        "required": [
+          "fidelity",
+          "sourceName"
+        ],
+        "title": "Provenance",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "absoluteMagnitude": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Absolutemagnitude"
+      },
+      "arrivalDate": {
+        "format": "date",
+        "title": "Arrivaldate",
+        "type": "string"
+      },
+      "arrivalVInfinityKmPerS": {
+        "title": "Arrivalvinfinitykmpers",
+        "type": "number"
+      },
+      "c3Km2PerS2": {
+        "title": "C3Km2Pers2",
+        "type": "number"
+      },
+      "departureDate": {
+        "format": "date",
+        "title": "Departuredate",
+        "type": "string"
+      },
+      "departureVInfinityKmPerS": {
+        "title": "Departurevinfinitykmpers",
+        "type": "number"
+      },
+      "designation": {
+        "title": "Designation",
+        "type": "string"
+      },
+      "isBinary": {
+        "title": "Isbinary",
+        "type": "boolean"
+      },
+      "isNearEarthObject": {
+        "title": "Isnearearthobject",
+        "type": "boolean"
+      },
+      "isPotentiallyHazardous": {
+        "title": "Ispotentiallyhazardous",
+        "type": "boolean"
+      },
+      "name": {
+        "title": "Name",
+        "type": "string"
+      },
+      "orbitClass": {
+        "title": "Orbitclass",
+        "type": "string"
+      },
+      "orbitConditionCode": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Orbitconditioncode"
+      },
+      "source": {
+        "$ref": "#/$defs/Provenance"
+      },
+      "sourceRef": {
+        "title": "Sourceref",
+        "type": "string"
+      },
+      "timeOfFlightDays": {
+        "title": "Timeofflightdays",
+        "type": "number"
+      },
+      "totalDeltaVKmPerS": {
+        "title": "Totaldeltavkmpers",
+        "type": "number"
+      }
+    },
+    "required": [
+      "designation",
+      "name",
+      "departureDate",
+      "arrivalDate",
+      "c3Km2PerS2",
+      "departureVInfinityKmPerS",
+      "arrivalVInfinityKmPerS",
+      "totalDeltaVKmPerS",
+      "timeOfFlightDays",
+      "orbitClass",
+      "isNearEarthObject",
+      "isPotentiallyHazardous",
+      "isBinary",
+      "sourceRef",
+      "source"
+    ],
+    "title": "JplMissionOption",
+    "type": "object"
+  },
+  "NeoAccessibleData": {
+    "$defs": {
+      "JplMissionOption": {
+        "additionalProperties": false,
+        "properties": {
+          "absoluteMagnitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Absolutemagnitude"
+          },
+          "arrivalDate": {
+            "format": "date",
+            "title": "Arrivaldate",
+            "type": "string"
+          },
+          "arrivalVInfinityKmPerS": {
+            "title": "Arrivalvinfinitykmpers",
+            "type": "number"
+          },
+          "c3Km2PerS2": {
+            "title": "C3Km2Pers2",
+            "type": "number"
+          },
+          "departureDate": {
+            "format": "date",
+            "title": "Departuredate",
+            "type": "string"
+          },
+          "departureVInfinityKmPerS": {
+            "title": "Departurevinfinitykmpers",
+            "type": "number"
+          },
+          "designation": {
+            "title": "Designation",
+            "type": "string"
+          },
+          "isBinary": {
+            "title": "Isbinary",
+            "type": "boolean"
+          },
+          "isNearEarthObject": {
+            "title": "Isnearearthobject",
+            "type": "boolean"
+          },
+          "isPotentiallyHazardous": {
+            "title": "Ispotentiallyhazardous",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "orbitClass": {
+            "title": "Orbitclass",
+            "type": "string"
+          },
+          "orbitConditionCode": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Orbitconditioncode"
+          },
+          "source": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "sourceRef": {
+            "title": "Sourceref",
+            "type": "string"
+          },
+          "timeOfFlightDays": {
+            "title": "Timeofflightdays",
+            "type": "number"
+          },
+          "totalDeltaVKmPerS": {
+            "title": "Totaldeltavkmpers",
+            "type": "number"
+          }
+        },
+        "required": [
+          "designation",
+          "name",
+          "departureDate",
+          "arrivalDate",
+          "c3Km2PerS2",
+          "departureVInfinityKmPerS",
+          "arrivalVInfinityKmPerS",
+          "totalDeltaVKmPerS",
+          "timeOfFlightDays",
+          "orbitClass",
+          "isNearEarthObject",
+          "isPotentiallyHazardous",
+          "isBinary",
+          "sourceRef",
+          "source"
+        ],
+        "title": "JplMissionOption",
+        "type": "object"
+      },
+      "Provenance": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "fidelity": {
+            "enum": [
+              "source-backed",
+              "derived",
+              "gameplay-estimate",
+              "not-modelled"
+            ],
+            "title": "Fidelity",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Publishedat"
+          },
+          "retrievedAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Retrievedat"
+          },
+          "sourceName": {
+            "title": "Sourcename",
+            "type": "string"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceurl"
+          },
+          "sourceVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceversion"
+          }
+        },
+        "required": [
+          "fidelity",
+          "sourceName"
+        ],
+        "title": "Provenance",
+        "type": "object"
+      },
+      "SourceInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "retrievedAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Retrievedat"
+          },
+          "signatureVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Signatureversion"
+          },
+          "skippedRows": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Skippedrows",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "live",
+              "cached",
+              "demo"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "synthetic",
+          "note"
+        ],
+        "title": "SourceInfo",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "options": {
+        "items": {
+          "$ref": "#/$defs/JplMissionOption"
+        },
+        "title": "Options",
+        "type": "array"
+      },
+      "source": {
+        "$ref": "#/$defs/SourceInfo"
+      }
+    },
+    "required": [
+      "options",
+      "source"
+    ],
+    "title": "NeoAccessibleData",
+    "type": "object"
+  },
+  "NeoDetailData": {
+    "$defs": {
+      "JplMissionOption": {
+        "additionalProperties": false,
+        "properties": {
+          "absoluteMagnitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Absolutemagnitude"
+          },
+          "arrivalDate": {
+            "format": "date",
+            "title": "Arrivaldate",
+            "type": "string"
+          },
+          "arrivalVInfinityKmPerS": {
+            "title": "Arrivalvinfinitykmpers",
+            "type": "number"
+          },
+          "c3Km2PerS2": {
+            "title": "C3Km2Pers2",
+            "type": "number"
+          },
+          "departureDate": {
+            "format": "date",
+            "title": "Departuredate",
+            "type": "string"
+          },
+          "departureVInfinityKmPerS": {
+            "title": "Departurevinfinitykmpers",
+            "type": "number"
+          },
+          "designation": {
+            "title": "Designation",
+            "type": "string"
+          },
+          "isBinary": {
+            "title": "Isbinary",
+            "type": "boolean"
+          },
+          "isNearEarthObject": {
+            "title": "Isnearearthobject",
+            "type": "boolean"
+          },
+          "isPotentiallyHazardous": {
+            "title": "Ispotentiallyhazardous",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "orbitClass": {
+            "title": "Orbitclass",
+            "type": "string"
+          },
+          "orbitConditionCode": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Orbitconditioncode"
+          },
+          "source": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "sourceRef": {
+            "title": "Sourceref",
+            "type": "string"
+          },
+          "timeOfFlightDays": {
+            "title": "Timeofflightdays",
+            "type": "number"
+          },
+          "totalDeltaVKmPerS": {
+            "title": "Totaldeltavkmpers",
+            "type": "number"
+          }
+        },
+        "required": [
+          "designation",
+          "name",
+          "departureDate",
+          "arrivalDate",
+          "c3Km2PerS2",
+          "departureVInfinityKmPerS",
+          "arrivalVInfinityKmPerS",
+          "totalDeltaVKmPerS",
+          "timeOfFlightDays",
+          "orbitClass",
+          "isNearEarthObject",
+          "isPotentiallyHazardous",
+          "isBinary",
+          "sourceRef",
+          "source"
+        ],
+        "title": "JplMissionOption",
+        "type": "object"
+      },
+      "Provenance": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "fidelity": {
+            "enum": [
+              "source-backed",
+              "derived",
+              "gameplay-estimate",
+              "not-modelled"
+            ],
+            "title": "Fidelity",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Publishedat"
+          },
+          "retrievedAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Retrievedat"
+          },
+          "sourceName": {
+            "title": "Sourcename",
+            "type": "string"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceurl"
+          },
+          "sourceVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sourceversion"
+          }
+        },
+        "required": [
+          "fidelity",
+          "sourceName"
+        ],
+        "title": "Provenance",
+        "type": "object"
+      },
+      "SourceInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "retrievedAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Retrievedat"
+          },
+          "signatureVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Signatureversion"
+          },
+          "skippedRows": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Skippedrows",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "live",
+              "cached",
+              "demo"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "synthetic",
+          "note"
+        ],
+        "title": "SourceInfo",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "designation": {
+        "title": "Designation",
+        "type": "string"
+      },
+      "options": {
+        "items": {
+          "$ref": "#/$defs/JplMissionOption"
+        },
+        "title": "Options",
+        "type": "array"
+      },
+      "source": {
+        "$ref": "#/$defs/SourceInfo"
+      }
+    },
+    "required": [
+      "designation",
+      "options",
+      "source"
+    ],
+    "title": "NeoDetailData",
+    "type": "object"
+  },
+  "SourceInfo": {
+    "additionalProperties": false,
+    "properties": {
+      "note": {
+        "title": "Note",
+        "type": "string"
+      },
+      "retrievedAt": {
+        "anyOf": [
+          {
+            "format": "date-time",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Retrievedat"
+      },
+      "signatureVersion": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Signatureversion"
+      },
+      "skippedRows": {
+        "default": 0,
+        "minimum": 0,
+        "title": "Skippedrows",
+        "type": "integer"
+      },
+      "status": {
+        "enum": [
+          "live",
+          "cached",
+          "demo"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "synthetic": {
+        "title": "Synthetic",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "status",
+      "synthetic",
+      "note"
+    ],
+    "title": "SourceInfo",
+    "type": "object"
+  }
+}

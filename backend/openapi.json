@@ -557,6 +557,82 @@
         "title": "ApiResult[MissionState]",
         "type": "object"
       },
+      "ApiResult_NeoAccessibleData_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NeoAccessibleData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[NeoAccessibleData]",
+        "type": "object"
+      },
+      "ApiResult_NeoDetailData_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NeoDetailData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[NeoDetailData]",
+        "type": "object"
+      },
       "ApiResult_OptimizeData_": {
         "additionalProperties": false,
         "properties": {
@@ -2883,6 +2959,113 @@
         "title": "JplAdapterStatus",
         "type": "object"
       },
+      "JplMissionOption": {
+        "additionalProperties": false,
+        "properties": {
+          "absoluteMagnitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Absolutemagnitude"
+          },
+          "arrivalDate": {
+            "format": "date",
+            "title": "Arrivaldate",
+            "type": "string"
+          },
+          "arrivalVInfinityKmPerS": {
+            "title": "Arrivalvinfinitykmpers",
+            "type": "number"
+          },
+          "c3Km2PerS2": {
+            "title": "C3Km2Pers2",
+            "type": "number"
+          },
+          "departureDate": {
+            "format": "date",
+            "title": "Departuredate",
+            "type": "string"
+          },
+          "departureVInfinityKmPerS": {
+            "title": "Departurevinfinitykmpers",
+            "type": "number"
+          },
+          "designation": {
+            "title": "Designation",
+            "type": "string"
+          },
+          "isBinary": {
+            "title": "Isbinary",
+            "type": "boolean"
+          },
+          "isNearEarthObject": {
+            "title": "Isnearearthobject",
+            "type": "boolean"
+          },
+          "isPotentiallyHazardous": {
+            "title": "Ispotentiallyhazardous",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "orbitClass": {
+            "title": "Orbitclass",
+            "type": "string"
+          },
+          "orbitConditionCode": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Orbitconditioncode"
+          },
+          "source": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "sourceRef": {
+            "title": "Sourceref",
+            "type": "string"
+          },
+          "timeOfFlightDays": {
+            "title": "Timeofflightdays",
+            "type": "number"
+          },
+          "totalDeltaVKmPerS": {
+            "title": "Totaldeltavkmpers",
+            "type": "number"
+          }
+        },
+        "required": [
+          "designation",
+          "name",
+          "departureDate",
+          "arrivalDate",
+          "c3Km2PerS2",
+          "departureVInfinityKmPerS",
+          "arrivalVInfinityKmPerS",
+          "totalDeltaVKmPerS",
+          "timeOfFlightDays",
+          "orbitClass",
+          "isNearEarthObject",
+          "isPotentiallyHazardous",
+          "isBinary",
+          "sourceRef",
+          "source"
+        ],
+        "title": "JplMissionOption",
+        "type": "object"
+      },
       "MeasurementRequirement": {
         "additionalProperties": false,
         "properties": {
@@ -3770,6 +3953,53 @@
           "observationCount"
         ],
         "title": "MissionTraceRowOut",
+        "type": "object"
+      },
+      "NeoAccessibleData": {
+        "additionalProperties": false,
+        "properties": {
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/JplMissionOption"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceInfo"
+          }
+        },
+        "required": [
+          "options",
+          "source"
+        ],
+        "title": "NeoAccessibleData",
+        "type": "object"
+      },
+      "NeoDetailData": {
+        "additionalProperties": false,
+        "properties": {
+          "designation": {
+            "title": "Designation",
+            "type": "string"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/JplMissionOption"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceInfo"
+          }
+        },
+        "required": [
+          "designation",
+          "options",
+          "source"
+        ],
+        "title": "NeoDetailData",
         "type": "object"
       },
       "NextObservationOut": {
@@ -5511,6 +5741,64 @@
         "title": "SimulateRequest",
         "type": "object"
       },
+      "SourceInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "retrievedAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrievedat"
+          },
+          "signatureVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signatureversion"
+          },
+          "skippedRows": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Skippedrows",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "live",
+              "cached",
+              "demo"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "synthetic",
+          "note"
+        ],
+        "title": "SourceInfo",
+        "type": "object"
+      },
       "SpacecraftArchitecture": {
         "additionalProperties": false,
         "properties": {
@@ -6746,6 +7034,107 @@
           }
         },
         "summary": "Science Belief"
+      }
+    },
+    "/api/space-data/neo-accessible": {
+      "get": {
+        "operationId": "neo_accessible_api_space_data_neo_accessible_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "years",
+            "required": false,
+            "schema": {
+              "default": "2031",
+              "maxLength": 40,
+              "pattern": "^\\d{4}(,\\d{4}){0,4}$",
+              "title": "Years",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "criterion",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "title": "Criterion",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_NeoAccessibleData_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Neo Accessible"
+      }
+    },
+    "/api/space-data/neo/{designation}": {
+      "get": {
+        "operationId": "neo_detail_api_space_data_neo__designation__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "designation",
+            "required": true,
+            "schema": {
+              "title": "Designation",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_NeoDetailData_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Neo Detail"
       }
     },
     "/api/templates": {

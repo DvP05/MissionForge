@@ -22,6 +22,7 @@ from app.schemas import (
     optimization,
     science_belief,
     simulation,
+    space_data,
     templates,
     uncertainty,
 )
@@ -870,7 +871,50 @@ def template_mission_state() -> templates.TemplateMissionState:
 
 # --- registry --------------------------------------------------------------------------
 
+
+def jpl_mission_option() -> space_data.JplMissionOption:
+    return space_data.JplMissionOption(
+        designation="2031 SY1",
+        name="(2031 SY1) Synthetic-1",
+        departure_date=date(2031, 3, 1),
+        arrival_date=date(2031, 12, 1),
+        c3_km2_per_s2=14.0,
+        departure_v_infinity_km_per_s=3.74,
+        arrival_v_infinity_km_per_s=0.5,
+        total_delta_v_km_per_s=4.62,
+        time_of_flight_days=275.0,
+        orbit_class="APO",
+        absolute_magnitude=24.1,
+        orbit_condition_code=3.0,
+        is_near_earth_object=True,
+        is_potentially_hazardous=False,
+        is_binary=False,
+        source_ref="jpl-mdesign:0123456789abcdef01234567",
+        source=Provenance(fidelity="gameplay-estimate", source_name="Synthetic fixture"),
+    )
+
+
+def source_info() -> space_data.SourceInfo:
+    return space_data.SourceInfo(
+        status="demo", synthetic=True, signature_version="1.2", note="synthetic", skipped_rows=0
+    )
+
+
+def neo_accessible_data() -> space_data.NeoAccessibleData:
+    return space_data.NeoAccessibleData(options=[jpl_mission_option()], source=source_info())
+
+
+def neo_detail_data() -> space_data.NeoDetailData:
+    return space_data.NeoDetailData(
+        designation="2031 SY1", options=[jpl_mission_option()], source=source_info()
+    )
+
+
 BUILDERS: dict[str, Callable[[], BaseModel]] = {
+    "space_data.JplMissionOption": jpl_mission_option,
+    "space_data.SourceInfo": source_info,
+    "space_data.NeoAccessibleData": neo_accessible_data,
+    "space_data.NeoDetailData": neo_detail_data,
     "mission.MissionState": mission_state,
     "mission.MeasurementRequirement": measurement,
     "mission.ComponentSelection": lambda: ComponentSelection(

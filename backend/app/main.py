@@ -17,11 +17,14 @@ from app.api.routes import (
     robustness,
     schedule,
     science,
+    space_data,
     templates,
 )
-from app.config import DEFAULT_SCENARIOS_DIR, get_settings
+from app.config import DEFAULT_JPL_SNAPSHOT, DEFAULT_SCENARIOS_DIR, get_settings
 from app.domain.analysis.orchestrator import ENGINE_VERSION
 from app.domain.simulation.anomalies import load_event_sets
+from app.integrations.jpl.client import JplClient, user_agent
+from app.integrations.jpl.repository import JplRepository, Snapshot
 from app.services.analyst_service import AnalystService
 from app.services.catalog_service import CatalogService
 from app.services.graph_service import GraphService
@@ -56,6 +59,21 @@ def create_app() -> FastAPI:
         engine_version=ENGINE_VERSION,
         app_version=settings.app_version,
         science_models=science_models,
+    )
+
+    # Phase 5: JPL adapter (offline snapshot unless live access is explicitly enabled)
+    app.state.jpl_repository = JplRepository(
+        client=JplClient(
+            settings.jpl_mdesign_base_url,
+            user_agent=user_agent(settings.app_version, settings.app_contact_email),
+            timeout_s=settings.jpl_request_timeout_ms / 1000,
+        )
+        if settings.jpl_live
+        else None,
+        snapshot=Snapshot.load(DEFAULT_JPL_SNAPSHOT),
+        live_enabled=settings.jpl_live,
+        ttl_a_s=settings.jpl_cache_ttl_a_seconds,
+        ttl_q_s=settings.jpl_cache_ttl_q_seconds,
     )
 
     # Phase 6 research differentiators (graph, arena, robustness, analyst, science, schedule).
@@ -120,6 +138,7 @@ def create_app() -> FastAPI:
     app.include_router(science.router, prefix="/api")
     app.include_router(schedule.router, prefix="/api")
     app.include_router(health_monitor.router, prefix="/api")
+    app.include_router(space_data.router, prefix="/api")
     return app
 
 

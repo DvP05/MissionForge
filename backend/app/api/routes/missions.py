@@ -517,6 +517,7 @@ def export_dossier(
         app_version=settings.app_version,
         analysis=analysis,
         research=research_service.build(run.input_snapshot, now, run),
+        verified_trajectory=request.app.state.jpl_repository.verify(run.input_snapshot.trajectory),
         replay=ReplayCheck(
             replay.status,
             tuple(m.field for m in replay.mismatches),

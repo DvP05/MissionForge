@@ -22,6 +22,15 @@ class Settings(BaseSettings):
     jpl_cache_ttl_a_seconds: int = 43200
     jpl_cache_ttl_q_seconds: int = 86400
     jpl_cache_ttl_m_seconds: int = 21600
+    # Live JPL access is opt-in (ruling R6): it needs JPL_LIVE_ENABLED=1 AND a real
+    # APP_CONTACT_EMAIL for the User-Agent. JPL_FORCE_OFFLINE=1 always wins (demo rehearsal).
+    jpl_live_enabled: bool = False
+    jpl_force_offline: bool = False
+
+    @property
+    def jpl_live(self) -> bool:
+        placeholder = self.app_contact_email.endswith(("@example.com", "@example.org"))
+        return self.jpl_live_enabled and not self.jpl_force_offline and not placeholder
 
     mission_schema_version: str = "1.0"
     # R40: there is no engine/catalogue version setting. The engine version is
@@ -55,6 +64,8 @@ DEFAULT_MISSIONS_DIR = Path(__file__).resolve().parents[2] / "data" / "missions"
 
 # <repo>/data/demo/demo-saved.json: seeded demo mission package (Task 7.5). Not in
 # data/missions, whose every *.json is read as a scenario template.
+# <repo>/data/jpl/demo-snapshot.json: offline JPL snapshot (synthetic until captured, R6).
+DEFAULT_JPL_SNAPSHOT = Path(__file__).resolve().parents[2] / "data" / "jpl" / "demo-snapshot.json"
 DEFAULT_DEMO_PACKAGE = Path(__file__).resolve().parents[2] / "data" / "demo" / "demo-saved.json"
 
 # <repo>/data/scenarios: scenario event sets (explicit path passed into the simulation).

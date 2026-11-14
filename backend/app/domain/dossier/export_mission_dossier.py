@@ -27,6 +27,7 @@ from app.schemas.evidence import (
     ResearchEvidence,
 )
 from app.schemas.simulation import MissionRun
+from app.schemas.space_data import JplMissionOption
 from app.schemas.units import Fidelity, Provenance, Unit
 
 __all__ = [
@@ -181,9 +182,55 @@ def _client_claim_notes(ref: str | None, link: str | None) -> list[str]:
     return [f"Claimed reference (unverified, plain text): {ref}"] if ref and link is None else []
 
 
-def _trajectory_records(run: MissionRun) -> list[EvidenceRecord]:
-    """Trajectory values are never source-backed here (R36): the provider and reference come
-    from the client, and the JPL adapter that would record verified provenance is Phase 5."""
+def _verified_records(run: MissionRun, option: JplMissionOption) -> list[EvidenceRecord]:
+    """R48: the server served this exact option; its provenance is the server's own record."""
+    traj = run.input_snapshot.trajectory
+    pv = option.source
+    out: list[EvidenceRecord] = []
+    for name, unit in _TRAJECTORY_FIELDS:
+        if getattr(traj, name) is None:
+            continue
+        informational = name == "mission_delta_v_km_per_s"
+        out.append(
+            EvidenceRecord(
+                id=f"ev-trajectory-{name}",
+                subject_id=f"trajectory.{name}",
+                fidelity=pv.fidelity,
+                source_title=pv.source_name,
+                source_url=pv.source_url,
+                source_version=pv.source_version,
+                retrieved_at=pv.retrieved_at,
+                unit=unit,
+                conversion_notes="JPL km/s and km^2/s^2 kept as served; SI in the engine.",
+                assumptions=[
+                    f"Verified by this server: {traj.raw_source_ref} ({option.designation}).",
+                    *(
+                        [
+                            "JPL total delta-v is informational; the spacecraft burn comes "
+                            "from the scenario (R41)."
+                        ]
+                        if informational
+                        else []
+                    ),
+                    *pv.assumptions,
+                ],
+                limitations=_limitations(
+                    pv.fidelity,
+                    pv.source_url,
+                    *(["Unit km^2/s^2 (not an enumerated contract unit)."] if unit is None else []),
+                ),
+            )
+        )
+    return out
+
+
+def _trajectory_records(
+    run: MissionRun, verified: JplMissionOption | None = None
+) -> list[EvidenceRecord]:
+    """Client-supplied trajectory provenance is never trusted (R36). A JPL trajectory becomes
+    source-backed only when the server verifies its reference and values (R48)."""
+    if verified is not None:
+        return _verified_records(run, verified) + _destination_records(run)
     snap = run.input_snapshot
     traj = snap.trajectory
     ref = traj.raw_source_ref
@@ -218,6 +265,12 @@ def _trajectory_records(run: MissionRun) -> list[EvidenceRecord]:
                 limitations=_limitations("gameplay-estimate", link, *extra),
             )
         )
+    return out + _destination_records(run)
+
+
+def _destination_records(run: MissionRun) -> list[EvidenceRecord]:
+    snap = run.input_snapshot
+    out: list[EvidenceRecord] = []
     dest = snap.destination.source
     if dest is not None:
         out.append(
@@ -302,13 +355,14 @@ def build_evidence_records(
     catalog: Mapping[str, CatalogComponent],
     *,
     analysis: MissionAnalysis | None = None,
+    verified_trajectory: JplMissionOption | None = None,
 ) -> list[EvidenceRecord]:
     """One record per catalogue parameter used, trajectory value, telemetry channel, derived
     budget (when `analysis` is given) and the run outcome. Nothing is invented: a value with
     no source link carries an explicit `unavailable-source` limitation, and a component the
     catalogue does not know is `not-modelled`."""
     out = _component_records(run, catalog, run.catalog_version)
-    out += _trajectory_records(run)
+    out += _trajectory_records(run, verified_trajectory)
     out += _telemetry_records(run)
     if analysis is not None:
         out += _budget_records(analysis)
@@ -338,9 +392,12 @@ def export_mission_dossier(
     analysis: MissionAnalysis | None = None,
     replay: ReplayCheck | None = None,
     research: ResearchEvidence | None = None,
+    verified_trajectory: JplMissionOption | None = None,
 ) -> Dossier:
     """Build the passport: a MissionPackage (JSON) and a self-contained HTML report."""
-    records = build_evidence_records(run, catalog, analysis=analysis)
+    records = build_evidence_records(
+        run, catalog, analysis=analysis, verified_trajectory=verified_trajectory
+    )
     package = MissionPackage(
         exported_at=exported_at,
         mission=run.input_snapshot,
