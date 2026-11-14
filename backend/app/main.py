@@ -26,6 +26,7 @@ from app.services.catalog_service import CatalogService
 from app.services.graph_service import GraphService
 from app.services.mission_service import MissionService
 from app.services.optimization_service import OptimizationService
+from app.services.research_evidence_service import ResearchEvidenceService
 from app.services.robustness_service import RobustnessService, load_profile
 from app.services.schedule_service import ScheduleService
 from app.services.science_service import ScienceService, load_science_models
@@ -67,6 +68,13 @@ def create_app() -> FastAPI:
     )
     app.state.science_service = ScienceService(load_science_models())
     app.state.schedule_service = ScheduleService(mission_service, catalogs)
+    # Phase 4 <-> 6 join: Evidence Passport v2 recomputes Phase 6 evidence for a run.
+    app.state.research_evidence_service = ResearchEvidenceService(
+        app.state.graph_service,
+        app.state.optimization_service,
+        app.state.robustness_service,
+        app.state.schedule_service,
+    )
 
     # Added innermost-first: size limit, then CORS, then the request id (outermost).
     app.add_middleware(

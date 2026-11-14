@@ -1658,6 +1658,46 @@
     "title": "MetricChange",
     "type": "object"
   },
+  "MissionTraceRowOut": {
+    "additionalProperties": false,
+    "properties": {
+      "instrumentId": {
+        "title": "Instrumentid",
+        "type": "string"
+      },
+      "instrumentName": {
+        "title": "Instrumentname",
+        "type": "string"
+      },
+      "observationCount": {
+        "title": "Observationcount",
+        "type": "integer"
+      },
+      "requirementIds": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Requirementids",
+        "type": "array"
+      },
+      "subsystemIds": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Subsystemids",
+        "type": "array"
+      }
+    },
+    "required": [
+      "instrumentId",
+      "instrumentName",
+      "requirementIds",
+      "subsystemIds",
+      "observationCount"
+    ],
+    "title": "MissionTraceRowOut",
+    "type": "object"
+  },
   "OptimizationObjective": {
     "additionalProperties": false,
     "properties": {
@@ -3082,6 +3122,63 @@
       "nearMisses"
     ],
     "title": "OptimizationResult",
+    "type": "object"
+  },
+  "ScienceTraceRowOut": {
+    "additionalProperties": false,
+    "properties": {
+      "capability": {
+        "title": "Capability",
+        "type": "string"
+      },
+      "instrumentIds": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Instrumentids",
+        "type": "array"
+      },
+      "objectiveId": {
+        "title": "Objectiveid",
+        "type": "string"
+      },
+      "objectiveTitle": {
+        "title": "Objectivetitle",
+        "type": "string"
+      },
+      "observationCount": {
+        "title": "Observationcount",
+        "type": "integer"
+      },
+      "required": {
+        "title": "Required",
+        "type": "boolean"
+      },
+      "requirementDescription": {
+        "title": "Requirementdescription",
+        "type": "string"
+      },
+      "requirementId": {
+        "title": "Requirementid",
+        "type": "string"
+      },
+      "status": {
+        "title": "Status",
+        "type": "string"
+      }
+    },
+    "required": [
+      "objectiveId",
+      "objectiveTitle",
+      "requirementId",
+      "requirementDescription",
+      "capability",
+      "required",
+      "instrumentIds",
+      "observationCount",
+      "status"
+    ],
+    "title": "ScienceTraceRowOut",
     "type": "object"
   },
   "TradeAlternative": {

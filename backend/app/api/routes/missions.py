@@ -5,7 +5,13 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from pydantic import Field, StrictBool, StrictInt, ValidationError
 
-from app.api.deps import Clock, get_clock, get_mission_service, get_simulation_service
+from app.api.deps import (
+    Clock,
+    get_clock,
+    get_mission_service,
+    get_research_evidence_service,
+    get_simulation_service,
+)
 from app.api.errors import (
     CATALOG_ITEM_NOT_FOUND,
     VALIDATION_ERROR,
@@ -24,6 +30,7 @@ from app.schemas.mission import MissionState
 from app.schemas.optimization import TradeStudyResult
 from app.schemas.simulation import FinalReport, MissionEvent, MissionRun, TelemetrySample
 from app.services.mission_service import DesignRef, MissionService, ValidationOutcome
+from app.services.research_evidence_service import ResearchEvidenceService
 from app.services.simulation_service import (
     DecisionAlreadyMadeError,
     RunNotFoundError,
@@ -436,6 +443,7 @@ async def import_package(
     if outcome.analysis is None:
         return _failure_response(request, settings, outcome)
     package.latest_analysis = outcome.analysis  # derived: always recomputed on import
+    package.research = None  # derived Passport v2 evidence: never trusted, recomputed on export
     statuses: list[RunReplayStatus] = []
     for run in package.runs:
         mismatches = service.version_mismatches(run)
@@ -488,12 +496,15 @@ def export_dossier(
     body: DossierRequest,
     request: Request,
     service: Annotated[SimulationService, Depends(get_simulation_service)],
+    research_service: Annotated[ResearchEvidenceService, Depends(get_research_evidence_service)],
     clock: Annotated[Clock, Depends(get_clock)],
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> ApiResult[DossierData]:
-    """Evidence Passport v1 (architecture 19.9). The run is re-validated by the schema; the
-    budgets are recomputed here from its snapshot and the replay is re-checked here, so the
-    passport never relies on client-calculated analysis or a client claim of identity.
+    """Evidence Passport v2 (architecture 19.9, Task 6.9). The run is re-validated by the
+    schema; the budgets and the Phase 6 research evidence (traceability, Pareto position,
+    robustness, schedule) are recomputed here from its snapshot and the replay is re-checked
+    here, so the passport never relies on client-calculated results or a client claim of
+    identity.
     """
     now = clock()
     run = body.run
@@ -505,6 +516,7 @@ def export_dossier(
         exported_at=now,
         app_version=settings.app_version,
         analysis=analysis,
+        research=research_service.build(run.input_snapshot, now),
         replay=ReplayCheck(
             replay.status,
             tuple(m.field for m in replay.mismatches),

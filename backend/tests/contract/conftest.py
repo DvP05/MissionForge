@@ -743,6 +743,55 @@ def mission_package_manifest() -> evidence.MissionPackageManifest:
     )
 
 
+def science_trace_row() -> optimization.ScienceTraceRowOut:
+    return optimization.ScienceTraceRowOut(
+        objective_id="obj-composition",
+        objective_title="Surface composition",
+        requirement_id="req-spectra",
+        requirement_description="Near-IR spectra of the surface",
+        capability="spectroscopy",
+        required=True,
+        instrument_ids=["inst-nir-spectrometer"],
+        observation_count=2,
+        status="covered",
+    )
+
+
+def mission_trace_row() -> optimization.MissionTraceRowOut:
+    return optimization.MissionTraceRowOut(
+        instrument_id="inst-nir-spectrometer",
+        instrument_name="Near-IR spectrometer",
+        requirement_ids=["req-spectra"],
+        subsystem_ids=["power", "data"],
+        observation_count=2,
+    )
+
+
+def pareto_position() -> evidence.ParetoPosition:
+    return evidence.ParetoPosition(
+        seed=42,
+        candidates_evaluated=100,
+        front_size=6,
+        baseline_id="cand-base",
+        baseline_feasible=True,
+        baseline_on_front=False,
+        dominated_by=["cand-1"],
+        archetypes={"lean": "cand-1", "science-max": "cand-2", "resilient": "cand-3"},
+        notes=["local design-space sample"],
+    )
+
+
+def research_evidence() -> evidence.ResearchEvidence:
+    return evidence.ResearchEvidence(
+        science_traceability=[science_trace_row()],
+        mission_traceability=[mission_trace_row()],
+        pareto=pareto_position(),
+        robustness=robustness_result(),
+        schedule=mission_schedule(),
+        not_included=["Onboard autonomy is not part of this build."],
+    )
+
+
 def mission_package() -> evidence.MissionPackage:
     return evidence.MissionPackage(
         exported_at=T0,
@@ -751,6 +800,7 @@ def mission_package() -> evidence.MissionPackage:
         runs=[mission_run()],
         evidence=[evidence_record()],
         manifest=mission_package_manifest(),
+        research=research_evidence(),
     )
 
 
@@ -867,6 +917,10 @@ BUILDERS: dict[str, Callable[[], BaseModel]] = {
     "health.Anomaly": anomaly,
     "evidence.MissionPackageManifest": mission_package_manifest,
     "evidence.MissionPackage": mission_package,
+    "evidence.ParetoPosition": pareto_position,
+    "evidence.ResearchEvidence": research_evidence,
+    "optimization.ScienceTraceRowOut": science_trace_row,
+    "optimization.MissionTraceRowOut": mission_trace_row,
     "templates.ScenarioTemplate": scenario_template,
     "templates.TemplateMissionState": template_mission_state,
 }

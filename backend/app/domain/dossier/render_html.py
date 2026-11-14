@@ -12,7 +12,7 @@ from html import escape
 from app.domain.dossier.build_run_manifest import build_run_manifest
 from app.schemas.analysis import MissionAnalysis
 from app.schemas.catalog import CatalogComponent
-from app.schemas.evidence import EvidenceRecord
+from app.schemas.evidence import EvidenceRecord, ResearchEvidence
 from app.schemas.simulation import MissionEvent, MissionRun
 from app.schemas.units import Fidelity
 
@@ -515,7 +515,140 @@ def _ledger(records: list[EvidenceRecord], analysis: MissionAnalysis | None) -> 
     )
 
 
-def _limitations_section(run: MissionRun) -> str:
+_RESEARCH_NOTE = (
+    "Recomputed at export by the current engine from this run's recorded design "
+    "(seed = mission seed). Gameplay-level research aids, not flight analyses."
+)
+
+
+def _traceability(research: ResearchEvidence) -> str:
+    stm = _table(
+        ["Objective", "Requirement", "Required", "Instruments", "Observations", "Status"],
+        [
+            [
+                _e(r.objective_title),
+                _e(r.requirement_description),
+                "yes" if r.required else "no",
+                _e(", ".join(r.instrument_ids) or "none"),
+                _e(r.observation_count),
+                _e(r.status),
+            ]
+            for r in research.science_traceability
+        ],
+    )
+    mtm = _table(
+        ["Instrument", "Requirements", "Subsystems", "Observations"],
+        [
+            [
+                _e(r.instrument_name),
+                _e(", ".join(r.requirement_ids) or "none"),
+                _e(", ".join(r.subsystem_ids) or "none"),
+                _e(r.observation_count),
+            ]
+            for r in research.mission_traceability
+        ],
+    )
+    if not research.science_traceability:
+        stm = '<p class="muted">No science traceability rows were computed.</p>'
+    if not research.mission_traceability:
+        mtm = '<p class="muted">No mission traceability rows were computed.</p>'
+    return _section(
+        "Traceability matrices",
+        f'<p class="muted">{_e(_RESEARCH_NOTE)}</p>'
+        f"<h3>Science traceability (STM)</h3>{stm}"
+        f"<h3>Mission traceability (MTM)</h3>{mtm}",
+    )
+
+
+def _pareto(research: ResearchEvidence) -> str:
+    p = research.pareto
+    if p is None:
+        return _section("Design-space position", '<p class="muted">Not computed.</p>')
+    if p.baseline_on_front:
+        where = "The flown design is on the Pareto front (no sampled design beats it on every objective)."  # noqa: E501
+    elif p.dominated_by:
+        where = (
+            f"The flown design is dominated by {len(p.dominated_by)} front design(s) "
+            f"(e.g. {', '.join(p.dominated_by)})."
+        )
+    else:
+        where = "The flown design is not on the Pareto front."
+    arch = ", ".join(f"{k}: {v}" for k, v in sorted(p.archetypes.items())) or "none"
+    dl = (
+        f"<p>{_e(where)}</p>"
+        f"<p>Seed {_e(p.seed)}; {_e(p.candidates_evaluated)} candidates evaluated; front size "
+        f'{_e(p.front_size)}; flown design id <span class="mono">{_e(p.baseline_id)}</span>'
+        f" ({'feasible' if p.baseline_feasible else 'infeasible'}).</p>"
+        f"<p>Archetypes: {_e(arch)}.</p>"
+    )
+    return _section("Design-space position", dl + _ul(p.notes, ""))
+
+
+def _robustness(research: ResearchEvidence) -> str:
+    r = research.robustness
+    if r is None:
+        return _section("Robustness", '<p class="muted">Not computed.</p>')
+    lo, hi = r.feasibility_wilson_95
+    rows = []
+    for name, q in r.metrics.items():
+
+        def cell(v: float | None, unit: str = q.unit) -> str:
+            if v is None:
+                return "— (not defined)"
+            return _e(_pct(v) if unit == "fraction" else f"{_num(v)} {unit}")
+
+        rows.append([_e(name), cell(q.p10), cell(q.median), cell(q.p90), _e(q.defined_samples)])
+    failures = [f"{cid}: {n} of {r.samples} samples" for cid, n in r.failure_counts.items()]
+    body = (
+        f"<p>Feasible in {_e(_pct(r.probability_feasible))} of {_e(r.samples)} samples "
+        f"(Wilson 95% interval {_e(_pct(lo))}–{_e(_pct(hi))}); seed {_e(r.seed)}; profile "
+        f"{_e(r.profile_version)}.</p>"
+        f'<p class="muted">{_e(r.disclaimer)}</p>'
+        + _table(["Metric", "p10", "Median", "p90", "Samples defined"], rows)
+        + "<h3>Hard-constraint failures</h3>"
+        + _ul(failures, "No hard constraint failed in any sample.")
+        + "<h3>Assumptions</h3>"
+        + _ul(r.assumptions, "")
+    )
+    return _section("Robustness", body)
+
+
+def _schedule(research: ResearchEvidence) -> str:
+    s = research.schedule
+    if s is None:
+        return _section("Science and downlink schedule", '<p class="muted">Not computed.</p>')
+    cycles = _table(
+        ["Cycle", "Observations", "Contact", "Buffer before", "Buffer after"],
+        [
+            [
+                _e(c.id),
+                _e(", ".join(c.observations) or "none"),
+                _e(c.contact_window_id or "none"),
+                _e(f"{_num(c.buffer_before_bits / 1e9)} Gbit"),
+                _e(f"{_num(c.buffer_after_bits / 1e9)} Gbit"),
+            ]
+            for c in s.cycles
+        ],
+    )
+    rejected = [f"{r.id}: {r.reason_code}" for r in s.rejected]
+    return _section(
+        "Science and downlink schedule",
+        '<p class="muted">Greedy heuristic schedule, not an optimal plan.</p>'
+        f"<p>{_e(len(s.accepted))} observation(s) accepted, {_e(len(s.rejected))} rejected; "
+        f"data lost {_e(_num(s.data_lost_bits / 1e9))} Gbit.</p>"
+        + cycles
+        + "<h3>Rejected observations</h3>"
+        + _ul(rejected, "No observation was rejected."),
+    )
+
+
+def _research_sections(research: ResearchEvidence | None) -> list[str]:
+    if research is None:
+        return []
+    return [_traceability(research), _pareto(research), _robustness(research), _schedule(research)]
+
+
+def _limitations_section(run: MissionRun, research: ResearchEvidence | None = None) -> str:
     fixed = [
         "All catalogue values are illustrative gameplay estimates (R3), not NASA, JPL or vendor data.",  # noqa: E501
         "The simulation is a deterministic event model, not orbital propagation or a flight-software test.",  # noqa: E501
@@ -525,7 +658,10 @@ def _limitations_section(run: MissionRun) -> str:
     return _section(
         "Limitations",
         f"<h3>This run</h3>{_ul(run.final_report.limitations, 'No run limitations were reported.')}"
-        f"<h3>This passport</h3>{_ul(fixed, '')}",
+        f"<h3>This passport</h3>{_ul(fixed, '')}"
+        + (
+            f"<h3>Not included</h3>{_ul(research.not_included, '')}" if research is not None else ""
+        ),
     )
 
 
@@ -537,6 +673,8 @@ def render_html(
     replay: ReplayCheck | None,
     exported_at: datetime,
     app_version: str,
+    *,
+    research: ResearchEvidence | None = None,
 ) -> str:
     title = run.input_snapshot.title
     unverified = _unverified_text(replay)
@@ -553,9 +691,10 @@ def render_html(
             _anomalies(run),
             _science(run),
             _score(run),
+            *_research_sections(research),
             _manifest(run, app_version, exported_at, replay),
             _ledger(records, analysis),
-            _limitations_section(run),
+            _limitations_section(run, research),
         ]
     )
     return (

@@ -354,6 +354,27 @@
         "title": "BudgetAnalysis",
         "type": "object"
       },
+      "BufferPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "bits": {
+            "ge": 0,
+            "title": "Bits",
+            "type": "number"
+          },
+          "t": {
+            "ge": 0,
+            "title": "T",
+            "type": "number"
+          }
+        },
+        "required": [
+          "t",
+          "bits"
+        ],
+        "title": "BufferPoint",
+        "type": "object"
+      },
       "ConstraintResult": {
         "additionalProperties": false,
         "properties": {
@@ -866,6 +887,63 @@
         "title": "MeasurementRequirement",
         "type": "object"
       },
+      "MetricQuantiles": {
+        "additionalProperties": false,
+        "description": "Quantiles over the samples where the metric is defined (R38: None margins skipped).\n\nAll three are None when no sample defined the metric; ``defined_samples`` says how\nmany samples contributed.",
+        "properties": {
+          "definedSamples": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Definedsamples",
+            "type": "integer"
+          },
+          "median": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median"
+          },
+          "p10": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P10"
+          },
+          "p90": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P90"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "p10",
+          "median",
+          "p90",
+          "unit"
+        ],
+        "title": "MetricQuantiles",
+        "type": "object"
+      },
       "MissionAnalysis": {
         "additionalProperties": false,
         "properties": {
@@ -1374,6 +1452,58 @@
         "title": "MissionRunManifest",
         "type": "object"
       },
+      "MissionSchedule": {
+        "additionalProperties": false,
+        "properties": {
+          "accepted": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Accepted",
+            "type": "array"
+          },
+          "bufferTimeline": {
+            "items": {
+              "$ref": "#/$defs/BufferPoint"
+            },
+            "title": "Buffertimeline",
+            "type": "array"
+          },
+          "cycles": {
+            "items": {
+              "$ref": "#/$defs/ScheduledDataCycle"
+            },
+            "title": "Cycles",
+            "type": "array"
+          },
+          "dataLossRiskAccepted": {
+            "default": false,
+            "title": "Datalossriskaccepted",
+            "type": "boolean"
+          },
+          "dataLostBits": {
+            "default": 0.0,
+            "ge": 0,
+            "title": "Datalostbits",
+            "type": "number"
+          },
+          "rejected": {
+            "items": {
+              "$ref": "#/$defs/RejectedOpportunity"
+            },
+            "title": "Rejected",
+            "type": "array"
+          }
+        },
+        "required": [
+          "accepted",
+          "rejected",
+          "cycles",
+          "bufferTimeline"
+        ],
+        "title": "MissionSchedule",
+        "type": "object"
+      },
       "MissionState": {
         "additionalProperties": false,
         "properties": {
@@ -1458,6 +1588,46 @@
           "randomSeed"
         ],
         "title": "MissionState",
+        "type": "object"
+      },
+      "MissionTraceRowOut": {
+        "additionalProperties": false,
+        "properties": {
+          "instrumentId": {
+            "title": "Instrumentid",
+            "type": "string"
+          },
+          "instrumentName": {
+            "title": "Instrumentname",
+            "type": "string"
+          },
+          "observationCount": {
+            "title": "Observationcount",
+            "type": "integer"
+          },
+          "requirementIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Requirementids",
+            "type": "array"
+          },
+          "subsystemIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Subsystemids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "instrumentId",
+          "instrumentName",
+          "requirementIds",
+          "subsystemIds",
+          "observationCount"
+        ],
+        "title": "MissionTraceRowOut",
         "type": "object"
       },
       "ObservationPlanItem": {
@@ -1567,6 +1737,79 @@
           "autonomyLevel"
         ],
         "title": "OperationsPlan",
+        "type": "object"
+      },
+      "ParetoPosition": {
+        "additionalProperties": false,
+        "description": "Where the flown design sits in the seeded candidate set (Passport v2, 19.2).",
+        "properties": {
+          "archetypes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "enum": [
+                "lean",
+                "science-max",
+                "resilient"
+              ]
+            },
+            "title": "Archetypes",
+            "type": "object"
+          },
+          "baselineFeasible": {
+            "title": "Baselinefeasible",
+            "type": "boolean"
+          },
+          "baselineId": {
+            "title": "Baselineid",
+            "type": "string"
+          },
+          "baselineOnFront": {
+            "title": "Baselineonfront",
+            "type": "boolean"
+          },
+          "candidatesEvaluated": {
+            "minimum": 0,
+            "title": "Candidatesevaluated",
+            "type": "integer"
+          },
+          "dominatedBy": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Dominatedby",
+            "type": "array"
+          },
+          "frontSize": {
+            "minimum": 0,
+            "title": "Frontsize",
+            "type": "integer"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "seed",
+          "candidatesEvaluated",
+          "frontSize",
+          "baselineId",
+          "baselineFeasible",
+          "baselineOnFront",
+          "dominatedBy",
+          "archetypes",
+          "notes"
+        ],
+        "title": "ParetoPosition",
         "type": "object"
       },
       "PhaseTransition": {
@@ -1753,6 +1996,34 @@
         "title": "Quantity",
         "type": "object"
       },
+      "RejectedOpportunity": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "reasonCode": {
+            "enum": [
+              "INSTRUMENT_CONFLICT",
+              "ENERGY",
+              "POINTING",
+              "BUFFER_OVERFLOW_BEFORE_CONTACT",
+              "NO_CONTACT",
+              "PHASE",
+              "THERMAL"
+            ],
+            "title": "Reasoncode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "reasonCode"
+        ],
+        "title": "RejectedOpportunity",
+        "type": "object"
+      },
       "ReliabilityAnalysis": {
         "additionalProperties": false,
         "properties": {
@@ -1781,6 +2052,199 @@
           "singlePointFailures"
         ],
         "title": "ReliabilityAnalysis",
+        "type": "object"
+      },
+      "ResearchEvidence": {
+        "additionalProperties": false,
+        "description": "Phase 6 evidence recomputed server-side from the run's input snapshot (Passport v2).\n\nDerived: like ``latest_analysis`` it is ignored on import and recomputed on export.\nA section is None when it could not be computed; ``not_included`` says why.",
+        "properties": {
+          "missionTraceability": {
+            "items": {
+              "$ref": "#/$defs/MissionTraceRowOut"
+            },
+            "title": "Missiontraceability",
+            "type": "array"
+          },
+          "notIncluded": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notincluded",
+            "type": "array"
+          },
+          "pareto": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ParetoPosition"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "robustness": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/RobustnessResult"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "schedule": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/MissionSchedule"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "scienceTraceability": {
+            "items": {
+              "$ref": "#/$defs/ScienceTraceRowOut"
+            },
+            "title": "Sciencetraceability",
+            "type": "array"
+          }
+        },
+        "title": "ResearchEvidence",
+        "type": "object"
+      },
+      "RobustnessResult": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "disclaimer": {
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "failureCounts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Failurecounts",
+            "type": "object"
+          },
+          "feasibilityWilson95": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "ge": 0,
+                "le": 1,
+                "type": "number"
+              },
+              {
+                "ge": 0,
+                "le": 1,
+                "type": "number"
+              }
+            ],
+            "title": "Feasibilitywilson95",
+            "type": "array"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "$ref": "#/$defs/MetricQuantiles"
+            },
+            "title": "Metrics",
+            "type": "object"
+          },
+          "probabilityFeasible": {
+            "ge": 0,
+            "le": 1,
+            "title": "Probabilityfeasible",
+            "type": "number"
+          },
+          "profileVersion": {
+            "title": "Profileversion",
+            "type": "string"
+          },
+          "samples": {
+            "minimum": 0,
+            "title": "Samples",
+            "type": "integer"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "samples",
+          "seed",
+          "probabilityFeasible",
+          "feasibilityWilson95",
+          "metrics",
+          "failureCounts",
+          "profileVersion",
+          "assumptions",
+          "disclaimer"
+        ],
+        "title": "RobustnessResult",
+        "type": "object"
+      },
+      "ScheduledDataCycle": {
+        "additionalProperties": false,
+        "properties": {
+          "bufferAfterBits": {
+            "ge": 0,
+            "title": "Bufferafterbits",
+            "type": "number"
+          },
+          "bufferBeforeBits": {
+            "ge": 0,
+            "title": "Bufferbeforebits",
+            "type": "number"
+          },
+          "contactWindowId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Contactwindowid"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "observations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Observations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "observations",
+          "bufferBeforeBits",
+          "bufferAfterBits",
+          "explanation"
+        ],
+        "title": "ScheduledDataCycle",
         "type": "object"
       },
       "ScienceAnalysis": {
@@ -1904,6 +2368,63 @@
           "status"
         ],
         "title": "ScienceOutcome",
+        "type": "object"
+      },
+      "ScienceTraceRowOut": {
+        "additionalProperties": false,
+        "properties": {
+          "capability": {
+            "title": "Capability",
+            "type": "string"
+          },
+          "instrumentIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Instrumentids",
+            "type": "array"
+          },
+          "objectiveId": {
+            "title": "Objectiveid",
+            "type": "string"
+          },
+          "objectiveTitle": {
+            "title": "Objectivetitle",
+            "type": "string"
+          },
+          "observationCount": {
+            "title": "Observationcount",
+            "type": "integer"
+          },
+          "required": {
+            "title": "Required",
+            "type": "boolean"
+          },
+          "requirementDescription": {
+            "title": "Requirementdescription",
+            "type": "string"
+          },
+          "requirementId": {
+            "title": "Requirementid",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "objectiveId",
+          "objectiveTitle",
+          "requirementId",
+          "requirementDescription",
+          "capability",
+          "required",
+          "instrumentIds",
+          "observationCount",
+          "status"
+        ],
+        "title": "ScienceTraceRowOut",
         "type": "object"
       },
       "ScoreBreakdown": {
@@ -2390,6 +2911,17 @@
         "title": "Packageschemaversion",
         "type": "string"
       },
+      "research": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/ResearchEvidence"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
       "runs": {
         "items": {
           "$ref": "#/$defs/MissionRun"
@@ -2433,6 +2965,602 @@
       "scenarioVersion"
     ],
     "title": "MissionPackageManifest",
+    "type": "object"
+  },
+  "ParetoPosition": {
+    "additionalProperties": false,
+    "description": "Where the flown design sits in the seeded candidate set (Passport v2, 19.2).",
+    "properties": {
+      "archetypes": {
+        "additionalProperties": {
+          "type": "string"
+        },
+        "propertyNames": {
+          "enum": [
+            "lean",
+            "science-max",
+            "resilient"
+          ]
+        },
+        "title": "Archetypes",
+        "type": "object"
+      },
+      "baselineFeasible": {
+        "title": "Baselinefeasible",
+        "type": "boolean"
+      },
+      "baselineId": {
+        "title": "Baselineid",
+        "type": "string"
+      },
+      "baselineOnFront": {
+        "title": "Baselineonfront",
+        "type": "boolean"
+      },
+      "candidatesEvaluated": {
+        "minimum": 0,
+        "title": "Candidatesevaluated",
+        "type": "integer"
+      },
+      "dominatedBy": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Dominatedby",
+        "type": "array"
+      },
+      "frontSize": {
+        "minimum": 0,
+        "title": "Frontsize",
+        "type": "integer"
+      },
+      "notes": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Notes",
+        "type": "array"
+      },
+      "seed": {
+        "title": "Seed",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "seed",
+      "candidatesEvaluated",
+      "frontSize",
+      "baselineId",
+      "baselineFeasible",
+      "baselineOnFront",
+      "dominatedBy",
+      "archetypes",
+      "notes"
+    ],
+    "title": "ParetoPosition",
+    "type": "object"
+  },
+  "ResearchEvidence": {
+    "$defs": {
+      "BufferPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "bits": {
+            "ge": 0,
+            "title": "Bits",
+            "type": "number"
+          },
+          "t": {
+            "ge": 0,
+            "title": "T",
+            "type": "number"
+          }
+        },
+        "required": [
+          "t",
+          "bits"
+        ],
+        "title": "BufferPoint",
+        "type": "object"
+      },
+      "MetricQuantiles": {
+        "additionalProperties": false,
+        "description": "Quantiles over the samples where the metric is defined (R38: None margins skipped).\n\nAll three are None when no sample defined the metric; ``defined_samples`` says how\nmany samples contributed.",
+        "properties": {
+          "definedSamples": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Definedsamples",
+            "type": "integer"
+          },
+          "median": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median"
+          },
+          "p10": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P10"
+          },
+          "p90": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P90"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "p10",
+          "median",
+          "p90",
+          "unit"
+        ],
+        "title": "MetricQuantiles",
+        "type": "object"
+      },
+      "MissionSchedule": {
+        "additionalProperties": false,
+        "properties": {
+          "accepted": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Accepted",
+            "type": "array"
+          },
+          "bufferTimeline": {
+            "items": {
+              "$ref": "#/$defs/BufferPoint"
+            },
+            "title": "Buffertimeline",
+            "type": "array"
+          },
+          "cycles": {
+            "items": {
+              "$ref": "#/$defs/ScheduledDataCycle"
+            },
+            "title": "Cycles",
+            "type": "array"
+          },
+          "dataLossRiskAccepted": {
+            "default": false,
+            "title": "Datalossriskaccepted",
+            "type": "boolean"
+          },
+          "dataLostBits": {
+            "default": 0.0,
+            "ge": 0,
+            "title": "Datalostbits",
+            "type": "number"
+          },
+          "rejected": {
+            "items": {
+              "$ref": "#/$defs/RejectedOpportunity"
+            },
+            "title": "Rejected",
+            "type": "array"
+          }
+        },
+        "required": [
+          "accepted",
+          "rejected",
+          "cycles",
+          "bufferTimeline"
+        ],
+        "title": "MissionSchedule",
+        "type": "object"
+      },
+      "MissionTraceRowOut": {
+        "additionalProperties": false,
+        "properties": {
+          "instrumentId": {
+            "title": "Instrumentid",
+            "type": "string"
+          },
+          "instrumentName": {
+            "title": "Instrumentname",
+            "type": "string"
+          },
+          "observationCount": {
+            "title": "Observationcount",
+            "type": "integer"
+          },
+          "requirementIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Requirementids",
+            "type": "array"
+          },
+          "subsystemIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Subsystemids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "instrumentId",
+          "instrumentName",
+          "requirementIds",
+          "subsystemIds",
+          "observationCount"
+        ],
+        "title": "MissionTraceRowOut",
+        "type": "object"
+      },
+      "ParetoPosition": {
+        "additionalProperties": false,
+        "description": "Where the flown design sits in the seeded candidate set (Passport v2, 19.2).",
+        "properties": {
+          "archetypes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "enum": [
+                "lean",
+                "science-max",
+                "resilient"
+              ]
+            },
+            "title": "Archetypes",
+            "type": "object"
+          },
+          "baselineFeasible": {
+            "title": "Baselinefeasible",
+            "type": "boolean"
+          },
+          "baselineId": {
+            "title": "Baselineid",
+            "type": "string"
+          },
+          "baselineOnFront": {
+            "title": "Baselineonfront",
+            "type": "boolean"
+          },
+          "candidatesEvaluated": {
+            "minimum": 0,
+            "title": "Candidatesevaluated",
+            "type": "integer"
+          },
+          "dominatedBy": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Dominatedby",
+            "type": "array"
+          },
+          "frontSize": {
+            "minimum": 0,
+            "title": "Frontsize",
+            "type": "integer"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "seed",
+          "candidatesEvaluated",
+          "frontSize",
+          "baselineId",
+          "baselineFeasible",
+          "baselineOnFront",
+          "dominatedBy",
+          "archetypes",
+          "notes"
+        ],
+        "title": "ParetoPosition",
+        "type": "object"
+      },
+      "RejectedOpportunity": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "reasonCode": {
+            "enum": [
+              "INSTRUMENT_CONFLICT",
+              "ENERGY",
+              "POINTING",
+              "BUFFER_OVERFLOW_BEFORE_CONTACT",
+              "NO_CONTACT",
+              "PHASE",
+              "THERMAL"
+            ],
+            "title": "Reasoncode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "reasonCode"
+        ],
+        "title": "RejectedOpportunity",
+        "type": "object"
+      },
+      "RobustnessResult": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "disclaimer": {
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "failureCounts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Failurecounts",
+            "type": "object"
+          },
+          "feasibilityWilson95": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "ge": 0,
+                "le": 1,
+                "type": "number"
+              },
+              {
+                "ge": 0,
+                "le": 1,
+                "type": "number"
+              }
+            ],
+            "title": "Feasibilitywilson95",
+            "type": "array"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "$ref": "#/$defs/MetricQuantiles"
+            },
+            "title": "Metrics",
+            "type": "object"
+          },
+          "probabilityFeasible": {
+            "ge": 0,
+            "le": 1,
+            "title": "Probabilityfeasible",
+            "type": "number"
+          },
+          "profileVersion": {
+            "title": "Profileversion",
+            "type": "string"
+          },
+          "samples": {
+            "minimum": 0,
+            "title": "Samples",
+            "type": "integer"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "samples",
+          "seed",
+          "probabilityFeasible",
+          "feasibilityWilson95",
+          "metrics",
+          "failureCounts",
+          "profileVersion",
+          "assumptions",
+          "disclaimer"
+        ],
+        "title": "RobustnessResult",
+        "type": "object"
+      },
+      "ScheduledDataCycle": {
+        "additionalProperties": false,
+        "properties": {
+          "bufferAfterBits": {
+            "ge": 0,
+            "title": "Bufferafterbits",
+            "type": "number"
+          },
+          "bufferBeforeBits": {
+            "ge": 0,
+            "title": "Bufferbeforebits",
+            "type": "number"
+          },
+          "contactWindowId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Contactwindowid"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "observations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Observations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "observations",
+          "bufferBeforeBits",
+          "bufferAfterBits",
+          "explanation"
+        ],
+        "title": "ScheduledDataCycle",
+        "type": "object"
+      },
+      "ScienceTraceRowOut": {
+        "additionalProperties": false,
+        "properties": {
+          "capability": {
+            "title": "Capability",
+            "type": "string"
+          },
+          "instrumentIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Instrumentids",
+            "type": "array"
+          },
+          "objectiveId": {
+            "title": "Objectiveid",
+            "type": "string"
+          },
+          "objectiveTitle": {
+            "title": "Objectivetitle",
+            "type": "string"
+          },
+          "observationCount": {
+            "title": "Observationcount",
+            "type": "integer"
+          },
+          "required": {
+            "title": "Required",
+            "type": "boolean"
+          },
+          "requirementDescription": {
+            "title": "Requirementdescription",
+            "type": "string"
+          },
+          "requirementId": {
+            "title": "Requirementid",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "objectiveId",
+          "objectiveTitle",
+          "requirementId",
+          "requirementDescription",
+          "capability",
+          "required",
+          "instrumentIds",
+          "observationCount",
+          "status"
+        ],
+        "title": "ScienceTraceRowOut",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "description": "Phase 6 evidence recomputed server-side from the run's input snapshot (Passport v2).\n\nDerived: like ``latest_analysis`` it is ignored on import and recomputed on export.\nA section is None when it could not be computed; ``not_included`` says why.",
+    "properties": {
+      "missionTraceability": {
+        "items": {
+          "$ref": "#/$defs/MissionTraceRowOut"
+        },
+        "title": "Missiontraceability",
+        "type": "array"
+      },
+      "notIncluded": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Notincluded",
+        "type": "array"
+      },
+      "pareto": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/ParetoPosition"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "robustness": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/RobustnessResult"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "schedule": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/MissionSchedule"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "scienceTraceability": {
+        "items": {
+          "$ref": "#/$defs/ScienceTraceRowOut"
+        },
+        "title": "Sciencetraceability",
+        "type": "array"
+      }
+    },
+    "title": "ResearchEvidence",
     "type": "object"
   }
 }

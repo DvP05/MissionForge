@@ -62,6 +62,28 @@ class ArchitectureGraph(ContractModel):
         return self
 
 
+# Science / mission traceability matrix rows (STM / MTM, 19.1); shared by the graph route
+# and Evidence Passport v2.
+class ScienceTraceRowOut(ContractModel):
+    objective_id: str
+    objective_title: str
+    requirement_id: str
+    requirement_description: str
+    capability: str
+    required: StrictBool
+    instrument_ids: list[str]
+    observation_count: StrictInt
+    status: str
+
+
+class MissionTraceRowOut(ContractModel):
+    instrument_id: str
+    instrument_name: str
+    requirement_ids: list[str]
+    subsystem_ids: list[str]
+    observation_count: StrictInt
+
+
 class MetricChange(ContractModel):
     metric: str
     # None = undefined / not-modelled at that revision (R38: never a fake 0).

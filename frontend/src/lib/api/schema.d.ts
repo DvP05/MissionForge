@@ -49,9 +49,11 @@ export interface paths {
         put?: never;
         /**
          * Export Dossier
-         * @description Evidence Passport v1 (architecture 19.9). The run is re-validated by the schema; the
-         *     budgets are recomputed here from its snapshot and the replay is re-checked here, so the
-         *     passport never relies on client-calculated analysis or a client claim of identity.
+         * @description Evidence Passport v2 (architecture 19.9, Task 6.9). The run is re-validated by the
+         *     schema; the budgets and the Phase 6 research evidence (traceability, Pareto position,
+         *     robustness, schedule) are recomputed here from its snapshot and the replay is re-checked
+         *     here, so the passport never relies on client-calculated results or a client claim of
+         *     identity.
          */
         post: operations["export_dossier_api_mission_dossier_post"];
         delete?: never;
@@ -1235,6 +1237,7 @@ export interface components {
              * @constant
              */
             packageSchemaVersion: "1.0";
+            research?: components["schemas"]["ResearchEvidence"] | null;
             /** Runs */
             runs?: components["schemas"]["MissionRun"][];
         };
@@ -1525,6 +1528,32 @@ export interface components {
             /** Seed */
             seed?: number | null;
         };
+        /**
+         * ParetoPosition
+         * @description Where the flown design sits in the seeded candidate set (Passport v2, 19.2).
+         */
+        ParetoPosition: {
+            /** Archetypes */
+            archetypes: {
+                [key: string]: string;
+            };
+            /** Baselinefeasible */
+            baselineFeasible: boolean;
+            /** Baselineid */
+            baselineId: string;
+            /** Baselineonfront */
+            baselineOnFront: boolean;
+            /** Candidatesevaluated */
+            candidatesEvaluated: number;
+            /** Dominatedby */
+            dominatedBy: string[];
+            /** Frontsize */
+            frontSize: number;
+            /** Notes */
+            notes: string[];
+            /** Seed */
+            seed: number;
+        };
         /** PhaseTransition */
         PhaseTransition: {
             /** Missionday */
@@ -1651,6 +1680,24 @@ export interface components {
         /** ReplayRequest */
         ReplayRequest: {
             run: components["schemas"]["MissionRun"];
+        };
+        /**
+         * ResearchEvidence
+         * @description Phase 6 evidence recomputed server-side from the run's input snapshot (Passport v2).
+         *
+         *     Derived: like ``latest_analysis`` it is ignored on import and recomputed on export.
+         *     A section is None when it could not be computed; ``not_included`` says why.
+         */
+        ResearchEvidence: {
+            /** Missiontraceability */
+            missionTraceability?: components["schemas"]["MissionTraceRowOut"][];
+            /** Notincluded */
+            notIncluded?: string[];
+            pareto?: components["schemas"]["ParetoPosition"] | null;
+            robustness?: components["schemas"]["RobustnessResult"] | null;
+            schedule?: components["schemas"]["MissionSchedule"] | null;
+            /** Sciencetraceability */
+            scienceTraceability?: components["schemas"]["ScienceTraceRowOut"][];
         };
         /** RobustnessData */
         RobustnessData: {

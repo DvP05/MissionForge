@@ -2922,6 +2922,16 @@
             "title": "Packageschemaversion",
             "type": "string"
           },
+          "research": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResearchEvidence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "runs": {
             "items": {
               "$ref": "#/components/schemas/MissionRun"
@@ -3714,6 +3724,79 @@
         "title": "OptimizeRequest",
         "type": "object"
       },
+      "ParetoPosition": {
+        "additionalProperties": false,
+        "description": "Where the flown design sits in the seeded candidate set (Passport v2, 19.2).",
+        "properties": {
+          "archetypes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "enum": [
+                "lean",
+                "science-max",
+                "resilient"
+              ]
+            },
+            "title": "Archetypes",
+            "type": "object"
+          },
+          "baselineFeasible": {
+            "title": "Baselinefeasible",
+            "type": "boolean"
+          },
+          "baselineId": {
+            "title": "Baselineid",
+            "type": "string"
+          },
+          "baselineOnFront": {
+            "title": "Baselineonfront",
+            "type": "boolean"
+          },
+          "candidatesEvaluated": {
+            "minimum": 0.0,
+            "title": "Candidatesevaluated",
+            "type": "integer"
+          },
+          "dominatedBy": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Dominatedby",
+            "type": "array"
+          },
+          "frontSize": {
+            "minimum": 0.0,
+            "title": "Frontsize",
+            "type": "integer"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "seed",
+          "candidatesEvaluated",
+          "frontSize",
+          "baselineId",
+          "baselineFeasible",
+          "baselineOnFront",
+          "dominatedBy",
+          "archetypes",
+          "notes"
+        ],
+        "title": "ParetoPosition",
+        "type": "object"
+      },
       "PhaseTransition": {
         "additionalProperties": false,
         "properties": {
@@ -4125,6 +4208,65 @@
           "run"
         ],
         "title": "ReplayRequest",
+        "type": "object"
+      },
+      "ResearchEvidence": {
+        "additionalProperties": false,
+        "description": "Phase 6 evidence recomputed server-side from the run's input snapshot (Passport v2).\n\nDerived: like ``latest_analysis`` it is ignored on import and recomputed on export.\nA section is None when it could not be computed; ``not_included`` says why.",
+        "properties": {
+          "missionTraceability": {
+            "items": {
+              "$ref": "#/components/schemas/MissionTraceRowOut"
+            },
+            "title": "Missiontraceability",
+            "type": "array"
+          },
+          "notIncluded": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notincluded",
+            "type": "array"
+          },
+          "pareto": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ParetoPosition"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "robustness": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RobustnessResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "schedule": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MissionSchedule"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scienceTraceability": {
+            "items": {
+              "$ref": "#/components/schemas/ScienceTraceRowOut"
+            },
+            "title": "Sciencetraceability",
+            "type": "array"
+          }
+        },
+        "title": "ResearchEvidence",
         "type": "object"
       },
       "RobustnessData": {
@@ -5526,7 +5668,7 @@
     },
     "/api/mission/dossier": {
       "post": {
-        "description": "Evidence Passport v1 (architecture 19.9). The run is re-validated by the schema; the\nbudgets are recomputed here from its snapshot and the replay is re-checked here, so the\npassport never relies on client-calculated analysis or a client claim of identity.",
+        "description": "Evidence Passport v2 (architecture 19.9, Task 6.9). The run is re-validated by the\nschema; the budgets and the Phase 6 research evidence (traceability, Pareto position,\nrobustness, schedule) are recomputed here from its snapshot and the replay is re-checked\nhere, so the passport never relies on client-calculated results or a client claim of\nidentity.",
         "operationId": "export_dossier_api_mission_dossier_post",
         "requestBody": {
           "content": {

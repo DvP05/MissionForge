@@ -20,7 +20,12 @@ from app.domain.dossier.render_html import (
 )
 from app.schemas.analysis import MissionAnalysis
 from app.schemas.catalog import CatalogComponent
-from app.schemas.evidence import EvidenceRecord, MissionPackage, MissionPackageManifest
+from app.schemas.evidence import (
+    EvidenceRecord,
+    MissionPackage,
+    MissionPackageManifest,
+    ResearchEvidence,
+)
 from app.schemas.simulation import MissionRun
 from app.schemas.units import Fidelity, Provenance, Unit
 
@@ -332,6 +337,7 @@ def export_mission_dossier(
     app_version: str,
     analysis: MissionAnalysis | None = None,
     replay: ReplayCheck | None = None,
+    research: ResearchEvidence | None = None,
 ) -> Dossier:
     """Build the passport: a MissionPackage (JSON) and a self-contained HTML report."""
     records = build_evidence_records(run, catalog, analysis=analysis)
@@ -347,6 +353,9 @@ def export_mission_dossier(
             catalog_version=run.catalog_version,
             scenario_version=run.manifest.scenario_version,
         ),
+        research=research,
     )
-    html = render_html(run, catalog, records, analysis, replay, exported_at, app_version)
+    html = render_html(
+        run, catalog, records, analysis, replay, exported_at, app_version, research=research
+    )
     return Dossier(package=package, html=html)

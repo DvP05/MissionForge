@@ -11,6 +11,7 @@ from app.services.catalog_service import CatalogService
 from app.services.graph_service import GraphService
 from app.services.mission_service import MissionService
 from app.services.optimization_service import OptimizationService
+from app.services.research_evidence_service import ResearchEvidenceService
 from app.services.robustness_service import RobustnessService
 from app.services.schedule_service import ScheduleService
 from app.services.science_service import ScienceService
@@ -58,6 +59,10 @@ def get_science_service(request: Request) -> ScienceService:
 
 def get_schedule_service(request: Request) -> ScheduleService:
     return cast(ScheduleService, request.app.state.schedule_service)
+
+
+def get_research_evidence_service(request: Request) -> ResearchEvidenceService:
+    return cast(ResearchEvidenceService, request.app.state.research_evidence_service)
 
 
 def _utc_now() -> datetime:
