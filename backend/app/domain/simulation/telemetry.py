@@ -25,7 +25,9 @@ Event effects (Task 4.2, ``TelemetryOverlay``): every anomaly / scenario event d
 ``event`` checkpoint; ``soc_delta`` dips the battery at that checkpoint only (it recovers by
 the next one, gameplay-estimate); ``propellant_delta`` steps apply from their day on; buffer
 losses are subtracted from the buffer from their day on (clamped at 0); after a termination
-no checkpoint is taken except a final one in phase ``terminated``.
+no checkpoint is taken except a final one in phase ``terminated``, which keeps the
+terminating event's battery dip (0 when the battery was depleted). ``propellant_delta`` is
+telemetry-only: it moves the propellant channel (clamped at 0) but not the maneuver budget.
 """
 
 from collections.abc import Mapping
@@ -100,13 +102,12 @@ class TelemetryOverlay:
     end_day: float | None = None  # termination day
 
 
-def base_soc(ctx: AnalysisContext, schedule: PhaseSchedule, day: float) -> float:
-    """Battery SoC the telemetry shows on ``day`` before any event dip."""
-    if day <= 0.0:
-        return 1.0
+def base_soc(ctx: AnalysisContext, phase: Phase) -> float:
+    """Battery SoC shown in ``phase`` before any event dip: the science cycle during
+    science-ops, the cruise cycle otherwise (the ledger always has one of them)."""
     science = _soc(ctx, "science")
     cruise = _soc(ctx, "cruise")
-    if schedule.phase_at(day) == "science-ops" and science is not None:
+    if phase == "science-ops" and science is not None:
         return science
     if cruise is not None:
         return cruise
@@ -174,10 +175,6 @@ def telemetry_samples(
     burn_dv = per[-1][1] if per else 0.0
     after_burn = propellant_remaining_fraction(ctx, propellant_kg, burn_dv)
     before_burn = propellant_remaining_fraction(ctx, propellant_kg, 0.0)
-    science_soc = _soc(ctx, "science")
-    fallback_soc = _soc(ctx, "cruise")
-    if fallback_soc is None:  # the ledger always has a cruise or a science cycle
-        fallback_soc = science_soc if science_soc is not None else 0.0
 
     out: list[TelemetrySample] = []
 
@@ -198,9 +195,11 @@ def telemetry_samples(
         if cp.kind == "transition" and cp.phase == "launch-deployment":
             add(cp, "battery_soc", 1.0, "gameplay-estimate")
         else:
-            soc = science_soc if cp.phase == "science-ops" and science_soc is not None else None
-            value = soc if soc is not None else fallback_soc
-            if cp.kind == "event" and cp.mission_day in ov.soc_dips:
+            # the final terminated checkpoint shows the state at the terminating event
+            phase = schedule.phase_at(cp.mission_day) if cp.phase == "terminated" else cp.phase
+            value = base_soc(ctx, phase)
+            dipped = cp.kind == "event" or cp.phase == "terminated"
+            if dipped and cp.mission_day in ov.soc_dips:
                 add(cp, "battery_soc", _clamp01(value + ov.soc_dips[cp.mission_day]), "derived")
             else:
                 add(cp, "battery_soc", value, "derived")

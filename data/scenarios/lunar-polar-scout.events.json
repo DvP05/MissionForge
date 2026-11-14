@@ -1,0 +1,76 @@
+{
+  "eventSetId": "lunar-default-v1",
+  "version": "0.1.0",
+  "title": "Lunar polar scout: default event set",
+  "scenarioIds": [
+    "lunar-polar-scout"
+  ],
+  "default": true,
+  "extends": "generic-design-v1",
+  "assumptions": [
+    "Two declared scenario events (a permanently shadowed region pass during science and a lunar eclipse during the contact period) occur on days drawn from independent seeded scenario streams; they are the only random element of the run.",
+    "The scenario events are illustrative narrative, not an ephemeris prediction."
+  ],
+  "anomalies": [],
+  "scenarioEvents": [
+    {
+      "id": "psr-pass",
+      "title": "Permanently shadowed region pass",
+      "severity": "warning",
+      "eventType": "decision",
+      "window": "science-ops",
+      "situation": "The ground track crosses a permanently shadowed crater: the coldest, most valuable terrain, but the instruments need heater power to observe it.",
+      "prompt": "Skip the cold pass or heat the instruments and observe?",
+      "counterfactual": "Carry power margin for heater-assisted observations of shadowed terrain.",
+      "effects": {},
+      "choices": [
+        {
+          "id": "skip-pass",
+          "label": "Skip the shadowed pass",
+          "tradeoff": "No thermal or power risk, but observations in the next 3 days are not flown.",
+          "effects": {
+            "science_time_lost_days": 3.0
+          }
+        },
+        {
+          "id": "heat-and-observe",
+          "label": "Heat the instruments and observe",
+          "tradeoff": "No science time lost, but the heaters drain 30 % of the battery; if it empties the spacecraft is lost.",
+          "effects": {
+            "soc_delta": -0.3
+          }
+        }
+      ]
+    },
+    {
+      "id": "lunar-eclipse",
+      "title": "Lunar eclipse: thermal survival",
+      "severity": "warning",
+      "eventType": "decision",
+      "window": "contacts",
+      "situation": "A lunar eclipse cuts solar power for several hours and the spacecraft cools quickly.",
+      "prompt": "Enter survival mode or keep operating through the eclipse?",
+      "counterfactual": "Size the battery for an eclipse with operations still running.",
+      "effects": {},
+      "choices": [
+        {
+          "id": "survival-mode",
+          "label": "Enter survival mode",
+          "tradeoff": "The battery is protected, but observations and contacts in the next 2 days are dropped.",
+          "effects": {
+            "science_time_lost_days": 2.0,
+            "link_outage_days": 2.0
+          }
+        },
+        {
+          "id": "keep-operating",
+          "label": "Keep operating",
+          "tradeoff": "No science or contacts lost, but the battery drops 40 % of its capacity.",
+          "effects": {
+            "soc_delta": -0.4
+          }
+        }
+      ]
+    }
+  ]
+}

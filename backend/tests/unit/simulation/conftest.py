@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from app.domain.simulation.anomalies import ScenarioEventSet
 
 NOW = datetime(2026, 11, 13, 12, 0, tzinfo=UTC)
-EVENT_SET = "neo-rendezvous-nominal-v1"
+EVENT_SET = "nominal-v1"
 NEO_EVENTS = "neo-default-v1"
 GENERIC_EVENTS = "generic-design-v1"
 SCENARIO_VERSION = "0.1.0"
@@ -124,9 +124,18 @@ def run_sim(
 
 
 def low_margin_state(seed: int = 42) -> MissionState:
-    """NEO medium radio planned at its 100 kbit/s maximum: feasible, link margin ~3.7 dB."""
+    """NEO medium radio planned at its 100 kbit/s maximum: feasible, link margin ~3.7 dB,
+    every analysis check passes (so no design anomaly, R31)."""
     dump = make_state(seed=seed, communications_id=MEDIUM).model_dump()
     dump["operations"]["downlink_plan"] = [
         {**c, "data_rate_bits_per_second": 100000.0} for c in dump["operations"]["downlink_plan"]
     ]
+    return MissionState.model_validate(dump)
+
+
+def thin_downlink_state(seed: int = 42) -> MissionState:
+    """NEO medium radio with only the first 25 contacts: the analysis flags data return
+    (warning, marginal design), so the downlink anomaly fires (R31)."""
+    dump = make_state(seed=seed, communications_id=MEDIUM).model_dump()
+    dump["operations"]["downlink_plan"] = dump["operations"]["downlink_plan"][:25]
     return MissionState.model_validate(dump)

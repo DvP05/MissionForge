@@ -47,12 +47,17 @@ NOMINAL_LIMITATION = "Nominal run: no anomalies or decisions are injected."
 CATALOG_LIMITATION = "All catalogue values are illustrative gameplay-estimate archetypes."
 LIMITATIONS: tuple[str, ...] = (*BASE_LIMITATIONS, NOMINAL_LIMITATION, CATALOG_LIMITATION)
 EFFECT_LIMITATIONS: tuple[str, ...] = (
-    "Anomalies are deterministic rules on the design's own margins; the only randomness is "
-    "the day of the declared scenario event, drawn from the seeded scenario stream.",
+    "Design anomalies fire only where the engineering analysis flags the matching constraint; "
+    "the only randomness is the day of each declared scenario event, drawn from its own "
+    "seeded scenario stream.",
     "Event effects are gameplay-estimate approximations: skipped observations and missed "
     "contacts are re-analysed by the engine; lost buffer data can no longer be downlinked "
     "(downlinked = min(downlinked, generated - lost)); battery dips recover by the next "
     "checkpoint.",
+    "Plan items are skipped, missed, rescaled or cancelled whole by their start day; an item "
+    "that starts before an effect window and runs into it is flown in full (approximation).",
+    "Propellant effects are telemetry-only: they move the propellant channel (clamped at 0) "
+    "but do not change the maneuver budget.",
 )
 TERMINATION_LIMITATION = (
     "Terminated run: activities from day {day:g} on were cancelled; this postmortem and the "

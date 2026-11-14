@@ -360,7 +360,7 @@ def mission_run_manifest() -> simulation.MissionRunManifest:
         engine_version="0.1.0",
         catalog_version="0.1.0",
         scenario_version="0.1.0",
-        event_set_id="neo-rendezvous.events@0.1.0",
+        event_set_id="neo-default-v1",
         seed=42,
         app_version="0.1.0",
     )
@@ -372,7 +372,7 @@ def mission_run() -> simulation.MissionRun:
         mission_id="mission-001",
         design_revision=3,
         seed=42,
-        scenario_event_set_id="neo-rendezvous.events@0.1.0",
+        scenario_event_set_id="neo-default-v1",
         engine_version="0.1.0",
         catalog_version="0.1.0",
         experimental=False,
@@ -396,7 +396,7 @@ def simulation_input() -> simulation.SimulationInput:
         engine_version="0.1.0",
         catalog_version="0.1.0",
         random_seed=42,
-        scenario_event_set_id="neo-rendezvous.events@0.1.0",
+        scenario_event_set_id="neo-default-v1",
         monte_carlo_samples=None,
     )
 

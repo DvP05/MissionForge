@@ -1,9 +1,9 @@
 {
-  "runId": "run-446736b7546bda955f96",
+  "runId": "run-53ded464237c03a7f6b8",
   "missionId": "m-sim",
   "designRevision": 0,
   "seed": 42,
-  "scenarioEventSetId": "neo-rendezvous-nominal-v1",
+  "scenarioEventSetId": "nominal-v1",
   "engineVersion": "0.1.0",
   "catalogVersion": "0.1.0",
   "experimental": false,
@@ -383,7 +383,7 @@
     "engineVersion": "0.1.0",
     "catalogVersion": "0.1.0",
     "scenarioVersion": "0.1.0",
-    "eventSetId": "neo-rendezvous-nominal-v1",
+    "eventSetId": "nominal-v1",
     "seed": 42,
     "appVersion": "0.1.0"
   },

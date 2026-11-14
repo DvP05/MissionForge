@@ -129,7 +129,7 @@ def test_run_records_design_revision_snapshot_and_manifest(
     m = run.manifest
     assert (m.schema_version, m.engine_version, m.catalog_version) == ("1.0", "0.1.0", "0.1.0")
     assert (m.scenario_version, m.app_version, m.seed) == ("0.1.0", "0.1.0", 42)
-    assert m.event_set_id == run.scenario_event_set_id == "neo-rendezvous-nominal-v1"
+    assert m.event_set_id == run.scenario_event_set_id == "nominal-v1"
     assert run.decisions == () and run.autonomy_log == ()
 
 

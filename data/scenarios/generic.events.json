@@ -4,31 +4,42 @@
   "title": "Design-traced anomalies (any scenario)",
   "scenarioIds": [],
   "assumptions": [
-    "Anomalies are deterministic rules on the design's own margins: a design that clears every threshold sees none of them (no random punishment).",
-    "Thresholds and effect sizes are gameplay-estimate teaching values, not flight rules."
+    "Design anomalies fire only when the engineering analysis already flags the matching constraint (data return / link margin, battery reserve / energy closure, pointing, delta-v margin): the run tells the same story as the analysis, and a design the analysis clears sees none of them (no random punishment).",
+    "severityThreshold values only choose warning vs critical (gameplay-estimate); effect sizes are gameplay-estimate teaching values, not flight rules."
   ],
   "anomalies": [
     {
       "id": "missed-contact",
       "title": "Missed contact: data backlog",
       "severity": "warning",
-      "rule": {"kind": "link-margin-below", "threshold": 6.0, "unit": "dB"},
-      "situation": "The ground station loses lock during the pass and the planned contact is missed, so the collected data stays on board and a data backlog builds up.",
+      "rule": {
+        "kind": "data-return-shortfall",
+        "severityThreshold": 3.0,
+        "unit": "dB"
+      },
+      "situation": "The ground station loses lock during a pass and the planned contact is missed; with no slack in the downlink plan the collected data stays on board and a data backlog builds up.",
       "prompt": "How should operations respond to the fading link?",
-      "counterfactual": "Keep every planned contact at least 6 dB above the link threshold (higher-gain radio or a lower planned downlink rate) so a fade does not drop the pass.",
-      "effects": {"link_outage_days": 0.5},
+      "counterfactual": "Give the downlink plan slack (more or longer contacts, a higher-gain radio or a lower planned data volume) so the analysis data-return and link-margin checks pass and one lost pass does not leave data on board.",
+      "effects": {
+        "link_outage_days": 0.5
+      },
       "choices": [
         {
           "id": "lower-rate",
           "label": "Halve the downlink rate",
           "tradeoff": "About 3 dB more link margin for the rest of the mission, but each pass returns half the data, so the backlog drains slowly.",
-          "effects": {"link_outage_days": 0.5, "downlink_rate_factor": 0.5}
+          "effects": {
+            "link_outage_days": 0.5,
+            "downlink_rate_factor": 0.5
+          }
         },
         {
           "id": "keep-rate",
           "label": "Keep the planned rate",
           "tradeoff": "Full-rate passes once the link recovers, but the marginal link keeps dropping passes for the next 6 days and the backlog grows.",
-          "effects": {"link_outage_days": 6.0}
+          "effects": {
+            "link_outage_days": 6.0
+          }
         }
       ]
     },
@@ -36,23 +47,31 @@
       "id": "power-low",
       "title": "Power low during science",
       "severity": "warning",
-      "rule": {"kind": "battery-reserve-below", "threshold": 0.1, "unit": "fraction"},
+      "rule": {
+        "kind": "battery-reserve-low",
+        "severityThreshold": 0.0,
+        "unit": "fraction"
+      },
       "situation": "The battery approaches its reserve floor while the instruments draw science power.",
       "prompt": "Shed load or keep observing?",
-      "counterfactual": "Size the arrays and battery so the worst power cycle ends at least 10 % above the reserve floor.",
+      "counterfactual": "Size the arrays and battery so the analysis battery-reserve and energy-closure checks pass.",
       "effects": {},
       "choices": [
         {
           "id": "shed-load",
           "label": "Shed instrument load",
           "tradeoff": "The battery recovers, but observations in the next 3 days are not flown.",
-          "effects": {"science_time_lost_days": 3.0}
+          "effects": {
+            "science_time_lost_days": 3.0
+          }
         },
         {
           "id": "continue-science",
           "label": "Keep observing",
           "tradeoff": "No science time lost, but the battery drops a further 25 % of capacity; if it empties the spacecraft is lost.",
-          "effects": {"soc_delta": -0.25}
+          "effects": {
+            "soc_delta": -0.25
+          }
         }
       ]
     },
@@ -60,23 +79,31 @@
       "id": "pointing-drift",
       "title": "Pointing drift",
       "severity": "warning",
-      "rule": {"kind": "pointing-ratio-above", "threshold": 0.5, "unit": "fraction"},
+      "rule": {
+        "kind": "pointing-out-of-spec",
+        "severityThreshold": 2.0,
+        "unit": "fraction"
+      },
       "situation": "Attitude errors drift towards the instrument pointing requirement during the first observation.",
       "prompt": "Recalibrate the attitude system or keep observing?",
-      "counterfactual": "Choose an ADCS whose accuracy is at most half the tightest instrument pointing requirement.",
+      "counterfactual": "Choose an ADCS whose accuracy meets the tightest instrument pointing requirement, so the analysis credits the pointing.",
       "effects": {},
       "choices": [
         {
           "id": "recalibrate",
           "label": "Recalibrate attitude control",
           "tradeoff": "Sharper pointing afterwards, but observations in the next 2 days are not flown.",
-          "effects": {"science_time_lost_days": 2.0}
+          "effects": {
+            "science_time_lost_days": 2.0
+          }
         },
         {
           "id": "continue-observing",
           "label": "Keep observing",
           "tradeoff": "No science time lost, but 30 % of the buffered data is smeared and discarded.",
-          "effects": {"buffer_loss_fraction": 0.3}
+          "effects": {
+            "buffer_loss_fraction": 0.3
+          }
         }
       ]
     },
@@ -84,29 +111,39 @@
       "id": "correction-shortfall",
       "title": "Correction-maneuver shortfall",
       "severity": "warning",
-      "rule": {"kind": "propellant-headroom-below", "threshold": 0.2, "unit": "fraction"},
+      "rule": {
+        "kind": "delta-v-shortfall",
+        "severityThreshold": 0.0,
+        "unit": "fraction"
+      },
       "situation": "Navigation asks for a trajectory correction, but the propellant headroom above the planned maneuvers is thin.",
       "prompt": "Spend the reserve, skip the correction, or end the mission?",
-      "counterfactual": "Keep at least 20 % of the available delta-v as margin after the planned maneuvers and reserve (more propellant or a higher-Isp system).",
+      "counterfactual": "Keep a positive delta-v margin after the planned maneuvers and reserve (more propellant or a higher-Isp system), so the analysis delta-v check passes.",
       "effects": {},
       "choices": [
         {
           "id": "burn-reserve",
           "label": "Burn the reserve",
           "tradeoff": "The correction is flown on time, using 15 % of the loaded propellant.",
-          "effects": {"propellant_delta": -0.15}
+          "effects": {
+            "propellant_delta": -0.15
+          }
         },
         {
           "id": "skip-correction",
           "label": "Skip the correction",
           "tradeoff": "Propellant is kept, but the arrival dispersion costs 15 days of observations while the target is re-acquired.",
-          "effects": {"science_time_lost_days": 15.0}
+          "effects": {
+            "science_time_lost_days": 15.0
+          }
         },
         {
           "id": "abort-mission",
           "label": "End the mission",
           "tradeoff": "The spacecraft is safed and the mission ends now; the postmortem explains what the design lacked.",
-          "effects": {"terminate": 1.0}
+          "effects": {
+            "terminate": 1.0
+          }
         }
       ]
     }

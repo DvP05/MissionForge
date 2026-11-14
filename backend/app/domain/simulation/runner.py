@@ -10,12 +10,18 @@ checkpoints (with the effect overlay) -> science outcomes and final report -> Mi
 
 Reproducible: the result depends only on the SimulationInput, the catalogue, the scenario
 inputs, the event sets, the decisions and the explicitly passed versions. The only
-randomness is the declared scenario event day (``make_rng(seed, "scenario", <id>)``).
+randomness is the declared scenario event days (``make_rng(seed, "scenario", <id>)``,
+one stream per declared event).
+
+Early termination (abort choice or depleted battery) is the intended exception to the
+"six or more phases" rule (AC-10): the run lists the phases entered up to the termination
+day, then ``terminated``; an abort in mid-course therefore shows fewer than six phases, and
+the final report is a postmortem so the learning journey continues to the review.
 """
 
 import hashlib
 import json
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import replace
 
 from app.domain.analysis._params import param_value
@@ -24,6 +30,7 @@ from app.domain.catalog.loader import Catalog
 from app.domain.catalog.resolver import resolve_architecture
 from app.domain.errors import DomainValidationError
 from app.domain.simulation.anomalies import (
+    AnomalyDecl,
     Occurrence,
     ScenarioEventSet,
     evaluate_occurrences,
@@ -64,6 +71,7 @@ from app.domain.simulation.telemetry import (
 )
 from app.schemas.mission import MissionState
 from app.schemas.simulation import (
+    EventDecisionMaker,
     MissionRun,
     MissionRunManifest,
     Phase,
@@ -141,12 +149,26 @@ def _occurrence_spec(
     decl = occ.decl
     text = f"{decl.situation} Why this happened: {occ.why}."
     resolved_by: str | None = None
-    maker: str = "system"
+    maker: EventDecisionMaker = "system"
     if decl.choices:
         record = next(r for r in run.records if r.event_id == occ.event_id)
         resolved_by = record.choice_id
         by_player = occ.event_id in chosen
         maker = "player" if by_player else "system"
+        chosen_effects = next(c.effects for c in decl.choices if c.id == resolved_by)
+        headroom = occ.trigger.get("value")
+        if (
+            "propellant_delta" in chosen_effects
+            and isinstance(decl, AnomalyDecl)
+            and decl.rule.kind == "delta-v-shortfall"
+            and isinstance(headroom, float)
+            and headroom < 0.0
+        ):
+            text += (
+                " Warning: the delta-v headroom is already negative, so the reserve burn "
+                "cannot be fully flown; the propellant telemetry is clamped at 0 "
+                "(propellant_delta is telemetry-only)."
+            )
         options = "; ".join(f"{c.label} ({c.id}): {c.tradeoff}" for c in decl.choices)
         text += (
             f" {decl.prompt} Options: {options}. Chosen: {_choice_label(occ, resolved_by)} "
@@ -158,10 +180,10 @@ def _occurrence_spec(
         else " Its day is a seeded scenario uncertainty; the effects are deterministic."
     )
     return EventSpec(
-        occ.mission_day, decl.event_type, decl.severity, decl.title, text, occ.trigger,
+        occ.mission_day, decl.event_type, occ.severity, decl.title, text, occ.trigger,
         RANK_SCENARIO, phase=schedule.phase_at(occ.mission_day),
         choices=decl.contract_choices(), resolved_by=resolved_by,
-        decision_maker="player" if maker == "player" else "system", id=occ.event_id,
+        decision_maker=maker, id=occ.event_id,
     )  # fmt: skip
 
 
@@ -205,10 +227,13 @@ def _effect_specs(
     return out
 
 
-def _mark_rate_changes(specs: list[EventSpec], flown: FlownPlan) -> list[EventSpec]:
+def _mark_changes(
+    specs: list[EventSpec], index: Sequence[int], changed_by: Mapping[int, str], what: str
+) -> list[EventSpec]:
+    """Tag flown items whose plan an event changed (``caused_by`` + a sentence)."""
     out: list[EventSpec] = []
-    for k, spec in zip(flown.contact_index, specs, strict=True):
-        cause = flown.rate_changed_by.get(k)
+    for k, spec in zip(index, specs, strict=True):
+        cause = changed_by.get(k)
         if cause is None:
             out.append(spec)
             continue
@@ -216,7 +241,7 @@ def _mark_rate_changes(specs: list[EventSpec], flown: FlownPlan) -> list[EventSp
             replace(
                 spec,
                 trigger={**spec.trigger, "caused_by": cause},
-                description=f"{spec.description} The planned rate was reduced by event {cause}.",
+                description=f"{spec.description} The planned {what} was changed by event {cause}.",
             )
         )
     return out
@@ -312,6 +337,7 @@ def run_mission(
     # declared events -> decisions and effects (event order) -> as-flown plan
     occurrences = evaluate_occurrences(
         event_set, state, schedule, ctx,
+        constraints={c.id: c.status for c in analysis.constraints},
         instruments=resolved.instruments, pointing_deg=pointing, seed=sim_input.random_seed,
     )  # fmt: skip
     chosen = dict(decisions or {})
@@ -324,7 +350,7 @@ def run_mission(
             f"no decision event with id {', '.join(unknown)} in this run",
         )
     run_state, occurred = resolve_occurrences(
-        occurrences, chosen, soc_at=lambda day: base_soc(ctx, schedule, day)
+        occurrences, chosen, soc_at=lambda day: base_soc(ctx, schedule.phase_at(day))
     )
     cancelled = sorted(set(chosen) - {o.event_id for o in occurred})
     if cancelled:
@@ -349,8 +375,18 @@ def run_mission(
         ]
     specs = [
         *nominal_specs,
-        *science_specs(flown.state, resolved.instruments, fctx, flown.observation_index),
-        *_mark_rate_changes(downlink_specs(flown.state, fctx, flown.contact_index), flown),
+        *_mark_changes(
+            science_specs(flown.state, resolved.instruments, fctx, flown.observation_index),
+            flown.observation_index,
+            flown.duty_changed_by,
+            "duty cycle",
+        ),
+        *_mark_changes(
+            downlink_specs(flown.state, fctx, flown.contact_index),
+            flown.contact_index,
+            flown.rate_changed_by,
+            "rate",
+        ),
         *_effect_specs(state, flown, by_id),
         *(_occurrence_spec(o, run_state, chosen, schedule) for o in occurred),
         *((term[0],) if term is not None else ()),

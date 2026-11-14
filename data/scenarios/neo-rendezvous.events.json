@@ -2,11 +2,13 @@
   "eventSetId": "neo-default-v1",
   "version": "0.1.0",
   "title": "Echoes of Origins: default event set",
-  "scenarioIds": ["neo-rendezvous"],
+  "scenarioIds": [
+    "neo-rendezvous"
+  ],
   "extends": "generic-design-v1",
   "assumptions": [
-    "One declared scenario event (a solar particle event) occurs on a day drawn from the seeded scenario stream inside the science window; it is the only random element of the run.",
-    "The solar event is illustrative scenario narrative, not a space-weather forecast."
+    "Two declared scenario events (an uncertain target illumination during approach and a solar particle event during science) occur on days drawn from independent seeded scenario streams; they are the only random element of the run.",
+    "The scenario events are illustrative narrative, not a space-weather or photometry forecast."
   ],
   "anomalies": [],
   "scenarioEvents": [
@@ -25,15 +27,49 @@
           "id": "pause-science",
           "label": "Enter safe mode (pause science)",
           "tradeoff": "No risk to the spacecraft or its data, but observations in the next 10 days are not flown.",
-          "effects": {"science_time_lost_days": 10.0}
+          "effects": {
+            "science_time_lost_days": 10.0
+          }
         },
         {
           "id": "continue",
           "label": "Continue science",
           "tradeoff": "No science time lost, but upsets corrupt half of the buffered data and the heaters drain 25 % of the battery.",
-          "effects": {"buffer_loss_fraction": 0.5, "soc_delta": -0.25}
+          "effects": {
+            "buffer_loss_fraction": 0.5,
+            "soc_delta": -0.25
+          }
+        }
+      ]
+    },
+    {
+      "id": "target-illumination",
+      "title": "Uncertain target illumination",
+      "severity": "info",
+      "eventType": "decision",
+      "window": "approach",
+      "situation": "Approach imaging shows the target is darker than the pre-launch scenario estimate, so each observation collects less usable signal per hour.",
+      "prompt": "Extend the observations or keep the planned schedule?",
+      "counterfactual": "Plan observation time with margin over each requirement so an illumination surprise does not leave a measurement short.",
+      "effects": {},
+      "choices": [
+        {
+          "id": "keep-schedule",
+          "label": "Keep the planned schedule",
+          "tradeoff": "No extra data volume or propellant; measurements keep their planned observation time.",
+          "effects": {}
+        },
+        {
+          "id": "extend-observation",
+          "label": "Extend the observations",
+          "tradeoff": "Observations run at 1.5x their duty cycle (more scheduled time and collected data), but the buffer fills faster and the extra attitude work uses 3 % of the propellant.",
+          "effects": {
+            "duty_cycle_factor": 1.5,
+            "propellant_delta": -0.03
+          }
         }
       ]
     }
-  ]
+  ],
+  "default": true
 }

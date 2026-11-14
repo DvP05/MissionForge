@@ -1,5 +1,5 @@
 {
-  "runId": "run-902e1e1973cacf69d3c8",
+  "runId": "run-fcb4228d25042554f08b",
   "missionId": "m-sim",
   "designRevision": 0,
   "seed": 42,
@@ -165,202 +165,127 @@
         {
           "startDay": 291.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 294.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 297.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 300.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 303.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 306.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 309.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 312.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 315.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 318.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 321.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 324.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 327.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 330.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 333.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 336.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 339.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 342.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 345.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 348.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 351.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 354.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 357.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 360.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         },
         {
           "startDay": 363.0,
           "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 366.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 369.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 372.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 375.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 378.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 381.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 384.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 387.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 390.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 393.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 396.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 399.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 402.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 405.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
-        },
-        {
-          "startDay": 408.0,
-          "durationMinutes": 480.0,
-          "dataRateBitsPerSecond": 100000.0
+          "dataRateBitsPerSecond": 50000.0
         }
       ],
       "safeModePolicy": "balanced",
@@ -523,8 +448,46 @@
       "decisionMaker": "system"
     },
     {
-      "id": "approach-milestone-2",
+      "id": "scenario-target-illumination",
       "sequence": 5,
+      "missionDay": 258.848,
+      "phase": "approach",
+      "type": "decision",
+      "severity": "info",
+      "title": "Uncertain target illumination",
+      "description": "Approach imaging shows the target is darker than the pre-launch scenario estimate, so each observation collects less usable signal per hour. Why this happened: the event set neo-default-v1 declares this scenario event in the approach window (days 245-290); its day is drawn from the seeded scenario stream. Extend the observations or keep the planned schedule? Options: Keep the planned schedule (keep-schedule): No extra data volume or propellant; measurements keep their planned observation time.; Extend the observations (extend-observation): Observations run at 1.5x their duty cycle (more scheduled time and collected data), but the buffer fills faster and the extra attitude work uses 3 % of the propellant.. Chosen: Extend the observations (player choice). Its day is a seeded scenario uncertainty; the effects are deterministic.",
+      "trigger": {
+        "source": "scenario-event",
+        "ref": "scenarioEvents/neo-default-v1/target-illumination",
+        "rule": "seeded-day",
+        "window": "approach",
+        "window_start_day": 245.0,
+        "window_end_day": 290.0,
+        "stream": "make_rng(seed, 'scenario', 'target-illumination')"
+      },
+      "choices": [
+        {
+          "id": "keep-schedule",
+          "label": "Keep the planned schedule",
+          "tradeoff": "No extra data volume or propellant; measurements keep their planned observation time.",
+          "effects": {}
+        },
+        {
+          "id": "extend-observation",
+          "label": "Extend the observations",
+          "tradeoff": "Observations run at 1.5x their duty cycle (more scheduled time and collected data), but the buffer fills faster and the extra attitude work uses 3 % of the propellant.",
+          "effects": {
+            "duty_cycle_factor": 1.5,
+            "propellant_delta": -0.03
+          }
+        }
+      ],
+      "resolvedBy": "extend-observation",
+      "decisionMaker": "player"
+    },
+    {
+      "id": "approach-milestone-2",
+      "sequence": 6,
       "missionDay": 275.0,
       "phase": "approach",
       "type": "milestone",
@@ -543,7 +506,7 @@
     },
     {
       "id": "science-ops-milestone-1",
-      "sequence": 6,
+      "sequence": 7,
       "missionDay": 290.0,
       "phase": "science-ops",
       "type": "milestone",
@@ -561,20 +524,21 @@
     },
     {
       "id": "science-ops-science-1",
-      "sequence": 7,
+      "sequence": 8,
       "missionDay": 290.0,
       "phase": "science-ops",
       "type": "science",
       "severity": "info",
       "title": "Observation: meas-shape-model",
-      "description": "Observation of meas-shape-model for 4 h at duty cycle 0.015; data is stored in the onboard buffer until the next contact.",
+      "description": "Observation of meas-shape-model for 4 h at duty cycle 0.0225; data is stored in the onboard buffer until the next contact. The planned duty cycle was changed by event scenario-target-illumination.",
       "trigger": {
         "source": "design",
         "ref": "operations.observationPlan[0]",
         "plan_item": "operations.observationPlan[0]",
         "measurement_id": "meas-shape-model",
         "duration_hours": 4.0,
-        "duty_cycle": 0.015
+        "duty_cycle": 0.0225,
+        "caused_by": "scenario-target-illumination"
       },
       "choices": [],
       "resolvedBy": null,
@@ -582,20 +546,21 @@
     },
     {
       "id": "anomaly-missed-contact",
-      "sequence": 8,
+      "sequence": 9,
       "missionDay": 291.0,
       "phase": "science-ops",
       "type": "anomaly",
       "severity": "warning",
       "title": "Missed contact: data backlog",
-      "description": "The ground station loses lock during the pass and the planned contact is missed, so the collected data stays on board and a data backlog builds up. Why this happened: contact 1 has a link margin of +3.70 dB with comms-xband-medium, below the 6 dB the event set needs to ride out a fade. How should operations respond to the fading link? Options: Halve the downlink rate (lower-rate): About 3 dB more link margin for the rest of the mission, but each pass returns half the data, so the backlog drains slowly.; Keep the planned rate (keep-rate): Full-rate passes once the link recovers, but the marginal link keeps dropping passes for the next 6 days and the backlog grows.. Chosen: Keep the planned rate (player choice). The effects follow a deterministic design rule.",
+      "description": "The ground station loses lock during a pass and the planned contact is missed; with no slack in the downlink plan the collected data stays on board and a data backlog builds up. Why this happened: the analysis flags the downlink (data-return warning): with comms-xband-medium the worst link margin is +6.71 dB and the contact plan has no slack, so a lost pass turns into a backlog. How should operations respond to the fading link? Options: Halve the downlink rate (lower-rate): About 3 dB more link margin for the rest of the mission, but each pass returns half the data, so the backlog drains slowly.; Keep the planned rate (keep-rate): Full-rate passes once the link recovers, but the marginal link keeps dropping passes for the next 6 days and the backlog grows.. Chosen: Keep the planned rate (player choice). The effects follow a deterministic design rule.",
       "trigger": {
         "source": "design",
         "ref": "architecture.communicationsId",
         "plan_item": "operations.downlinkPlan[0]",
-        "value_db": 3.6982984755906045,
-        "threshold_db": 6.0,
-        "rule": "link-margin-below",
+        "value_db": 6.708598432230417,
+        "severity_threshold_db": 3.0,
+        "constraint_data-return": "warning",
+        "rule": "data-return-shortfall",
         "anomaly": "missed-contact"
       },
       "choices": [
@@ -622,7 +587,7 @@
     },
     {
       "id": "science-ops-downlink-1",
-      "sequence": 9,
+      "sequence": 10,
       "missionDay": 291.0,
       "phase": "science-ops",
       "type": "downlink",
@@ -641,7 +606,7 @@
     },
     {
       "id": "science-ops-downlink-2",
-      "sequence": 10,
+      "sequence": 11,
       "missionDay": 294.0,
       "phase": "science-ops",
       "type": "downlink",
@@ -660,20 +625,20 @@
     },
     {
       "id": "science-ops-downlink-3",
-      "sequence": 11,
+      "sequence": 12,
       "missionDay": 297.0,
       "phase": "science-ops",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 3",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[2]",
         "plan_item": "operations.downlinkPlan[2]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -681,20 +646,21 @@
     },
     {
       "id": "science-ops-science-2",
-      "sequence": 12,
+      "sequence": 13,
       "missionDay": 300.0,
       "phase": "science-ops",
       "type": "science",
       "severity": "info",
       "title": "Observation: meas-shape-model",
-      "description": "Observation of meas-shape-model for 4 h at duty cycle 0.015; data is stored in the onboard buffer until the next contact.",
+      "description": "Observation of meas-shape-model for 4 h at duty cycle 0.0225; data is stored in the onboard buffer until the next contact. The planned duty cycle was changed by event scenario-target-illumination.",
       "trigger": {
         "source": "design",
         "ref": "operations.observationPlan[1]",
         "plan_item": "operations.observationPlan[1]",
         "measurement_id": "meas-shape-model",
         "duration_hours": 4.0,
-        "duty_cycle": 0.015
+        "duty_cycle": 0.0225,
+        "caused_by": "scenario-target-illumination"
       },
       "choices": [],
       "resolvedBy": null,
@@ -702,20 +668,20 @@
     },
     {
       "id": "science-ops-downlink-4",
-      "sequence": 13,
+      "sequence": 14,
       "missionDay": 300.0,
       "phase": "science-ops",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 4",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[3]",
         "plan_item": "operations.downlinkPlan[3]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -723,13 +689,13 @@
     },
     {
       "id": "scenario-solar-event",
-      "sequence": 14,
+      "sequence": 15,
       "missionDay": 302.668,
       "phase": "science-ops",
       "type": "decision",
       "severity": "warning",
       "title": "Solar particle event: safe-mode prompt",
-      "description": "A solar particle event raises the radiation dose and the risk of memory upsets in the onboard buffer. Why this happened: the event set neo-default-v1 declares this scenario event inside the science window (days 290-320); its day is drawn from the seeded scenario stream. Enter safe mode or keep the science timeline running? Options: Enter safe mode (pause science) (pause-science): No risk to the spacecraft or its data, but observations in the next 10 days are not flown.; Continue science (continue): No science time lost, but upsets corrupt half of the buffered data and the heaters drain 25 % of the battery.. Chosen: Continue science (player choice). Its day is a seeded scenario uncertainty; the effects are deterministic.",
+      "description": "A solar particle event raises the radiation dose and the risk of memory upsets in the onboard buffer. Why this happened: the event set neo-default-v1 declares this scenario event in the science-ops window (days 290-320); its day is drawn from the seeded scenario stream. Enter safe mode or keep the science timeline running? Options: Enter safe mode (pause science) (pause-science): No risk to the spacecraft or its data, but observations in the next 10 days are not flown.; Continue science (continue): No science time lost, but upsets corrupt half of the buffered data and the heaters drain 25 % of the battery.. Chosen: Continue science (player choice). Its day is a seeded scenario uncertainty; the effects are deterministic.",
       "trigger": {
         "source": "scenario-event",
         "ref": "scenarioEvents/neo-default-v1/solar-event",
@@ -763,20 +729,20 @@
     },
     {
       "id": "science-ops-downlink-5",
-      "sequence": 15,
+      "sequence": 16,
       "missionDay": 303.0,
       "phase": "science-ops",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 5",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[4]",
         "plan_item": "operations.downlinkPlan[4]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -784,20 +750,20 @@
     },
     {
       "id": "science-ops-downlink-6",
-      "sequence": 16,
+      "sequence": 17,
       "missionDay": 306.0,
       "phase": "science-ops",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 6",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[5]",
         "plan_item": "operations.downlinkPlan[5]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -805,20 +771,20 @@
     },
     {
       "id": "science-ops-downlink-7",
-      "sequence": 17,
+      "sequence": 18,
       "missionDay": 309.0,
       "phase": "science-ops",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 7",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[6]",
         "plan_item": "operations.downlinkPlan[6]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -826,20 +792,21 @@
     },
     {
       "id": "science-ops-science-3",
-      "sequence": 18,
+      "sequence": 19,
       "missionDay": 310.0,
       "phase": "science-ops",
       "type": "science",
       "severity": "info",
       "title": "Observation: meas-vnir-spectra",
-      "description": "Observation of meas-vnir-spectra for 8 h at duty cycle 0.025; data is stored in the onboard buffer until the next contact.",
+      "description": "Observation of meas-vnir-spectra for 8 h at duty cycle 0.0375; data is stored in the onboard buffer until the next contact. The planned duty cycle was changed by event scenario-target-illumination.",
       "trigger": {
         "source": "design",
         "ref": "operations.observationPlan[2]",
         "plan_item": "operations.observationPlan[2]",
         "measurement_id": "meas-vnir-spectra",
         "duration_hours": 8.0,
-        "duty_cycle": 0.025
+        "duty_cycle": 0.037500000000000006,
+        "caused_by": "scenario-target-illumination"
       },
       "choices": [],
       "resolvedBy": null,
@@ -847,20 +814,20 @@
     },
     {
       "id": "science-ops-downlink-8",
-      "sequence": 19,
+      "sequence": 20,
       "missionDay": 312.0,
       "phase": "science-ops",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 8",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[7]",
         "plan_item": "operations.downlinkPlan[7]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -868,20 +835,20 @@
     },
     {
       "id": "science-ops-downlink-9",
-      "sequence": 20,
+      "sequence": 21,
       "missionDay": 315.0,
       "phase": "science-ops",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 9",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[8]",
         "plan_item": "operations.downlinkPlan[8]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -889,20 +856,20 @@
     },
     {
       "id": "science-ops-downlink-10",
-      "sequence": 21,
+      "sequence": 22,
       "missionDay": 318.0,
       "phase": "science-ops",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 10",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[9]",
         "plan_item": "operations.downlinkPlan[9]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -910,20 +877,21 @@
     },
     {
       "id": "science-ops-science-4",
-      "sequence": 22,
+      "sequence": 23,
       "missionDay": 320.0,
       "phase": "science-ops",
       "type": "science",
       "severity": "info",
       "title": "Observation: meas-vnir-spectra",
-      "description": "Observation of meas-vnir-spectra for 8 h at duty cycle 0.025; data is stored in the onboard buffer until the next contact.",
+      "description": "Observation of meas-vnir-spectra for 8 h at duty cycle 0.0375; data is stored in the onboard buffer until the next contact. The planned duty cycle was changed by event scenario-target-illumination.",
       "trigger": {
         "source": "design",
         "ref": "operations.observationPlan[3]",
         "plan_item": "operations.observationPlan[3]",
         "measurement_id": "meas-vnir-spectra",
         "duration_hours": 8.0,
-        "duty_cycle": 0.025
+        "duty_cycle": 0.037500000000000006,
+        "caused_by": "scenario-target-illumination"
       },
       "choices": [],
       "resolvedBy": null,
@@ -931,7 +899,7 @@
     },
     {
       "id": "downlink-return-milestone-1",
-      "sequence": 23,
+      "sequence": 24,
       "missionDay": 320.3333333333333,
       "phase": "downlink-return",
       "type": "milestone",
@@ -941,7 +909,7 @@
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan",
-        "value": 40
+        "value": 25
       },
       "choices": [],
       "resolvedBy": null,
@@ -949,20 +917,20 @@
     },
     {
       "id": "downlink-return-downlink-1",
-      "sequence": 24,
+      "sequence": 25,
       "missionDay": 321.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 11",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[10]",
         "plan_item": "operations.downlinkPlan[10]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -970,20 +938,20 @@
     },
     {
       "id": "downlink-return-downlink-2",
-      "sequence": 25,
+      "sequence": 26,
       "missionDay": 324.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 12",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[11]",
         "plan_item": "operations.downlinkPlan[11]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -991,20 +959,20 @@
     },
     {
       "id": "downlink-return-downlink-3",
-      "sequence": 26,
+      "sequence": 27,
       "missionDay": 327.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 13",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[12]",
         "plan_item": "operations.downlinkPlan[12]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -1012,20 +980,20 @@
     },
     {
       "id": "downlink-return-downlink-4",
-      "sequence": 27,
+      "sequence": 28,
       "missionDay": 330.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 14",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[13]",
         "plan_item": "operations.downlinkPlan[13]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -1033,20 +1001,20 @@
     },
     {
       "id": "downlink-return-downlink-5",
-      "sequence": 28,
+      "sequence": 29,
       "missionDay": 333.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 15",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[14]",
         "plan_item": "operations.downlinkPlan[14]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -1054,20 +1022,20 @@
     },
     {
       "id": "downlink-return-downlink-6",
-      "sequence": 29,
+      "sequence": 30,
       "missionDay": 336.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 16",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[15]",
         "plan_item": "operations.downlinkPlan[15]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -1075,20 +1043,20 @@
     },
     {
       "id": "downlink-return-downlink-7",
-      "sequence": 30,
+      "sequence": 31,
       "missionDay": 339.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 17",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 855.4 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[16]",
         "plan_item": "operations.downlinkPlan[16]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 855360000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -1096,20 +1064,20 @@
     },
     {
       "id": "downlink-return-downlink-8",
-      "sequence": 31,
+      "sequence": 32,
       "missionDay": 342.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 18",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 129.6 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[17]",
         "plan_item": "operations.downlinkPlan[17]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 129600000.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -1117,20 +1085,20 @@
     },
     {
       "id": "downlink-return-downlink-9",
-      "sequence": 32,
+      "sequence": 33,
       "missionDay": 345.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 19",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[18]",
         "plan_item": "operations.downlinkPlan[18]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -1138,20 +1106,20 @@
     },
     {
       "id": "downlink-return-downlink-10",
-      "sequence": 33,
+      "sequence": 34,
       "missionDay": 348.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 20",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[19]",
         "plan_item": "operations.downlinkPlan[19]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -1159,20 +1127,20 @@
     },
     {
       "id": "downlink-return-downlink-11",
-      "sequence": 34,
+      "sequence": 35,
       "missionDay": 351.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 21",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[20]",
         "plan_item": "operations.downlinkPlan[20]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -1180,20 +1148,20 @@
     },
     {
       "id": "downlink-return-downlink-12",
-      "sequence": 35,
+      "sequence": 36,
       "missionDay": 354.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 22",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[21]",
         "plan_item": "operations.downlinkPlan[21]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -1201,20 +1169,20 @@
     },
     {
       "id": "downlink-return-downlink-13",
-      "sequence": 36,
+      "sequence": 37,
       "missionDay": 357.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 23",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[22]",
         "plan_item": "operations.downlinkPlan[22]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -1222,20 +1190,20 @@
     },
     {
       "id": "downlink-return-downlink-14",
-      "sequence": 37,
+      "sequence": 38,
       "missionDay": 360.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 24",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[23]",
         "plan_item": "operations.downlinkPlan[23]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -1243,335 +1211,20 @@
     },
     {
       "id": "downlink-return-downlink-15",
-      "sequence": 38,
+      "sequence": 39,
       "missionDay": 363.0,
       "phase": "downlink-return",
       "type": "downlink",
       "severity": "info",
       "title": "Ground contact 25",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
+      "description": "Contact of 480 min at 50 kbit/s (link margin +6.71 dB) returns 427.7 Mbit.",
       "trigger": {
         "source": "design",
         "ref": "operations.downlinkPlan[24]",
         "plan_item": "operations.downlinkPlan[24]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-16",
-      "sequence": 39,
-      "missionDay": 366.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 26",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[25]",
-        "plan_item": "operations.downlinkPlan[25]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-17",
-      "sequence": 40,
-      "missionDay": 369.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 27",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[26]",
-        "plan_item": "operations.downlinkPlan[26]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-18",
-      "sequence": 41,
-      "missionDay": 372.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 28",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[27]",
-        "plan_item": "operations.downlinkPlan[27]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-19",
-      "sequence": 42,
-      "missionDay": 375.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 29",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[28]",
-        "plan_item": "operations.downlinkPlan[28]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-20",
-      "sequence": 43,
-      "missionDay": 378.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 30",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[29]",
-        "plan_item": "operations.downlinkPlan[29]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-21",
-      "sequence": 44,
-      "missionDay": 381.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 31",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[30]",
-        "plan_item": "operations.downlinkPlan[30]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-22",
-      "sequence": 45,
-      "missionDay": 384.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 32",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[31]",
-        "plan_item": "operations.downlinkPlan[31]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-23",
-      "sequence": 46,
-      "missionDay": 387.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 33",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[32]",
-        "plan_item": "operations.downlinkPlan[32]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-24",
-      "sequence": 47,
-      "missionDay": 390.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 34",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[33]",
-        "plan_item": "operations.downlinkPlan[33]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-25",
-      "sequence": 48,
-      "missionDay": 393.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 35",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[34]",
-        "plan_item": "operations.downlinkPlan[34]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-26",
-      "sequence": 49,
-      "missionDay": 396.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 36",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[35]",
-        "plan_item": "operations.downlinkPlan[35]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-27",
-      "sequence": 50,
-      "missionDay": 399.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 37",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[36]",
-        "plan_item": "operations.downlinkPlan[36]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-28",
-      "sequence": 51,
-      "missionDay": 402.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 38",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[37]",
-        "plan_item": "operations.downlinkPlan[37]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-29",
-      "sequence": 52,
-      "missionDay": 405.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 39",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[38]",
-        "plan_item": "operations.downlinkPlan[38]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
-      },
-      "choices": [],
-      "resolvedBy": null,
-      "decisionMaker": "system"
-    },
-    {
-      "id": "downlink-return-downlink-30",
-      "sequence": 53,
-      "missionDay": 408.0,
-      "phase": "downlink-return",
-      "type": "downlink",
-      "severity": "info",
-      "title": "Ground contact 40",
-      "description": "Contact of 480 min at 100 kbit/s (link margin +3.70 dB) returns 0.0 Mbit.",
-      "trigger": {
-        "source": "design",
-        "ref": "operations.downlinkPlan[39]",
-        "plan_item": "operations.downlinkPlan[39]",
-        "link_margin_db": 3.6982984755906045,
-        "rate_bps": 100000.0,
-        "returned_bits": 0.0
+        "link_margin_db": 6.708598432230417,
+        "rate_bps": 50000.0,
+        "returned_bits": 427680000.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -1579,7 +1232,7 @@
     },
     {
       "id": "complete-milestone-1",
-      "sequence": 54,
+      "sequence": 40,
       "missionDay": 420.0,
       "phase": "complete",
       "type": "milestone",
@@ -1761,6 +1414,38 @@
     {
       "channel": "battery_soc",
       "unit": "fraction",
+      "missionDay": 258.848,
+      "value": 1.0,
+      "fidelity": "derived",
+      "phase": "approach"
+    },
+    {
+      "channel": "propellant_fraction",
+      "unit": "fraction",
+      "missionDay": 258.848,
+      "value": 0.97,
+      "fidelity": "derived",
+      "phase": "approach"
+    },
+    {
+      "channel": "buffer_fill",
+      "unit": "fraction",
+      "missionDay": 258.848,
+      "value": 0.0,
+      "fidelity": "derived",
+      "phase": "approach"
+    },
+    {
+      "channel": "pointing_error_deg",
+      "unit": "deg",
+      "missionDay": 258.848,
+      "value": 0.02,
+      "fidelity": "gameplay-estimate",
+      "phase": "approach"
+    },
+    {
+      "channel": "battery_soc",
+      "unit": "fraction",
       "missionDay": 275.0,
       "value": 1.0,
       "fidelity": "derived",
@@ -1770,7 +1455,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 275.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "approach"
     },
@@ -1802,7 +1487,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 290.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -1834,7 +1519,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 290.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -1866,7 +1551,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 291.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -1874,7 +1559,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 291.0,
-      "value": 0.135,
+      "value": 0.2025,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -1898,7 +1583,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 297.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -1906,7 +1591,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 297.0,
-      "value": 0.135,
+      "value": 0.2025,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -1914,7 +1599,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 297.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -1938,7 +1623,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 300.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -1946,7 +1631,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 300.0,
-      "value": 0.10827,
+      "value": 0.189135,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -1970,7 +1655,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 300.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -1978,7 +1663,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 300.0,
-      "value": 0.10827,
+      "value": 0.189135,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -1986,7 +1671,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 300.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2010,7 +1695,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 302.668,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2018,7 +1703,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 302.668,
-      "value": 0.10827,
+      "value": 0.189135,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2042,7 +1727,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 303.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2050,7 +1735,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 303.0,
-      "value": 0.10827,
+      "value": 0.189135,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2058,7 +1743,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 303.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2082,7 +1767,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 306.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2090,7 +1775,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 306.0,
-      "value": 0.08154,
+      "value": 0.17576999999999998,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2098,7 +1783,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 306.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2122,7 +1807,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 309.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2130,7 +1815,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 309.0,
-      "value": 0.05481,
+      "value": 0.16240500000000002,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2138,7 +1823,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 309.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2162,7 +1847,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 310.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2170,7 +1855,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 310.0,
-      "value": 0.028079999999999994,
+      "value": 0.14904,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2194,7 +1879,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 312.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2202,7 +1887,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 312.0,
-      "value": 0.09558,
+      "value": 0.25029,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2210,7 +1895,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 312.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2234,7 +1919,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 315.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2242,7 +1927,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 315.0,
-      "value": 0.06885,
+      "value": 0.236925,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2250,7 +1935,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 315.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2274,7 +1959,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 318.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2282,7 +1967,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 318.0,
-      "value": 0.04211999999999999,
+      "value": 0.22355999999999998,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2290,7 +1975,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 318.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2314,7 +1999,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 320.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2322,7 +2007,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 320.0,
-      "value": 0.015390000000000001,
+      "value": 0.21019500000000002,
       "fidelity": "derived",
       "phase": "science-ops"
     },
@@ -2346,7 +2031,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 320.3333333333333,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2354,7 +2039,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 320.3333333333333,
-      "value": 0.08288999999999999,
+      "value": 0.311445,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2378,7 +2063,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 321.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2386,7 +2071,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 321.0,
-      "value": 0.08288999999999999,
+      "value": 0.311445,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2394,7 +2079,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 321.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2418,7 +2103,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 324.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2426,7 +2111,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 324.0,
-      "value": 0.05615999999999999,
+      "value": 0.29808,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2434,7 +2119,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 324.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2458,7 +2143,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 327.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2466,7 +2151,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 327.0,
-      "value": 0.029429999999999984,
+      "value": 0.284715,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2474,7 +2159,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 327.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2498,7 +2183,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 330.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2506,7 +2191,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 330.0,
-      "value": 0.002699999999999994,
+      "value": 0.27135,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2514,7 +2199,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 330.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2538,7 +2223,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 333.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2546,7 +2231,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 333.0,
-      "value": 0.0,
+      "value": 0.257985,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2554,7 +2239,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 333.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2578,7 +2263,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 336.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2586,7 +2271,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 336.0,
-      "value": 0.0,
+      "value": 0.24462,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2594,7 +2279,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 336.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2618,7 +2303,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 339.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2626,7 +2311,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 339.0,
-      "value": 0.0,
+      "value": 0.231255,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2634,7 +2319,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 339.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2658,7 +2343,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 342.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2666,7 +2351,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 342.0,
-      "value": 0.0,
+      "value": 0.21789000000000003,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2674,7 +2359,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 342.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2698,7 +2383,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 345.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2706,7 +2391,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 345.0,
-      "value": 0.0,
+      "value": 0.204525,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2714,7 +2399,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 345.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2738,7 +2423,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 348.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2746,7 +2431,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 348.0,
-      "value": 0.0,
+      "value": 0.19116,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2754,7 +2439,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 348.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2778,7 +2463,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 351.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2786,7 +2471,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 351.0,
-      "value": 0.0,
+      "value": 0.17779499999999998,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2794,7 +2479,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 351.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2818,7 +2503,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 354.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2826,7 +2511,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 354.0,
-      "value": 0.0,
+      "value": 0.16443000000000002,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2834,7 +2519,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 354.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2858,7 +2543,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 357.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2866,7 +2551,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 357.0,
-      "value": 0.0,
+      "value": 0.151065,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2874,7 +2559,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 357.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2898,7 +2583,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 360.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2906,7 +2591,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 360.0,
-      "value": 0.0,
+      "value": 0.1377,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2914,7 +2599,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 360.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2938,7 +2623,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 363.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2946,7 +2631,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 363.0,
-      "value": 0.0,
+      "value": 0.12433500000000003,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2954,7 +2639,7 @@
       "channel": "link_margin_db",
       "unit": "dB",
       "missionDay": 363.0,
-      "value": 3.6982984755906045,
+      "value": 6.708598432230417,
       "fidelity": "derived",
       "phase": "downlink-return"
     },
@@ -2962,606 +2647,6 @@
       "channel": "pointing_error_deg",
       "unit": "deg",
       "missionDay": 363.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 366.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 366.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 366.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 366.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 366.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 369.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 369.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 369.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 369.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 369.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 372.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 372.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 372.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 372.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 372.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 375.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 375.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 375.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 375.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 375.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 378.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 378.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 378.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 378.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 378.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 381.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 381.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 381.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 381.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 381.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 384.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 384.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 384.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 384.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 384.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 387.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 387.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 387.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 387.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 387.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 390.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 390.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 390.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 390.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 390.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 393.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 393.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 393.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 393.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 393.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 396.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 396.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 396.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 396.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 396.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 399.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 399.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 399.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 399.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 399.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 402.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 402.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 402.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 402.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 402.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 405.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 405.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 405.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 405.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 405.0,
-      "value": 0.02,
-      "fidelity": "gameplay-estimate",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "battery_soc",
-      "unit": "fraction",
-      "missionDay": 408.0,
-      "value": 1.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "propellant_fraction",
-      "unit": "fraction",
-      "missionDay": 408.0,
-      "value": 0.48429015661153413,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "buffer_fill",
-      "unit": "fraction",
-      "missionDay": 408.0,
-      "value": 0.0,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "link_margin_db",
-      "unit": "dB",
-      "missionDay": 408.0,
-      "value": 3.6982984755906045,
-      "fidelity": "derived",
-      "phase": "downlink-return"
-    },
-    {
-      "channel": "pointing_error_deg",
-      "unit": "deg",
-      "missionDay": 408.0,
       "value": 0.02,
       "fidelity": "gameplay-estimate",
       "phase": "downlink-return"
@@ -3578,7 +2663,7 @@
       "channel": "propellant_fraction",
       "unit": "fraction",
       "missionDay": 420.0,
-      "value": 0.48429015661153413,
+      "value": 0.45429015661153416,
       "fidelity": "derived",
       "phase": "complete"
     },
@@ -3586,7 +2671,7 @@
       "channel": "buffer_fill",
       "unit": "fraction",
       "missionDay": 420.0,
-      "value": 0.0,
+      "value": 0.11097000000000001,
       "fidelity": "derived",
       "phase": "complete"
     },
@@ -3600,6 +2685,13 @@
     }
   ],
   "decisions": [
+    {
+      "eventId": "scenario-target-illumination",
+      "choiceId": "extend-observation",
+      "decisionMaker": "player",
+      "missionDay": 258.848,
+      "rationale": "player choice: Extend the observations"
+    },
     {
       "eventId": "anomaly-missed-contact",
       "choiceId": "keep-rate",
@@ -3620,27 +2712,27 @@
     {
       "objectiveId": "obj-morphology",
       "collectedFraction": 0.7,
-      "returnedFraction": 0.5128666666666667,
+      "returnedFraction": 0.35419999999999996,
       "status": "partial"
     },
     {
       "objectiveId": "obj-composition",
       "collectedFraction": 1.0,
-      "returnedFraction": 0.7326666666666667,
+      "returnedFraction": 0.506,
       "status": "partial"
     }
   ],
   "finalReport": {
     "outcome": "partial",
-    "summary": "Flown run of a feasible design: 0/2 objectives achieved; 61% of the science returned, 83% collected; score 94.9. 2 anomaly/scenario event(s) occurred.",
+    "summary": "Flown run of a marginal design: 0/2 objectives achieved; 42% of the science returned, 83% collected; score 85.5. 3 anomaly/scenario event(s) occurred.",
     "score": {
-      "total": 94.85714285714286,
+      "total": 85.50714285714285,
       "dimensions": [
         {
           "id": "scientific-return",
           "weight": 30.0,
-          "score": 82.85714285714285,
-          "explanation": "Returned-data science coverage is 83 of 100 (collected data that is not downlinked does not count)."
+          "score": 68.35714285714285,
+          "explanation": "Returned-data science coverage is 68 of 100 (collected data that is not downlinked does not count)."
         },
         {
           "id": "mission-execution",
@@ -3651,7 +2743,7 @@
         {
           "id": "engineering-robustness",
           "weight": 20.0,
-          "score": 100.0,
+          "score": 75.0,
           "explanation": "Mean of 4 mass, delta-v, energy and data headrooms relative to the required headroom (full credit at the hard-gate threshold, zero at no headroom)."
         },
         {
@@ -3664,20 +2756,28 @@
           "id": "operations-quality",
           "weight": 10.0,
           "score": 100.0,
-          "explanation": "40 of 40 planned contacts close (design-time proxy; refined by simulation)."
+          "explanation": "25 of 25 planned contacts close (design-time proxy; refined by simulation)."
         }
       ]
     },
     "realizedRisks": [
+      "data-return (warning): Data return",
+      "target-illumination (decision, day 258.848): Uncertain target illumination; choice: Extend the observations",
       "missed-contact (anomaly, day 291): Missed contact: data backlog; choice: Keep the planned rate",
       "solar-event (decision, day 302.668): Solar particle event: safe-mode prompt; choice: Continue science"
     ],
     "rootCauses": [
-      "Missed contact: data backlog (day 291): contact 1 has a link margin of +3.70 dB with comms-xband-medium, below the 6 dB the event set needs to ride out a fade.",
-      "Solar particle event: safe-mode prompt (day 302.668): the event set neo-default-v1 declares this scenario event inside the science window (days 290-320); its day is drawn from the seeded scenario stream."
+      "Downlink capacity 1.07e+10 bit is below the 1.56e+10 bit needed (generated 1.3e+10 bit plus 20% margin); only 1.07e+10 of 1.3e+10 bit is downlinked, so collected science is not fully returned.",
+      "Uncertain target illumination (day 258.848): the event set neo-default-v1 declares this scenario event in the approach window (days 245-290); its day is drawn from the seeded scenario stream.",
+      "Missed contact: data backlog (day 291): the analysis flags the downlink (data-return warning): with comms-xband-medium the worst link margin is +6.71 dB and the contact plan has no slack, so a lost pass turns into a backlog.",
+      "Solar particle event: safe-mode prompt (day 302.668): the event set neo-default-v1 declares this scenario event in the science-ops window (days 290-320); its day is drawn from the seeded scenario stream."
     ],
     "counterfactuals": [
-      "Keep every planned contact at least 6 dB above the link threshold (higher-gain radio or a lower planned downlink rate) so a fade does not drop the pass.",
+      "Upgrade communications (e.g. higher-gain antenna) or reduce observation duty cycle: Raises downlink capacity or lowers generated data so more science is returned.",
+      "Reduce observation duty cycle: Generates less data.",
+      "Plan more or longer downlink contacts: Adds capacity.",
+      "Plan observation time with margin over each requirement so an illumination surprise does not leave a measurement short.",
+      "Give the downlink plan slack (more or longer contacts, a higher-gain radio or a lower planned data volume) so the analysis data-return and link-margin checks pass and one lost pass does not leave data on board.",
       "Schedule observations with slack so a safe-mode pause does not remove a required measurement, and downlink often so little data is exposed in the buffer."
     ],
     "limitations": [
@@ -3690,8 +2790,10 @@
       "Battery state of charge is the end-of-cycle value of the analysis representative power cycle for the phase; the battery is full at launch (gameplay-estimate).",
       "Pointing error is a proxy equal to the ADCS pointing accuracy (gameplay-estimate).",
       "Link margin is reported at contacts only, at the scenario reference Earth range.",
-      "Anomalies are deterministic rules on the design's own margins; the only randomness is the day of the declared scenario event, drawn from the seeded scenario stream.",
+      "Design anomalies fire only where the engineering analysis flags the matching constraint; the only randomness is the day of each declared scenario event, drawn from its own seeded scenario stream.",
       "Event effects are gameplay-estimate approximations: skipped observations and missed contacts are re-analysed by the engine; lost buffer data can no longer be downlinked (downlinked = min(downlinked, generated - lost)); battery dips recover by the next checkpoint.",
+      "Plan items are skipped, missed, rescaled or cancelled whole by their start day; an item that starts before an effect window and runs into it is flown in full (approximation).",
+      "Propellant effects are telemetry-only: they move the propellant channel (clamped at 0) but do not change the maneuver budget.",
       "All catalogue values are illustrative gameplay-estimate archetypes."
     ]
   }

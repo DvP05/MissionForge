@@ -17,6 +17,10 @@ Pipeline (pure; ``runner.run_mission`` drives it):
 4. ``data_loss_bits`` / ``returned_scale`` apply buffer losses: lost bits can no longer be
    downlinked, so downlinked' = min(downlinked, generated - lost) (gameplay approximation).
 
+Approximation (labelled in the report limitations): plan items are skipped, missed,
+rescaled or cancelled whole by their START day; an item that starts before an effect
+window and runs into it is flown in full.
+
 Termination: a ``terminate`` effect, or a ``soc_delta`` that takes the battery to 0 or
 below (``TERMINATION_BATTERY``), ends the mission on that event's day.
 """
@@ -149,6 +153,7 @@ class FlownPlan:
     skipped_observations: Mapping[int, str]  # planned index -> causing event id
     missed_contacts: Mapping[int, str]
     rate_changed_by: Mapping[int, str]  # planned contact index -> event that cut its rate
+    duty_changed_by: Mapping[int, str]  # planned observation index -> event that scaled it
     cancelled_observations: int
     cancelled_contacts: int
 
@@ -158,6 +163,7 @@ class FlownPlan:
             self.skipped_observations
             or self.missed_contacts
             or self.rate_changed_by
+            or self.duty_changed_by
             or self.cancelled_observations
             or self.cancelled_contacts
         )
@@ -177,6 +183,7 @@ def flown_plan(state: MissionState, run: RunState) -> FlownPlan:
     obs: list[dict[str, object]] = []
     obs_idx: list[int] = []
     skipped: dict[int, str] = {}
+    duty_by: dict[int, str] = {}
     cancelled_obs = 0
     for i, item in enumerate(ops.observation_plan):
         if end is not None and item.start_day >= end:
@@ -186,7 +193,13 @@ def flown_plan(state: MissionState, run: RunState) -> FlownPlan:
         if cause is not None:
             skipped[i] = cause
             continue
-        obs.append(item.model_dump())
+        dump_item = item.model_dump()
+        for a in run.applied:
+            factor = a.effects.get("duty_cycle_factor")
+            if factor is not None and a.mission_day <= item.start_day:
+                dump_item["duty_cycle"] = min(1.0, dump_item["duty_cycle"] * factor)
+                duty_by[i] = a.event_id
+        obs.append(dump_item)
         obs_idx.append(i)
     contacts: list[dict[str, object]] = []
     con_idx: list[int] = []
@@ -218,6 +231,7 @@ def flown_plan(state: MissionState, run: RunState) -> FlownPlan:
         skipped_observations=skipped,
         missed_contacts=missed,
         rate_changed_by=rate_by,
+        duty_changed_by=duty_by,
         cancelled_observations=cancelled_obs,
         cancelled_contacts=cancelled_con,
     )

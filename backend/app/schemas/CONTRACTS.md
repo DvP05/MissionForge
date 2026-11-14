@@ -153,7 +153,8 @@ which regenerates `openapi.json` / frontend types only when a route exposes the 
     *Usage note (Task 4.2, no schema change):* `DecisionChoice.effects` keys are the
     simulator's effects vocabulary (`app.domain.simulation.anomalies.EFFECT_KEYS`):
     `science_time_lost_days`, `link_outage_days`, `downlink_rate_factor`,
-    `buffer_loss_fraction`, `soc_delta`, `propellant_delta`, `terminate` (float values).
+    `duty_cycle_factor`, `buffer_loss_fraction`, `soc_delta`, `propellant_delta` (telemetry-only),
+    `terminate` (float values).
     A default choice made without the player is recorded with `decision_maker = "ground"`
     and rationale `"default (no player choice)"`; the event shows `"system"`. Anomaly and
     scenario events use declared ids `anomaly-<id>` / `scenario-<id>` as decision keys.

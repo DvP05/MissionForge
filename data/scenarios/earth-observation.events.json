@@ -1,0 +1,73 @@
+{
+  "eventSetId": "eo-default-v1",
+  "version": "0.1.0",
+  "title": "Earth observation: default event set",
+  "scenarioIds": [
+    "earth-observation"
+  ],
+  "default": true,
+  "extends": "generic-design-v1",
+  "assumptions": [
+    "Two declared scenario events (a wildfire tasking request during science and a ground-station outage during the contact period) occur on days drawn from independent seeded scenario streams; they are the only random element of the run.",
+    "The scenario events are illustrative narrative, not real tasking or station schedules."
+  ],
+  "anomalies": [],
+  "scenarioEvents": [
+    {
+      "id": "wildfire-tasking",
+      "title": "Wildfire tasking request",
+      "severity": "info",
+      "eventType": "decision",
+      "window": "science-ops",
+      "situation": "Emergency services ask the mission to image an active wildfire, which displaces part of the planned science timeline.",
+      "prompt": "Accept the tasking or keep the science plan?",
+      "counterfactual": "Plan science with slack so a tasking request can be accepted without losing a required measurement.",
+      "effects": {},
+      "choices": [
+        {
+          "id": "keep-plan",
+          "label": "Keep the science plan",
+          "tradeoff": "The planned science is unchanged; the wildfire imagery (not scored) is not taken.",
+          "effects": {}
+        },
+        {
+          "id": "accept-tasking",
+          "label": "Accept the tasking",
+          "tradeoff": "Public-service imagery (not scored), but the fire imaging takes half of the instrument time of every later planned observation.",
+          "effects": {
+            "duty_cycle_factor": 0.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "ground-station-outage",
+      "title": "Ground-station outage",
+      "severity": "warning",
+      "eventType": "decision",
+      "window": "contacts",
+      "situation": "The primary ground station goes offline for maintenance.",
+      "prompt": "Wait for the primary station or reroute to a smaller backup station?",
+      "counterfactual": "Plan contacts with more than one station or enough slack to absorb an outage.",
+      "effects": {},
+      "choices": [
+        {
+          "id": "wait-for-station",
+          "label": "Wait for the primary station",
+          "tradeoff": "Full-rate contacts resume after the outage, but contacts in the next 3 days are missed.",
+          "effects": {
+            "link_outage_days": 3.0
+          }
+        },
+        {
+          "id": "reroute-backup",
+          "label": "Reroute to the backup station",
+          "tradeoff": "No contacts missed, but the smaller backup antenna halves the downlink rate for the rest of the mission.",
+          "effects": {
+            "downlink_rate_factor": 0.5
+          }
+        }
+      ]
+    }
+  ]
+}

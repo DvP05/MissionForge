@@ -19,16 +19,17 @@ from app.schemas.simulation import DecisionChoice, MissionRun
 from tests.unit.simulation.conftest import (
     MEDIUM,
     RunFactory,
-    low_margin_state,
     make_state,
+    thin_downlink_state,
 )
 from tests.unit.simulation.test_runner import _approx_equal
 
 SOLAR = "scenario-solar-event"
+ILLUMINATION = "scenario-target-illumination"
 MISSED = "anomaly-missed-contact"
 SHORTFALL = "anomaly-correction-shortfall"
 GOLDEN = Path(__file__).resolve().parents[2] / "golden" / "neo_run_anomaly_seed42.json"
-GOLDEN_DECISIONS = {SOLAR: "continue", MISSED: "keep-rate"}
+GOLDEN_DECISIONS = {SOLAR: "continue", MISSED: "keep-rate", ILLUMINATION: "extend-observation"}
 
 
 def _returned(run: MissionRun) -> tuple[float, ...]:
@@ -86,7 +87,7 @@ def test_invalid_choice_id_is_rejected(run_sim: RunFactory) -> None:
 
 
 def test_missing_decision_uses_documented_default(run_sim: RunFactory) -> None:
-    run = run_sim(low_margin_state())
+    run = run_sim(thin_downlink_state())
     choice_events = [e for e in run.events if e.choices]
     assert [r.event_id for r in run.decisions] == [e.id for e in choice_events]
     for rec, ev in zip(run.decisions, choice_events, strict=True):
@@ -99,8 +100,10 @@ def test_missing_decision_uses_documented_default(run_sim: RunFactory) -> None:
 
 def test_player_decision_is_recorded(run_sim: RunFactory) -> None:
     run = run_sim(make_state(communications_id=MEDIUM), decisions={SOLAR: "continue"})
-    (rec,) = run.decisions
+    by_event = {r.event_id: r for r in run.decisions}
+    rec = by_event[SOLAR]
     assert (rec.event_id, rec.choice_id, rec.decision_maker) == (SOLAR, "continue", "player")
+    assert by_event[ILLUMINATION].decision_maker == "ground"  # not chosen -> default
     ev = next(e for e in run.events if e.id == SOLAR)
     assert ev.resolved_by == "continue" and ev.decision_maker == "player"
 
@@ -122,7 +125,7 @@ def test_pause_science_vs_continue_differ_measurably(run_sim: RunFactory) -> Non
 
 
 def test_missed_contact_choices_change_the_backlog(run_sim: RunFactory) -> None:
-    state = low_margin_state()
+    state = thin_downlink_state()
     lower = run_sim(state, decisions={MISSED: "lower-rate"})
     keep = run_sim(state, decisions={MISSED: "keep-rate"})
 
@@ -131,7 +134,7 @@ def test_missed_contact_choices_change_the_backlog(run_sim: RunFactory) -> None:
 
     assert missed(keep) > missed(lower)
     rates = {e.trigger.get("rate_bps") for e in lower.events if e.type == "downlink"}
-    assert 50000.0 in rates  # the halved rate is flown after the anomaly
+    assert 25000.0 in rates  # the halved rate is flown after the anomaly
 
 
 def test_propellant_choice_changes_telemetry(run_sim: RunFactory) -> None:
@@ -146,6 +149,8 @@ def test_propellant_choice_changes_telemetry(run_sim: RunFactory) -> None:
         ][-1]  # fmt: skip
 
     assert prop(burn) < prop(skip)
+    ev = next(e for e in burn.events if e.id == SHORTFALL)
+    assert "telemetry-only" in ev.description  # headroom is already negative
 
 
 # --- early termination -----------------------------------------------------------------
@@ -155,6 +160,10 @@ def test_abort_path_terminates_with_postmortem(run_sim: RunFactory) -> None:
     run = run_sim(_cold_gas(), experimental=True, decisions={SHORTFALL: "abort-mission"})
     day = next(e.mission_day for e in run.events if e.id == SHORTFALL)
     assert run.phases[-1] == "terminated" and "complete" not in run.phases
+    # intended exception to the six-phase rule: the abort in mid-course ends the phase list
+    assert run.phases == (
+        "launch-deployment", "commissioning", "cruise", "mid-course", "terminated",
+    )  # fmt: skip
     assert run.phase_transitions[-1].phase == "terminated"
     assert run.phase_transitions[-1].mission_day == day
     last = run.events[-1]
@@ -180,20 +189,22 @@ def test_depleted_battery_terminates_the_run(run_sim: RunFactory) -> None:
     risky = run_sim(state, experimental=True, decisions={"anomaly-power-low": "continue-science"})
     assert risky.final_report.outcome == "terminated"
     assert risky.events[-1].trigger["cause"] == "battery-depleted"
+    last_soc = [t for t in risky.telemetry if t.channel == "battery_soc"][-1]
+    assert last_soc.phase == "terminated" and last_soc.value == 0.0  # keeps the dip
 
 
 # --- reproducibility and golden -----------------------------------------------------------
 
 
 def test_same_seed_and_decisions_are_byte_identical(run_sim: RunFactory) -> None:
-    a = run_sim(low_margin_state(), decisions=GOLDEN_DECISIONS)
-    b = run_sim(low_margin_state(), decisions=GOLDEN_DECISIONS)
+    a = run_sim(thin_downlink_state(), decisions=GOLDEN_DECISIONS)
+    b = run_sim(thin_downlink_state(), decisions=GOLDEN_DECISIONS)
     assert a.model_dump_json() == b.model_dump_json()
-    assert a.run_id != run_sim(low_margin_state()).run_id  # decisions are part of the id
+    assert a.run_id != run_sim(thin_downlink_state()).run_id  # decisions are part of the id
 
 
 def test_anomaly_decision_run_matches_golden(run_sim: RunFactory) -> None:
-    data = run_sim(low_margin_state(), decisions=GOLDEN_DECISIONS).model_dump(
+    data = run_sim(thin_downlink_state(), decisions=GOLDEN_DECISIONS).model_dump(
         mode="json", by_alias=True
     )
     if os.environ.get("UPDATE_GOLDEN") == "1":
@@ -218,5 +229,49 @@ def test_decision_for_event_after_termination_is_rejected(run_sim: RunFactory) -
 
 def test_anomaly_path_runs_under_one_second(run_sim: RunFactory) -> None:
     start = time.perf_counter()
-    run_sim(low_margin_state(), decisions=GOLDEN_DECISIONS)
+    run_sim(thin_downlink_state(), decisions=GOLDEN_DECISIONS)
     assert time.perf_counter() - start < 1.0
+
+
+def test_illumination_choices_differ_measurably(run_sim: RunFactory) -> None:
+    state = thin_downlink_state()
+    keep = run_sim(state, decisions={ILLUMINATION: "keep-schedule"})
+    extend = run_sim(state, decisions={ILLUMINATION: "extend-observation"})
+
+    def series(r: MissionRun, channel: str) -> list[float]:
+        return [t.value for t in r.telemetry if t.channel == channel]
+
+    assert max(series(extend, "buffer_fill")) > max(series(keep, "buffer_fill"))
+    assert min(series(extend, "propellant_fraction")) < min(series(keep, "propellant_fraction"))
+    assert any(e.trigger.get("caused_by") == ILLUMINATION for e in extend.events)
+    assert extend.final_report != keep.final_report
+
+
+@pytest.mark.parametrize(
+    ("scenario", "event_set", "alternatives"),
+    [
+        (
+            "lunar-polar-scout",
+            "lunar-default-v1",
+            {"scenario-psr-pass": "heat-and-observe", "scenario-lunar-eclipse": "keep-operating"},
+        ),
+        (
+            "earth-observation",
+            "eo-default-v1",
+            {
+                "scenario-wildfire-tasking": "accept-tasking",
+                "scenario-ground-station-outage": "reroute-backup",
+            },
+        ),
+    ],
+)
+def test_lunar_and_eo_decisions_differ_measurably(
+    run_sim: RunFactory, scenario: str, event_set: str, alternatives: dict[str, str]
+) -> None:
+    state = make_state(scenario)
+    base = run_sim(state, event_set=event_set, experimental=True)
+    for event_id, choice in alternatives.items():
+        alt = run_sim(state, event_set=event_set, experimental=True, decisions={event_id: choice})
+        assert alt.telemetry != base.telemetry or alt.science_outcomes != base.science_outcomes
+        assert alt.final_report != base.final_report or alt.events != base.events
+        assert alt.run_id != base.run_id

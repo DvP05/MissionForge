@@ -6,38 +6,50 @@ directory, never from the environment)::
     {
       "eventSetId": "neo-default-v1", "version": "0.1.0", "title": "...",
       "scenarioIds": ["neo-rendezvous"],        # [] = applies to every scenario
+      "default": true,                          # the scenario's default set (one per scenario)
       "extends": "generic-design-v1",           # optional: inherit that set's declarations
       "assumptions": ["..."],
       "anomalies": [AnomalyDecl, ...],          # design-traced rules
-      "scenarioEvents": [ScenarioEventDecl]     # at most one declared scenario event
+      "scenarioEvents": [ScenarioEventDecl, ...]
     }
 
 ``AnomalyDecl``: ``id``, ``title``, ``severity``, ``eventType`` (default ``anomaly``),
-``rule`` ``{kind, threshold, unit}``, ``situation``, ``prompt``, ``counterfactual``,
-``effects`` (applied whatever is chosen) and 0 or 2-3 ``choices``
+``rule`` ``{kind, severityThreshold, unit}``, ``situation``, ``prompt``,
+``counterfactual``, ``effects`` (applied whatever is chosen) and 0 or 2-3 ``choices``
 ``{id, label, tradeoff, effects}``. The FIRST choice is the default (the safest; it must
 not terminate the mission). ``ScenarioEventDecl`` is the same with ``window`` instead of
 ``rule``.
 
-Rule kinds (closed set; thresholds come from the file, values from the analysis context):
+Design anomalies tell the same story as the analysis (R31): a rule fires ONLY when its
+analysis gate is open, i.e. the corresponding hard/soft constraint is ``warning`` or
+``fail`` (or, for pointing, the analysis' ``pointing_ok`` is false). A design whose analysis
+raises none of these sees no design anomaly (no random punishment). ``severityThreshold``
+is a secondary, labelled gameplay selector only: the event is ``critical`` when a gating
+constraint fails or the value is beyond the threshold, otherwise the declared severity.
 
-* ``link-margin-below`` (dB): the first planned contact (by start day) whose link margin
-  at the reference range and capped rate is below the threshold -> event on that
-  contact's start day, ``ref`` ``architecture.communicationsId``.
-* ``battery-reserve-below`` (fraction): worst end-of-cycle state of charge minus the SoC
-  floor of the energy ledger below the threshold -> event at the first observation start
-  (science power cycle), ``ref`` ``architecture.powerId``.
-* ``pointing-ratio-above`` (fraction): ADCS pointing accuracy / tightest pointing
-  requirement of the selected instruments above the threshold -> event at the first
-  observation start, ``ref`` ``architecture.adcsId``.
-* ``propellant-headroom-below`` (fraction): delta-v margin after the planned maneuvers and
-  reserve / available delta-v below the threshold (no available delta-v counts as -1)
-  -> event at the start of mid-course, ``ref`` ``architecture.propulsionId``.
+======================  ========================================  ============  ==========
+rule kind               gate (analysis)                           value / unit  event day
+======================  ========================================  ============  ==========
+data-return-shortfall   ``link-margin`` or ``data-return`` warn   worst link    first
+                        or fail                                   margin, dB    contact
+battery-reserve-low     ``battery-reserve`` or ``energy-closure``  min SoC -      first
+                        warn or fail                              floor         observation
+pointing-out-of-spec    ``AnalysisContext.pointing_ok`` false      ADCS acc. /   first
+                                                                  tightest req. observation
+delta-v-shortfall       ``delta-v-margin`` warn or fail           margin /      mid-course
+                                                                  available     start
+======================  ========================================  ============  ==========
 
-Scenario events (``window`` ``science-ops``): the occurrence day is uniform in
-[first observation start, last observation start] (science-ops phase when nothing is
-observed), drawn from ``make_rng(seed, "scenario", <event id>)`` and rounded to 0.001 d.
-This is the ONLY randomness of a run; every effect is deterministic.
+(``data-return`` reflects the link and contact plan; ``battery-reserve`` / ``energy-closure``
+the power ledger.) Refs: ``architecture.communicationsId`` / ``powerId`` / ``adcsId`` /
+``propulsionId``.
+
+Scenario events (``window``): the occurrence day is uniform in the window, drawn from
+``make_rng(seed, "scenario", <event id>)`` (one independent stream per declared event) and
+rounded to 0.001 d. Windows: ``science-ops`` = [first observation start, last observation
+start]; ``contacts`` = [first contact start, last contact start]; ``approach`` = approach
+phase start .. science-ops start. An empty plan falls back to the science-ops /
+downlink-return phase. These draws are the ONLY randomness of a run.
 
 Effects vocabulary (``EFFECT_KEYS``; ``DecisionChoice.effects`` uses the same keys, float
 values, applied from the event day in event order by ``decisions``):
@@ -46,10 +58,13 @@ values, applied from the event day in event order by ``decisions``):
 * ``link_outage_days`` (day): contacts starting in [day, day + v) are missed.
 * ``downlink_rate_factor`` (fraction, > 0): contacts starting on/after the day are planned
   at rate x v (the engine recomputes margin and returned data).
+* ``duty_cycle_factor`` (0.1..2): observations starting on/after the day run at duty cycle
+  x v (capped at 1); the engine recomputes generated data and coverage.
 * ``buffer_loss_fraction`` (fraction): that share of the onboard buffer on the day is lost.
 * ``soc_delta`` (fraction): battery state of charge change at the event checkpoint
   (recovers at the next checkpoint); a result <= 0 depletes the battery and terminates.
-* ``propellant_delta`` (fraction of the loaded propellant): applied from the day on.
+* ``propellant_delta`` (fraction of the loaded propellant): TELEMETRY-ONLY, applied to the
+  propellant channel from the day on (clamped at 0); it does not change the maneuver budget.
 * ``terminate`` (1 = yes): the mission ends on the event day (phase ``terminated``).
 """
 
@@ -76,6 +91,7 @@ EFFECT_KEYS: dict[str, tuple[float, float, str]] = {
     "science_time_lost_days": (0.0, 3650.0, "day"),
     "link_outage_days": (0.0, 3650.0, "day"),
     "downlink_rate_factor": (0.01, 1.0, "fraction"),
+    "duty_cycle_factor": (0.1, 2.0, "ratio"),
     "buffer_loss_fraction": (0.0, 1.0, "fraction"),
     "soc_delta": (-1.0, 1.0, "fraction"),
     "propellant_delta": (-1.0, 1.0, "fraction"),
@@ -83,17 +99,26 @@ EFFECT_KEYS: dict[str, tuple[float, float, str]] = {
 }
 
 RuleKind = Literal[
-    "link-margin-below",
-    "battery-reserve-below",
-    "pointing-ratio-above",
-    "propellant-headroom-below",
+    "data-return-shortfall",
+    "battery-reserve-low",
+    "pointing-out-of-spec",
+    "delta-v-shortfall",
 ]
 RULE_UNITS: dict[str, str] = {
-    "link-margin-below": "dB",
-    "battery-reserve-below": "fraction",
-    "pointing-ratio-above": "fraction",
-    "propellant-headroom-below": "fraction",
+    "data-return-shortfall": "dB",
+    "battery-reserve-low": "fraction",
+    "pointing-out-of-spec": "fraction",
+    "delta-v-shortfall": "fraction",
 }
+# analysis constraints that open each rule's gate (warning or fail)
+RULE_GATES: dict[str, tuple[str, ...]] = {
+    "data-return-shortfall": ("link-margin", "data-return"),
+    "battery-reserve-low": ("battery-reserve", "energy-closure"),
+    "pointing-out-of-spec": (),  # gated by AnalysisContext.pointing_ok
+    "delta-v-shortfall": ("delta-v-margin",),
+}
+OPEN_STATUSES = ("warning", "fail")
+Window = Literal["science-ops", "contacts", "approach"]
 SCENARIO_DAY_DECIMALS = 3
 NO_HEADROOM = -1.0  # headroom reported when no delta-v is available at all
 
@@ -125,7 +150,7 @@ class ChoiceDecl(_Model):
 
 class RuleDecl(_Model):
     kind: RuleKind
-    threshold: float
+    severity_threshold: float  # gameplay severity selector (not the trigger)
     unit: Literal["dB", "fraction"]
 
     @model_validator(mode="after")
@@ -171,7 +196,7 @@ class AnomalyDecl(_EventDecl):
 
 
 class ScenarioEventDecl(_EventDecl):
-    window: Literal["science-ops"]
+    window: Window
 
 
 class _EventSetFile(_Model):
@@ -179,10 +204,11 @@ class _EventSetFile(_Model):
     version: str
     title: str
     scenario_ids: tuple[str, ...] = ()
+    default: bool = False
     extends: str | None = None
     assumptions: tuple[str, ...] = ()
     anomalies: tuple[AnomalyDecl, ...] = ()
-    scenario_events: tuple[ScenarioEventDecl, ...] = Field(default=(), max_length=1)
+    scenario_events: tuple[ScenarioEventDecl, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -196,6 +222,7 @@ class ScenarioEventSet:
     assumptions: tuple[str, ...]
     anomalies: tuple[AnomalyDecl, ...]
     scenario_events: tuple[ScenarioEventDecl, ...]
+    default: bool = False
 
     @property
     def nominal(self) -> bool:
@@ -228,12 +255,28 @@ def load_event_sets(directory: Path) -> dict[str, ScenarioEventSet]:
             events = (*base.scenario_events, *events)
             assumptions = (*base.assumptions, *assumptions)
         ids = [d.id for d in (*anomalies, *events)]
-        if len(set(ids)) != len(ids) or len(events) > 1:
-            raise _invalid(sid, "duplicate declarations or more than one scenario event")
+        if len(set(ids)) != len(ids):
+            raise _invalid(sid, "duplicate declaration ids")
+        if f.default and not f.scenario_ids:
+            raise _invalid(sid, "a default event set must name its scenarioIds")
         out[sid] = ScenarioEventSet(
-            sid, f.version, f.title, f.scenario_ids, assumptions, anomalies, events
+            sid, f.version, f.title, f.scenario_ids, assumptions, anomalies, events, f.default
         )
+    for scenario in sorted({s for es in out.values() if es.default for s in es.scenario_ids}):
+        defaults = [es.id for es in out.values() if es.default and scenario in es.scenario_ids]
+        if len(defaults) > 1:
+            raise _invalid(scenario, f"several default event sets: {', '.join(defaults)}")
     return out
+
+
+def default_event_set_id(scenario_id: str, event_sets: Mapping[str, ScenarioEventSet]) -> str:
+    """The event set marked ``"default": true`` for ``scenario_id`` (Task 4.3 picks it)."""
+    for es in event_sets.values():
+        if es.default and scenario_id in es.scenario_ids:
+            return es.id
+    raise DomainValidationError(
+        "NO_DEFAULT_EVENT_SET", "scenarioId", f"no default event set for {scenario_id!r}"
+    )
 
 
 def resolve_event_set(
@@ -264,7 +307,23 @@ class Occurrence:
     mission_day: float
     source: Literal["design", "scenario-event"]
     trigger: Mapping[str, Scalar]
-    why: str  # "why this happened", with the current value and the threshold
+    why: str  # "why this happened", with the analysis finding and the current value
+    severity: EventSeverity
+
+
+@dataclass(frozen=True)
+class _Gate:
+    open: bool
+    failed: bool
+    statuses: dict[str, str]
+
+    def text(self) -> str:
+        return ", ".join(f"{k} {v}" for k, v in self.statuses.items())
+
+
+def _gate(kind: str, constraints: Mapping[str, str]) -> _Gate:
+    statuses = {c: constraints[c] for c in RULE_GATES[kind] if constraints.get(c) in OPEN_STATUSES}
+    return _Gate(bool(statuses), "fail" in statuses.values(), statuses)
 
 
 def _first_observation_day(state: MissionState) -> float | None:
@@ -272,53 +331,63 @@ def _first_observation_day(state: MissionState) -> float | None:
     return min(o.start_day for o in plan) if plan else None
 
 
-def _link_rule(decl: AnomalyDecl, state: MissionState, ctx: AnalysisContext) -> Occurrence | None:
+def _data_rule(
+    decl: AnomalyDecl, state: MissionState, ctx: AnalysisContext, gate: _Gate
+) -> Occurrence | None:
     plan = state.operations.downlink_plan
-    thr = decl.rule.threshold
-    for i in sorted(range(len(plan)), key=lambda k: plan[k].start_day):
-        margin = ctx.contact_links[i].margin_db
-        if margin < thr:
-            trig: dict[str, Scalar] = {
-                "ref": "architecture.communicationsId",
-                "plan_item": f"operations.downlinkPlan[{i}]",
-                "value_db": margin,
-                "threshold_db": thr,
-            }
-            why = (
-                f"contact {i + 1} has a link margin of {margin:+.2f} dB with "
-                f"{state.architecture.communications_id}, below the {thr:g} dB the event set "
-                "needs to ride out a fade"
-            )
-            return _occ(decl, plan[i].start_day, trig, why)
-    return None
+    if not gate.open or not plan:
+        return None
+    first = min(range(len(plan)), key=lambda k: (plan[k].start_day, k))
+    worst = min(lk.margin_db for lk in ctx.contact_links)
+    thr = decl.rule.severity_threshold
+    trig: dict[str, Scalar] = {
+        "ref": "architecture.communicationsId",
+        "plan_item": f"operations.downlinkPlan[{first}]",
+        "value_db": worst,
+        "severity_threshold_db": thr,
+        **{f"constraint_{k}": v for k, v in gate.statuses.items()},
+    }
+    why = (
+        f"the analysis flags the downlink ({gate.text()}): with "
+        f"{state.architecture.communications_id} the worst link margin is {worst:+.2f} dB and "
+        "the contact plan has no slack, so a lost pass turns into a backlog"
+    )
+    return _occ(decl, plan[first].start_day, trig, why, gate.failed or worst < thr)
 
 
 def _battery_rule(
-    decl: AnomalyDecl, state: MissionState, ctx: AnalysisContext
+    decl: AnomalyDecl,
+    state: MissionState,
+    schedule: PhaseSchedule,
+    ctx: AnalysisContext,
+    gate: _Gate,
 ) -> Occurrence | None:
-    reserve = ctx.energy.min_soc_fraction - ctx.energy.soc_floor_fraction
-    thr = decl.rule.threshold
-    day = _first_observation_day(state)
-    if reserve >= thr or day is None:
+    if not gate.open:
         return None
+    reserve = ctx.energy.min_soc_fraction - ctx.energy.soc_floor_fraction
+    thr = decl.rule.severity_threshold
+    day = _first_observation_day(state)
     trig: dict[str, Scalar] = {
         "ref": "architecture.powerId",
         "value": reserve,
-        "threshold": thr,
+        "severity_threshold": thr,
         "min_soc_fraction": ctx.energy.min_soc_fraction,
         "soc_floor_fraction": ctx.energy.soc_floor_fraction,
+        **{f"constraint_{k}": v for k, v in gate.statuses.items()},
     }
     why = (
-        f"the worst power cycle of {state.architecture.power_id} ends at "
-        f"{ctx.energy.min_soc_fraction:.0%} state of charge, {reserve:+.0%} from the "
-        f"{ctx.energy.soc_floor_fraction:.0%} reserve floor (threshold {thr:+.0%})"
+        f"the analysis flags the power system ({gate.text()}): the worst power cycle of "
+        f"{state.architecture.power_id} ends at {ctx.energy.min_soc_fraction:.0%} state of "
+        f"charge against a {ctx.energy.soc_floor_fraction:.0%} reserve floor"
     )
-    return _occ(decl, day, trig, why)
+    when = day if day is not None else schedule.start_of("science-ops")
+    return _occ(decl, when, trig, why, gate.failed or reserve < thr)
 
 
 def _pointing_rule(
     decl: AnomalyDecl,
     state: MissionState,
+    ctx: AnalysisContext,
     instruments: Sequence[CatalogComponent],
     pointing_deg: float,
 ) -> Occurrence | None:
@@ -329,59 +398,82 @@ def _pointing_rule(
         and i.parameters["pointing_requirement"].value > 0.0
     ]
     day = _first_observation_day(state)
-    if not reqs or day is None:
+    if ctx.pointing_ok or not reqs or day is None:
         return None
     tightest, inst = min(reqs)
     ratio = pointing_deg / tightest
-    thr = decl.rule.threshold
-    if ratio <= thr:
-        return None
+    thr = decl.rule.severity_threshold
     trig: dict[str, Scalar] = {
         "ref": "architecture.adcsId",
         "value": ratio,
-        "threshold": thr,
+        "severity_threshold": thr,
         "pointing_accuracy_deg": pointing_deg,
         "requirement_deg": tightest,
         "instrument": inst,
+        "analysis_pointing_ok": False,
     }
     why = (
-        f"{state.architecture.adcs_id} points to {pointing_deg:g} deg, {ratio:.2f} x the "
-        f"{tightest:g} deg requirement of {inst} (threshold {thr:g} x)"
+        f"the analysis finds the pointing out of spec: {state.architecture.adcs_id} points to "
+        f"{pointing_deg:g} deg, {ratio:.2f} x the {tightest:g} deg requirement of {inst}"
     )
-    return _occ(decl, day, trig, why)
+    return _occ(decl, day, trig, why, ratio > thr)
 
 
 def _propellant_rule(
-    decl: AnomalyDecl, state: MissionState, schedule: PhaseSchedule, ctx: AnalysisContext
+    decl: AnomalyDecl,
+    state: MissionState,
+    schedule: PhaseSchedule,
+    ctx: AnalysisContext,
+    gate: _Gate,
 ) -> Occurrence | None:
+    if not gate.open:
+        return None
     budget = ctx.maneuvers
     headroom = budget.margin_ms / budget.available_ms if budget.available_ms > 0 else NO_HEADROOM
-    thr = decl.rule.threshold
-    if headroom >= thr:
-        return None
+    thr = decl.rule.severity_threshold
     trig: dict[str, Scalar] = {
         "ref": "architecture.propulsionId",
         "value": headroom,
-        "threshold": thr,
+        "severity_threshold": thr,
         "margin_m_per_s": budget.margin_ms,
         "available_m_per_s": budget.available_ms,
+        **{f"constraint_{k}": v for k, v in gate.statuses.items()},
     }
     why = (
+        f"the analysis flags the delta-v budget ({gate.text()}): "
         f"{state.architecture.propulsion_id} leaves {budget.margin_ms:.0f} m/s of "
         f"{budget.available_ms:.0f} m/s available after the planned maneuvers and reserve "
-        f"({headroom:.0%} headroom, threshold {thr:.0%})"
+        f"({headroom:.0%} headroom)"
     )
-    return _occ(decl, schedule.start_of("mid-course"), trig, why)
+    return _occ(decl, schedule.start_of("mid-course"), trig, why, gate.failed or headroom < thr)
 
 
-def _occ(decl: AnomalyDecl, day: float, trig: Mapping[str, Scalar], why: str) -> Occurrence:
+def _occ(
+    decl: AnomalyDecl, day: float, trig: Mapping[str, Scalar], why: str, escalate: bool
+) -> Occurrence:
     full: dict[str, Scalar] = {
         "source": "design",
         **trig,
         "rule": decl.rule.kind,
         "anomaly": decl.id,
     }
-    return Occurrence(f"anomaly-{decl.id}", decl, day, "design", full, why)
+    severity: EventSeverity = "critical" if escalate else decl.severity
+    return Occurrence(f"anomaly-{decl.id}", decl, day, "design", full, why, severity)
+
+
+def _window(window: Window, state: MissionState, schedule: PhaseSchedule) -> tuple[float, float]:
+    ops = state.operations
+    if window == "science-ops" and ops.observation_plan:
+        days = [o.start_day for o in ops.observation_plan]
+        return min(days), max(days)
+    if window == "contacts" and ops.downlink_plan:
+        days = [c.start_day for c in ops.downlink_plan]
+        return min(days), max(days)
+    if window == "approach":
+        return schedule.start_of("approach"), schedule.start_of("science-ops")
+    if window == "contacts":
+        return schedule.start_of("downlink-return"), schedule.end_day
+    return schedule.start_of("science-ops"), schedule.start_of("downlink-return")
 
 
 def _scenario_occurrence(
@@ -391,11 +483,7 @@ def _scenario_occurrence(
     schedule: PhaseSchedule,
     seed: int,
 ) -> Occurrence:
-    plan = state.operations.observation_plan
-    if plan:
-        lo, hi = min(o.start_day for o in plan), max(o.start_day for o in plan)
-    else:
-        lo, hi = schedule.start_of("science-ops"), schedule.start_of("downlink-return")
+    lo, hi = _window(decl.window, state, schedule)
     rng = make_rng(seed, "scenario", decl.id)
     day = round(lo + rng.random() * (hi - lo), SCENARIO_DAY_DECIMALS)
     trig: dict[str, Scalar] = {
@@ -408,10 +496,10 @@ def _scenario_occurrence(
         "stream": f"make_rng(seed, 'scenario', '{decl.id}')",
     }
     why = (
-        f"the event set {event_set.id} declares this scenario event inside the science "
+        f"the event set {event_set.id} declares this scenario event in the {decl.window} "
         f"window (days {lo:g}-{hi:g}); its day is drawn from the seeded scenario stream"
     )
-    return Occurrence(f"scenario-{decl.id}", decl, day, "scenario-event", trig, why)
+    return Occurrence(f"scenario-{decl.id}", decl, day, "scenario-event", trig, why, decl.severity)
 
 
 def evaluate_occurrences(
@@ -420,22 +508,27 @@ def evaluate_occurrences(
     schedule: PhaseSchedule,
     ctx: AnalysisContext,
     *,
+    constraints: Mapping[str, str],
     instruments: Sequence[CatalogComponent],
     pointing_deg: float,
     seed: int,
 ) -> list[Occurrence]:
-    """Declared events that occur for this design, ordered by (day, declaration order)."""
+    """Declared events that occur, ordered by (day, declaration order).
+
+    ``constraints`` maps analysis constraint id -> status (the analysis gate, R31).
+    """
     found: list[Occurrence | None] = []
     for decl in event_set.anomalies:
         kind = decl.rule.kind
-        if kind == "link-margin-below":
-            found.append(_link_rule(decl, state, ctx))
-        elif kind == "battery-reserve-below":
-            found.append(_battery_rule(decl, state, ctx))
-        elif kind == "pointing-ratio-above":
-            found.append(_pointing_rule(decl, state, instruments, pointing_deg))
+        gate = _gate(kind, constraints)
+        if kind == "data-return-shortfall":
+            found.append(_data_rule(decl, state, ctx, gate))
+        elif kind == "battery-reserve-low":
+            found.append(_battery_rule(decl, state, schedule, ctx, gate))
+        elif kind == "pointing-out-of-spec":
+            found.append(_pointing_rule(decl, state, ctx, instruments, pointing_deg))
         else:
-            found.append(_propellant_rule(decl, state, schedule, ctx))
+            found.append(_propellant_rule(decl, state, schedule, ctx, gate))
     for sdecl in event_set.scenario_events:
         found.append(_scenario_occurrence(sdecl, event_set, state, schedule, seed))
     occs = [o for o in found if o is not None]
@@ -444,12 +537,14 @@ def evaluate_occurrences(
 
 __all__ = [
     "EFFECT_KEYS",
+    "RULE_GATES",
     "AnomalyDecl",
     "ChoiceDecl",
     "Occurrence",
     "RuleDecl",
     "ScenarioEventDecl",
     "ScenarioEventSet",
+    "default_event_set_id",
     "evaluate_occurrences",
     "load_event_sets",
     "resolve_event_set",
