@@ -3,7 +3,9 @@
 import Link from "next/link";
 
 import { ExperimentalBadge } from "@/components/common/ExperimentalBadge";
+import { AutonomyEntry } from "@/components/mission-control/AutonomyLog";
 import { PHASE_LABEL } from "@/components/mission-control/playback";
+import { TelemetryResidual } from "@/components/mission-control/TelemetryResidual";
 import { formatFraction } from "@/lib/format";
 import type { RunData } from "@/lib/persistence/run-cache";
 import { ExportDossier } from "./ExportDossier";
@@ -153,6 +155,29 @@ export function ReviewPage({ data }: { data: RunData }) {
 
       <Section id="review-analyst" title="What one part change would have done">
         <RunCounterfactuals run={run} />
+      </Section>
+
+      <Section id="review-autonomy" title="Onboard autonomy and command authority">
+        {(run.autonomyLog ?? []).length === 0 ? (
+          <p className="text-sm text-muted">No autonomy decisions in this run.</p>
+        ) : (
+          <>
+            <p className="text-sm">
+              {run.autonomyLog.filter((d) => d.decisionMaker === "onboard-policy").length} of {run.autonomyLog.length}{" "}
+              observation decisions were taken on board during communication blackouts;{" "}
+              {run.autonomyLog.filter((d) => !d.selectedActionId).length} observation(s) were held.
+            </p>
+            <ol className="space-y-2">
+              {run.autonomyLog.map((d, i) => (
+                <AutonomyEntry key={i} run={run} decision={d} />
+              ))}
+            </ol>
+          </>
+        )}
+      </Section>
+
+      <Section id="review-health" title="Health monitor">
+        <TelemetryResidual run={run} day={null} showHeading={false} />
       </Section>
 
       <Section id="review-limitations" title="Data limitations">

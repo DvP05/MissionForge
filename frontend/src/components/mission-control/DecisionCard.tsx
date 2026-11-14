@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { apiPost } from "@/lib/api-client";
 import { formatNumber, humanize } from "@/lib/format";
 import { useRunStore } from "@/state/run-store";
+import type { Authority } from "./authority";
 import type { DesignLimit, MissionEvent, TelemetrySample } from "./playback";
 
 /** The backend description minus its option list (the options are rendered as choices). */
@@ -23,11 +24,13 @@ export function DecisionCard({
   runId,
   telemetry,
   linkLimit,
+  authority = null,
 }: {
   event: MissionEvent;
   runId: string;
   telemetry: TelemetrySample[];
   linkLimit: DesignLimit | null;
+  authority?: Authority | null;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
   // The card appears while the focused Play button becomes disabled: move focus to the card.
@@ -76,6 +79,15 @@ export function DecisionCard({
             : "Deterministic rule: triggered by a value in your design."}
         </p>
       </div>
+      {authority ? (
+        <p data-testid="decision-authority" className="text-xs">
+          {authority.mode === "onboard"
+            ? `Communication blackout: Earth cannot command the spacecraft now${
+                authority.untilDays !== null ? ` (next contact in ${formatNumber(authority.untilDays)} d)` : ""
+              }. Your choice selects one of the stored contingency responses, which the spacecraft executes on board.`
+            : "Ground contact: your choice is uplinked as a ground command during this pass."}
+        </p>
+      ) : null}
       <p data-testid="decision-situation" className="text-sm">
         {situationText(event)}
       </p>
