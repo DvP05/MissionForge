@@ -14,7 +14,8 @@ Engine conventions (all labelled in ``ORCHESTRATOR_ASSUMPTIONS``):
 * Spacecraft maneuver: ``trajectory.mission_delta_v_km_per_s`` is a spacecraft maneuver
   for ``scenario-preset`` / ``manual-estimate`` trajectories (the NEO preset encodes its
   0.25 km/s rendezvous burn this way) and informational only for ``jpl-mdesign`` (JPL
-  ``dv_tot`` is never added to spacecraft delta-v). The reserve is
+  ``dv_tot`` is never added to spacecraft delta-v; the scenario's preset spacecraft burn is
+  used instead, R41). The reserve is
   ``MissionConstraints.delta_v_margin_km_per_s``.
 * Launch limit: the stricter of ``MissionConstraints.launch_mass_limit_kg`` and the
   selected launch vehicle's ``launch_mass_limit``.
@@ -37,7 +38,6 @@ the contract represents this (fail => infeasible, never mission-ready).
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Literal
 
 from pydantic import ValidationError
 
@@ -162,6 +162,9 @@ class ScenarioInputs:
     cost_params: CostParams = field(default_factory=CostParams)
     eclipse_fraction: float = 0.0  # fraction of each power cycle in eclipse, [0, 1)
     power_cycle_s: float = 86_400.0  # representative power cycle length (one day)
+    # R41: the scenario's own spacecraft maneuver (km/s), used when the trajectory
+    # provider is JPL (whose dv_tot / C3 figures are informational, never spacecraft dv).
+    spacecraft_delta_v_km_per_s: float | None = None
     assumptions: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
@@ -182,6 +185,7 @@ def scenario_inputs_from_template(template: ScenarioTemplate) -> ScenarioInputs:
         reference_earth_range_m=template.reference_earth_range_m,
         sun_distance_au=d.sun_distance_au,
         thermal_exposure=d.thermal_exposure,
+        spacecraft_delta_v_km_per_s=template.mission_state.trajectory.mission_delta_v_km_per_s,
         assumptions=(
             f"Scenario {template.scenario_id}: sun distance {d.sun_distance_au:.1f} AU and "
             f"thermal exposure '{exposure}' are gameplay-estimate defaults; no eclipse is "
@@ -203,14 +207,31 @@ def _overlap(a0: float, a1: float, b0: float, b1: float) -> float:
     return max(0.0, min(a1, b1) - max(a0, b0))
 
 
-def _maneuvers(traj: TrajectorySelection) -> list[Maneuver]:
+def _maneuvers(traj: TrajectorySelection, scenario: ScenarioInputs) -> list[Maneuver]:
+    """Spacecraft maneuvers come from the scenario/MissionState, never from JPL (R41).
+
+    ``scenario-preset`` / ``manual-estimate``: the trajectory's mission delta-v is the
+    spacecraft maneuver. ``jpl-mdesign``: the JPL figure is kept as informational only and
+    the scenario's own spacecraft maneuver (e.g. the NEO rendezvous burn) is still flown.
+    """
+    out: list[Maneuver] = []
     dv = traj.mission_delta_v_km_per_s
-    if dv is None:
-        return []
-    source: Literal["spacecraft", "trajectory-info"] = (
-        "trajectory-info" if traj.provider == "jpl-mdesign" else "spacecraft"
-    )
-    return [Maneuver(id=f"{traj.option_id}-delta-v", dv_ms=dv * 1000.0, source=source)]
+    if traj.provider != "jpl-mdesign":
+        if dv is not None:
+            out.append(
+                Maneuver(id=f"{traj.option_id}-delta-v", dv_ms=dv * 1000.0, source="spacecraft")
+            )
+        return out
+    sc = scenario.spacecraft_delta_v_km_per_s
+    if sc is not None:
+        out.append(
+            Maneuver(id="scenario-spacecraft-delta-v", dv_ms=sc * 1000.0, source="spacecraft")
+        )
+    if dv is not None:
+        out.append(
+            Maneuver(id=f"{traj.option_id}-delta-v", dv_ms=dv * 1000.0, source="trajectory-info")
+        )
+    return out
 
 
 def _trajectory_valid(traj: TrajectorySelection) -> bool:
@@ -353,7 +374,7 @@ def _build(state: MissionState, catalog: Catalog, scenario: ScenarioInputs) -> _
 
     propellant = _p(resolved.propulsion, "propellant_capacity", "kg")
     mass = compute_mass_budget(resolved, propellant, limits.mass_margin_fraction, limit)
-    maneuvers = _maneuvers(state.trajectory)
+    maneuvers = _maneuvers(state.trajectory, scenario)
     budget = maneuver_budget(
         resolved.propulsion,
         mass.dry_kg,

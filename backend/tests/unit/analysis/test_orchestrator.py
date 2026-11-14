@@ -383,10 +383,18 @@ def test_contract_validation_error_is_a_failed_analysis(
 def test_jpl_trajectory_delta_v_is_informational(
     catalog: Catalog, templates: dict[str, ScenarioTemplate]
 ) -> None:
+    """R41: JPL dv_tot is informational; the spacecraft rendezvous burn is kept."""
+    preset = _run(_state(), catalog, templates).budgets
     dump = _state().model_dump()
     dump["trajectory"] = {**dump["trajectory"], "provider": "jpl-mdesign"}
     a = _run(MissionState.model_validate(dump), catalog, templates)
-    assert a.budgets.required_delta_v_km_per_s.value == 0.0
+    assert a.budgets.required_delta_v_km_per_s.value == pytest.approx(0.25)
+    assert a.budgets.required_delta_v_km_per_s.value == preset.required_delta_v_km_per_s.value
+    assert a.budgets.delta_v_margin_km_per_s == preset.delta_v_margin_km_per_s
+    # a large JPL trajectory figure (dv_tot / C3-derived) never becomes spacecraft delta-v
+    dump["trajectory"] = {**dump["trajectory"], "mission_delta_v_km_per_s": 6.5}
+    big = _run(MissionState.model_validate(dump), catalog, templates)
+    assert big.budgets.required_delta_v_km_per_s.value == pytest.approx(0.25)
 
 
 def test_all_scenarios_analyse(catalog: Catalog, templates: dict[str, ScenarioTemplate]) -> None:
