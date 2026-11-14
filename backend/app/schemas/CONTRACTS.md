@@ -138,7 +138,8 @@ which regenerates `openapi.json` / frontend types only when a route exposes the 
    each of the five §7.11 dimension ids exactly once (R10 #9).
 8. `ScienceAnalysis` adds `collected_fraction` and `returned_fraction` (§7.10).
    `coverage_score` is ≥ 0 (0..100).
-9. `BudgetAnalysis` is exactly as in §6.4. The optional extra fields were not added.
+9. `BudgetAnalysis` is as in §6.4 except that the four bare margins are `float | None`
+   (R38; see "Analysis engine notes"). The optional extra fields were not added.
 
 ### simulation.py (§9, §19.5, §19.9, module_breakdown §4.2C)
 10. `Phase` is a closed Literal of ten phases (the spec has `phase: str`).
@@ -250,6 +251,7 @@ which regenerates `openapi.json` / frontend types only when a route exposes the 
 |---|---|---|
 | 2026-11-13 | Interface v1 frozen (Task 1.3) | controller rulings D1–D9, R9 |
 | 2026-11-13 | Fix round 1: replayable immutable runs, autonomy belief, feasibility invariants, `fraction` unit, schedule data loss, phase transitions, cross-reference validators, graph/impact/analyst/health payloads, CI snapshot guard | controller ruling R10 |
+| 2026-11-14 | `BudgetAnalysis` margin fractions (mass/energy/data) and `deltaVMarginKmPerS` become `float \| None`; snapshots, OpenAPI and TS types regenerated | controller ruling R38 |
 
 ## Templates (Task 1.5)
 
@@ -266,19 +268,24 @@ Consumers must read these rules before interpreting the plain-float fields.
   result contains exactly one constraint with id `catalog-item-not-found` or
   `model-input-invalid`, and its explanation names the error code and field. On this path:
   - every budget `Quantity` is 0 with provenance fidelity `not-modelled`;
-  - the bare-float margins (`massMarginFraction`, `energyMarginFraction`,
-    `dataMarginFraction`, `deltaVMarginKmPerS`), the science fractions and scores, and
-    `reliability.nominalReliability` / `riskIndex` are **placeholders (0), not results**.
+  - the bare margins (`massMarginFraction`, `energyMarginFraction`,
+    `dataMarginFraction`, `deltaVMarginKmPerS`) are `null` (R38);
+  - the science fractions and scores, and `reliability.nominalReliability` / `riskIndex`
+    are **placeholders (0), not results**.
 
   Consumers (API route, UI, dossier) must branch on those two constraint ids rather than
   read the numbers. The route layer may map `catalog-item-not-found` to the API error
   `CATALOG_ITEM_NOT_FOUND`.
-- **Undefined margins on the happy path are 0.0.** The bare-float fields
-  `massMarginFraction` (no launch limit), `energyMarginFraction` (no energy consumed) and
-  `dataMarginFraction` (no data generated) are set to `0.0` when the quantity is
-  undefined. The matching constraint (`mass-launch-limit`, `energy-closure`, `data-return`)
-  is `not-modelled` in that case, so use the constraint status to tell "undefined" apart
-  from "exactly zero margin".
+- **Undefined margins are `null` (R38, controller-approved contract change 2026-11-14).**
+  `BudgetAnalysis.massMarginFraction`, `energyMarginFraction`, `dataMarginFraction` and
+  `deltaVMarginKmPerS` are `float | null` (required, nullable). `null` means the margin is
+  undefined: no launch limit (mass), no energy consumed (energy), no data generated (data;
+  e.g. an empty observation plan), or a failed analysis (all four). The matching
+  constraint (`mass-launch-limit`, `energy-closure`, `data-return`, `delta-v-margin`) is
+  `not-modelled` (or absent on the failure path) and its explanation is the reason. `0.0`
+  appears only when the computed margin is genuinely zero. Consumers render `null` as
+  "—" plus that reason (budget tiles, trade compare, review chart, passport) and the trade
+  study omits a `null` margin from `deltas` (never a 0 delta).
 - `dataMarginFraction` = total downlink capacity / generated − 1. This is the same measure
   as the `data-return` constraint, and it differs from the ledger's
   (downlinked − generated) / generated.

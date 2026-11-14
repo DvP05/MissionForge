@@ -70,24 +70,37 @@ export function quantityRow(key: string, label: string, quantity: Quantity | und
   };
 }
 
+/**
+ * Why a bare margin is null (R38: the backend sends null, never a fake 0, when a margin is
+ * undefined). Uses the matching constraint's own explanation when there is one.
+ */
+export function undefinedMarginReason(a: MissionAnalysis, constraintId: string): string {
+  const c = a.constraints.find((x) => x.id === constraintId);
+  return c ? `Not defined for this design: ${c.explanation}` : "Not defined for this design";
+}
+
 export function scalarRow(
   a: MissionAnalysis,
   key: string,
   label: string,
-  value: number | undefined,
+  value: number | null | undefined,
   render: (v: number) => string,
+  /** Constraint whose explanation says why a null value is undefined (R38 margins). */
+  constraintId?: string,
 ): TileRow {
   if (analysisFailed(a)) {
     return { key, label, text: null, provenance: analysisProvenance(a), raw: null, reason: PLACEHOLDER_REASON };
   }
-  const ok = value !== undefined && Number.isFinite(value);
-  return {
+  const ok = typeof value === "number" && Number.isFinite(value);
+  const row: TileRow = {
     key,
     label,
     text: ok ? render(value) : null,
     provenance: analysisProvenance(a),
     raw: ok ? value : null,
   };
+  if (!ok && constraintId) row.reason = undefinedMarginReason(a, constraintId);
+  return row;
 }
 
 /** Maps backend budget fields onto tiles. Values are passed through, never recomputed. */
@@ -101,7 +114,7 @@ export function buildTiles(a: MissionAnalysis): TileModel[] {
         quantityRow("wet", "Wet mass", b.wetMassKg),
         quantityRow("dry", "Dry mass", b.dryMassKg),
         quantityRow("prop", "Propellant", b.propellantMassKg),
-        scalarRow(a, "margin", "Mass margin", b.massMarginFraction, formatFraction),
+        scalarRow(a, "margin", "Mass margin", b.massMarginFraction, formatFraction, "mass-launch-limit"),
       ],
     },
     {
@@ -110,7 +123,7 @@ export function buildTiles(a: MissionAnalysis): TileModel[] {
       rows: [
         quantityRow("avg", "Average power", b.averagePowerW),
         quantityRow("peak", "Peak power", b.peakPowerW),
-        scalarRow(a, "margin", "Energy margin", b.energyMarginFraction, formatFraction),
+        scalarRow(a, "margin", "Energy margin", b.energyMarginFraction, formatFraction, "energy-closure"),
       ],
     },
     {
@@ -119,7 +132,7 @@ export function buildTiles(a: MissionAnalysis): TileModel[] {
       rows: [
         quantityRow("avail", "Available", b.availableDeltaVKmPerS),
         quantityRow("req", "Required", b.requiredDeltaVKmPerS),
-        scalarRow(a, "margin", "Margin after reserve", b.deltaVMarginKmPerS, (v) => `${formatNumber(v)} km/s`),
+        scalarRow(a, "margin", "Margin after reserve", b.deltaVMarginKmPerS, (v) => `${formatNumber(v)} km/s`, "delta-v-margin"),
       ],
     },
     {
@@ -128,7 +141,7 @@ export function buildTiles(a: MissionAnalysis): TileModel[] {
       rows: [
         quantityRow("gen", "Generated", b.dataGeneratedBits),
         quantityRow("down", "Downlinked", b.dataDownlinkedBits),
-        scalarRow(a, "margin", "Downlink margin", b.dataMarginFraction, formatFraction),
+        scalarRow(a, "margin", "Downlink margin", b.dataMarginFraction, formatFraction, "data-return"),
       ],
     },
     { id: "cost", title: "Cost", rows: [quantityRow("cost", "Estimated cost", b.estimatedCostUsd)] },

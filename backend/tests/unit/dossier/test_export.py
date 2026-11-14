@@ -15,6 +15,7 @@ from app.domain.dossier.export_mission_dossier import (
     export_mission_dossier,
 )
 from app.schemas.evidence import MissionPackage
+from app.schemas.mission import MissionState
 from app.schemas.simulation import MissionRun
 from tests.unit.dossier.conftest import EXPORTED, Env
 
@@ -100,7 +101,7 @@ def test_trajectory_values_are_scenario_preset_estimates(env: Env, run: MissionR
         ("https://evil.example/ssd-api.jpl.nasa.gov", False),
         ("https://ssd-api.jpl.nasa.gov@evil.example/", False),
         ("https://evil.example@ssd-api.jpl.nasa.gov/", False),
-        ("https://evil.example\@ssd-api.jpl.nasa.gov/", False),
+        (r"https://evil.example\@ssd-api.jpl.nasa.gov/", False),
         (" https://ssd-api.jpl.nasa.gov/mdesign.api", False),
         ("https://ssd-api.jpl.nasa.gov/mdesign.api ", False),
         ("https://ssd-api.jpl.nasa.gov/mdesign\t.api", False),
@@ -276,3 +277,14 @@ def test_missing_analysis_is_labelled_not_invented(env: Env, run: MissionRun) ->
 def test_experimental_run_is_flagged(env: Env) -> None:
     html = _export(env, env.run(experimental=True)).html
     assert "Experimental what-if" in html
+
+
+def test_undefined_margin_renders_dash_with_reason_r38(env: Env) -> None:
+    dump = env.state().model_dump()
+    dump["operations"]["observation_plan"] = ()
+    run = env.run(MissionState.model_validate(dump))
+    analysis = env.analysis(run)
+    assert analysis.budgets.data_margin_fraction is None
+    budgets = _export(env, run).html.split("Budgets and margins</h2>")[1].split("</section>")[0]
+    assert "<td>data margin</td><td>— (not defined:" in budgets
+    assert "<td>data margin</td><td>0.0%" not in budgets

@@ -19,12 +19,15 @@ const MARGINS = [
 
 export function MarginsChart({ analysis }: { analysis: RunData["analysis"] }) {
   const failed = analysisFailed(analysis);
-  const rows: { label: string; margin: number | null }[] = MARGINS.map((m) => {
+  const rows: { label: string; margin: number | null; reason: string }[] = MARGINS.map((m) => {
     const c = analysis.constraints.find((x) => x.id === m.id);
     const v = c?.marginFraction;
-    return { label: m.label, margin: typeof v === "number" && Number.isFinite(v) && c?.status !== "not-modelled" ? v * 100 : null };
+    const ok = typeof v === "number" && Number.isFinite(v) && c?.status !== "not-modelled";
+    // R38: a missing margin is undefined (never a fake 0); say why when the constraint does.
+    const reason = c?.status === "not-modelled" ? `not defined: ${c.explanation}` : "not reported";
+    return { label: m.label, margin: ok ? v * 100 : null, reason };
   });
-  const plotted = rows.filter((r): r is { label: string; margin: number } => r.margin !== null);
+  const plotted = rows.filter((r): r is { label: string; margin: number; reason: string } => r.margin !== null);
   const provenance = analysisProvenance(analysis);
   return (
     <section data-testid="review-margins" aria-labelledby="margins-h" className="space-y-2">
@@ -53,7 +56,7 @@ export function MarginsChart({ analysis }: { analysis: RunData["analysis"] }) {
             {rows.map((r) => (
               <li key={r.label}>
                 <span className="text-muted">{r.label}: </span>
-                <span className="tabular-nums">{r.margin === null ? "— not reported" : formatFraction(r.margin / 100)}</span>
+                <span className="tabular-nums">{r.margin === null ? `— ${r.reason}` : formatFraction(r.margin / 100)}</span>
               </li>
             ))}
           </ul>

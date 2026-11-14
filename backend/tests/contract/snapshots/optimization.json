@@ -3,6 +3,7 @@
     "$defs": {
       "BudgetAnalysis": {
         "additionalProperties": false,
+        "description": "Margins are ``None`` when undefined / not modelled (R38), never a fake 0.",
         "properties": {
           "availableDeltaVKmPerS": {
             "$ref": "#/$defs/Quantity"
@@ -17,26 +18,54 @@
             "$ref": "#/$defs/Quantity"
           },
           "dataMarginFraction": {
-            "title": "Datamarginfraction",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Datamarginfraction"
           },
           "deltaVMarginKmPerS": {
-            "title": "Deltavmarginkmpers",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deltavmarginkmpers"
           },
           "dryMassKg": {
             "$ref": "#/$defs/Quantity"
           },
           "energyMarginFraction": {
-            "title": "Energymarginfraction",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Energymarginfraction"
           },
           "estimatedCostUsd": {
             "$ref": "#/$defs/Quantity"
           },
           "massMarginFraction": {
-            "title": "Massmarginfraction",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Massmarginfraction"
           },
           "peakPowerW": {
             "$ref": "#/$defs/Quantity"
@@ -1696,6 +1725,7 @@
       },
       "BudgetAnalysis": {
         "additionalProperties": false,
+        "description": "Margins are ``None`` when undefined / not modelled (R38), never a fake 0.",
         "properties": {
           "availableDeltaVKmPerS": {
             "$ref": "#/$defs/Quantity"
@@ -1710,26 +1740,54 @@
             "$ref": "#/$defs/Quantity"
           },
           "dataMarginFraction": {
-            "title": "Datamarginfraction",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Datamarginfraction"
           },
           "deltaVMarginKmPerS": {
-            "title": "Deltavmarginkmpers",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deltavmarginkmpers"
           },
           "dryMassKg": {
             "$ref": "#/$defs/Quantity"
           },
           "energyMarginFraction": {
-            "title": "Energymarginfraction",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Energymarginfraction"
           },
           "estimatedCostUsd": {
             "$ref": "#/$defs/Quantity"
           },
           "massMarginFraction": {
-            "title": "Massmarginfraction",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Massmarginfraction"
           },
           "peakPowerW": {
             "$ref": "#/$defs/Quantity"
@@ -3002,6 +3060,7 @@
     "$defs": {
       "BudgetAnalysis": {
         "additionalProperties": false,
+        "description": "Margins are ``None`` when undefined / not modelled (R38), never a fake 0.",
         "properties": {
           "availableDeltaVKmPerS": {
             "$ref": "#/$defs/Quantity"
@@ -3016,26 +3075,54 @@
             "$ref": "#/$defs/Quantity"
           },
           "dataMarginFraction": {
-            "title": "Datamarginfraction",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Datamarginfraction"
           },
           "deltaVMarginKmPerS": {
-            "title": "Deltavmarginkmpers",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deltavmarginkmpers"
           },
           "dryMassKg": {
             "$ref": "#/$defs/Quantity"
           },
           "energyMarginFraction": {
-            "title": "Energymarginfraction",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Energymarginfraction"
           },
           "estimatedCostUsd": {
             "$ref": "#/$defs/Quantity"
           },
           "massMarginFraction": {
-            "title": "Massmarginfraction",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Massmarginfraction"
           },
           "peakPowerW": {
             "$ref": "#/$defs/Quantity"
@@ -3655,6 +3742,7 @@
     "$defs": {
       "BudgetAnalysis": {
         "additionalProperties": false,
+        "description": "Margins are ``None`` when undefined / not modelled (R38), never a fake 0.",
         "properties": {
           "availableDeltaVKmPerS": {
             "$ref": "#/$defs/Quantity"
@@ -3669,26 +3757,54 @@
             "$ref": "#/$defs/Quantity"
           },
           "dataMarginFraction": {
-            "title": "Datamarginfraction",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Datamarginfraction"
           },
           "deltaVMarginKmPerS": {
-            "title": "Deltavmarginkmpers",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deltavmarginkmpers"
           },
           "dryMassKg": {
             "$ref": "#/$defs/Quantity"
           },
           "energyMarginFraction": {
-            "title": "Energymarginfraction",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Energymarginfraction"
           },
           "estimatedCostUsd": {
             "$ref": "#/$defs/Quantity"
           },
           "massMarginFraction": {
-            "title": "Massmarginfraction",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Massmarginfraction"
           },
           "peakPowerW": {
             "$ref": "#/$defs/Quantity"

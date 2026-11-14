@@ -45,19 +45,21 @@ class ConstraintResult(ContractModel):
 
 
 class BudgetAnalysis(ContractModel):
+    """Margins are ``None`` when undefined / not modelled (R38), never a fake 0."""
+
     dry_mass_kg: Quantity
     propellant_mass_kg: Quantity
     wet_mass_kg: Quantity
-    mass_margin_fraction: FiniteFloat
+    mass_margin_fraction: FiniteFloat | None
     average_power_w: Quantity
     peak_power_w: Quantity
-    energy_margin_fraction: FiniteFloat
+    energy_margin_fraction: FiniteFloat | None
     data_generated_bits: Quantity
     data_downlinked_bits: Quantity
-    data_margin_fraction: FiniteFloat
+    data_margin_fraction: FiniteFloat | None
     required_delta_v_km_per_s: Quantity
     available_delta_v_km_per_s: Quantity
-    delta_v_margin_km_per_s: FiniteFloat
+    delta_v_margin_km_per_s: FiniteFloat | None
     estimated_cost_usd: Quantity
 
 

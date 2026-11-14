@@ -3,7 +3,8 @@
 Pure function over two ``MissionAnalysis`` results: delta = alternative - base, in the metric's
 SI-style unit (``TRADE_METRICS``). A metric is omitted (never reported as 0) when either side
 is a placeholder, i.e. the analysis failed (``catalog-item-not-found`` / ``model-input-invalid``)
-or the Quantity is labelled ``not-modelled``. Mass allocation margin is not a trade metric.
+or the Quantity is labelled ``not-modelled``, or a bare margin is ``None`` (R38). Mass
+allocation margin is not a trade metric.
 """
 
 from collections.abc import Callable
@@ -28,7 +29,10 @@ def analysis_failed(analysis: MissionAnalysis) -> bool:
     return any(c.id in FAILURE_CONSTRAINT_IDS for c in analysis.constraints)
 
 
-def _scalar(read: Callable[[MissionAnalysis], float]) -> Callable[[MissionAnalysis], float | None]:
+def _scalar(
+    read: Callable[[MissionAnalysis], float | None],
+) -> Callable[[MissionAnalysis], float | None]:
+    """A bare engine scalar; ``None`` (undefined margin, R38) or a failed analysis => omitted."""
     return lambda a: None if analysis_failed(a) else read(a)
 
 

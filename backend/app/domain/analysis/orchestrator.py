@@ -479,13 +479,13 @@ def _budgets(b: _Built) -> BudgetAnalysis:
         dry_mass_kg=_q(m.dry_kg, "kg", mp),
         propellant_mass_kg=_q(b.propellant_kg, "kg", mp),
         wet_mass_kg=_q(m.wet_kg, "kg", mp),
-        mass_margin_fraction=m.margin_to_limit_fraction or 0.0,
+        mass_margin_fraction=m.margin_to_limit_fraction,
         average_power_w=_q(ctx.avg_power_w, "W", ep),
         peak_power_w=_q(ctx.peak_power_w, "W", ep),
-        energy_margin_fraction=energy_margin_fraction(ctx) or 0.0,
+        energy_margin_fraction=energy_margin_fraction(ctx),
         data_generated_bits=_q(ctx.data.generated_bits, "bit", dp),
         data_downlinked_bits=_q(ctx.data.downlinked_bits, "bit", dp),
-        data_margin_fraction=data_return_margin_fraction(ctx) or 0.0,
+        data_margin_fraction=data_return_margin_fraction(ctx),
         required_delta_v_km_per_s=_q(ms_to_kms(mv.required_ms), "km/s", pp),
         available_delta_v_km_per_s=_q(ms_to_kms(mv.available_ms), "km/s", pp),
         delta_v_margin_km_per_s=ms_to_kms(mv.margin_ms),
@@ -514,10 +514,10 @@ def _placeholder_budgets() -> BudgetAnalysis:
 
     return BudgetAnalysis(
         dry_mass_kg=z("kg"), propellant_mass_kg=z("kg"), wet_mass_kg=z("kg"),
-        mass_margin_fraction=0.0, average_power_w=z("W"), peak_power_w=z("W"),
-        energy_margin_fraction=0.0, data_generated_bits=z("bit"), data_downlinked_bits=z("bit"),
-        data_margin_fraction=0.0, required_delta_v_km_per_s=z("km/s"),
-        available_delta_v_km_per_s=z("km/s"), delta_v_margin_km_per_s=0.0,
+        mass_margin_fraction=None, average_power_w=z("W"), peak_power_w=z("W"),
+        energy_margin_fraction=None, data_generated_bits=z("bit"), data_downlinked_bits=z("bit"),
+        data_margin_fraction=None, required_delta_v_km_per_s=z("km/s"),
+        available_delta_v_km_per_s=z("km/s"), delta_v_margin_km_per_s=None,
         estimated_cost_usd=z("USD"),
     )  # fmt: skip
 

@@ -353,3 +353,22 @@ test.describe("placeholder analysis and debounce", () => {
     expect(revisions).toEqual([2]);
   });
 });
+
+test.describe("undefined margins (R38)", () => {
+  test("an empty observation plan shows the data margin as a dash with a reason, never 0 %", async ({ page }) => {
+    const id = await startNeo(page);
+    // Real backend; only the request is edited so the design has no observations.
+    await page.route(VALIDATE, async (route) => {
+      const body = route.request().postDataJSON();
+      body.missionState.operations.observationPlan = [];
+      await route.continue({ postData: JSON.stringify(body) });
+    });
+    await page.goto(`/architect/${id}`);
+    await expect(page.getByTestId("analysis-revision")).toContainText(/revision 0/i, { timeout: 30_000 });
+    const tile = page.getByTestId("budget-tile-data");
+    const margin = tile.locator("div", { has: page.getByText("Downlink margin", { exact: true }) }).last();
+    await expect(margin).toContainText("—");
+    await expect(margin.getByTestId("missing-reason")).toContainText(/not defined/i);
+    await expect(margin).not.toContainText(/0(\.0)?\s?%/);
+  });
+});

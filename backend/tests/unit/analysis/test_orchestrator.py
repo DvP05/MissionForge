@@ -530,3 +530,40 @@ def test_trajectory_validity_and_missing_delta_v(
     assert (_c(a, "trajectory-valid").status == "pass") is valid
     if valid:
         assert a.budgets.required_delta_v_km_per_s.value == 0.0
+
+
+# --- R38: undefined margins are None, never a fake 0 ---------------------------------
+
+
+def _without_observations(state: MissionState) -> MissionState:
+    dump = state.model_dump()
+    dump["operations"] = {**dump["operations"], "observation_plan": ()}
+    return MissionState.model_validate(dump)
+
+
+def test_empty_observation_plan_has_no_data_margin_r38(
+    catalog: Catalog, templates: dict[str, ScenarioTemplate]
+) -> None:
+    a = _run(_without_observations(_state()), catalog, templates)
+    assert a.budgets.data_generated_bits.value == 0.0
+    assert a.budgets.data_margin_fraction is None
+    assert _c(a, "data-return").status == "not-modelled"
+    assert a.model_dump(by_alias=True)["budgets"]["dataMarginFraction"] is None
+
+
+def test_defined_margins_stay_numbers_r38(
+    catalog: Catalog, templates: dict[str, ScenarioTemplate]
+) -> None:
+    b = _run(_state(), catalog, templates).budgets
+    assert isinstance(b.mass_margin_fraction, float)
+    assert isinstance(b.energy_margin_fraction, float)
+    assert isinstance(b.data_margin_fraction, float)
+    assert isinstance(b.delta_v_margin_km_per_s, float)
+
+
+def test_failed_analysis_margins_are_none_r38(
+    catalog: Catalog, templates: dict[str, ScenarioTemplate]
+) -> None:
+    b = _run(_edit(_state(), communications_id="comms-nope"), catalog, templates).budgets
+    assert b.mass_margin_fraction is None and b.energy_margin_fraction is None
+    assert b.data_margin_fraction is None and b.delta_v_margin_km_per_s is None

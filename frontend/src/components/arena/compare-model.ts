@@ -25,7 +25,7 @@ export const COMPARE_METRICS: CompareMetric[] = [
     key: "delta_v_margin_km_per_s",
     label: "Delta-v margin",
     unit: "km/s",
-    read: (a) => scalarRow(a, "dvm", "Delta-v margin", a.budgets.deltaVMarginKmPerS, (v) => `${formatNumber(v)} km/s`),
+    read: (a) => scalarRow(a, "dvm", "Delta-v margin", a.budgets.deltaVMarginKmPerS, (v) => `${formatNumber(v)} km/s`, "delta-v-margin"),
   },
   { key: "estimated_cost_usd", label: "Estimated cost", unit: "USD", read: (a) => quantityRow("cost", "Estimated cost", a.budgets.estimatedCostUsd) },
   {

@@ -4,7 +4,7 @@ Every dynamic string goes through `_e` (html.escape). One document: inline CSS w
 stylesheet, no scripts, no external files. Deterministic for the same inputs.
 """
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from html import escape
@@ -252,6 +252,20 @@ def _architecture(run: MissionRun, catalog: Mapping[str, CatalogComponent]) -> s
     return _section("Selected architecture", f"{table}<p class='muted'>{_e(note)}</p>")
 
 
+def _margin(
+    value: float | None,
+    fmt: Callable[[float], str],
+    analysis: MissionAnalysis,
+    constraint_id: str,
+) -> str:
+    """A margin value, or "—" plus why it is undefined (R38: never a fake 0)."""
+    if value is not None:
+        return fmt(value)
+    c = next((x for x in analysis.constraints if x.id == constraint_id), None)
+    reason = c.explanation if c is not None else "the analysis did not produce this margin"
+    return f"— (not defined: {reason})"
+
+
 def _budgets(run: MissionRun, analysis: MissionAnalysis | None) -> str:
     if analysis is None:
         return _section(
@@ -265,10 +279,15 @@ def _budgets(run: MissionRun, analysis: MissionAnalysis | None) -> str:
         q = getattr(b, name)
         rows.append([_e(name), _e(_num(q.value)), _e(q.unit), _e(q.provenance.fidelity)])
     margins = [
-        ["mass margin", _pct(b.mass_margin_fraction)],
-        ["energy margin", _pct(b.energy_margin_fraction)],
-        ["data margin", _pct(b.data_margin_fraction)],
-        ["delta-v margin", f"{_num(b.delta_v_margin_km_per_s)} km/s"],
+        ["mass margin", _margin(b.mass_margin_fraction, _pct, analysis, "mass-launch-limit")],
+        ["energy margin", _margin(b.energy_margin_fraction, _pct, analysis, "energy-closure")],
+        ["data margin", _margin(b.data_margin_fraction, _pct, analysis, "data-return")],
+        [
+            "delta-v margin",
+            _margin(
+                b.delta_v_margin_km_per_s, lambda v: f"{_num(v)} km/s", analysis, "delta-v-margin"
+            ),
+        ],
     ]
     cons = [[_e(c.id), _e(c.status), _e(c.explanation)] for c in analysis.constraints]
     notice = ""

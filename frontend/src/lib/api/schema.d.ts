@@ -383,22 +383,25 @@ export interface components {
             /** Version */
             version: number;
         };
-        /** BudgetAnalysis */
+        /**
+         * BudgetAnalysis
+         * @description Margins are ``None`` when undefined / not modelled (R38), never a fake 0.
+         */
         BudgetAnalysis: {
             availableDeltaVKmPerS: components["schemas"]["Quantity"];
             averagePowerW: components["schemas"]["Quantity"];
             dataDownlinkedBits: components["schemas"]["Quantity"];
             dataGeneratedBits: components["schemas"]["Quantity"];
             /** Datamarginfraction */
-            dataMarginFraction: number;
+            dataMarginFraction: number | null;
             /** Deltavmarginkmpers */
-            deltaVMarginKmPerS: number;
+            deltaVMarginKmPerS: number | null;
             dryMassKg: components["schemas"]["Quantity"];
             /** Energymarginfraction */
-            energyMarginFraction: number;
+            energyMarginFraction: number | null;
             estimatedCostUsd: components["schemas"]["Quantity"];
             /** Massmarginfraction */
-            massMarginFraction: number;
+            massMarginFraction: number | null;
             peakPowerW: components["schemas"]["Quantity"];
             propellantMassKg: components["schemas"]["Quantity"];
             requiredDeltaVKmPerS: components["schemas"]["Quantity"];

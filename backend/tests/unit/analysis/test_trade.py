@@ -98,3 +98,13 @@ def test_inputs_are_not_mutated() -> None:
     compute_deltas(base, _analyze(_with_arch(state, communicationsId="comms-xband-medium")))
     assert state.model_dump_json() == before
     assert base.model_dump_json() == base_json
+
+
+def test_none_margin_is_omitted_not_zero_r38() -> None:
+    base = _analyze(_state())
+    dump = base.model_dump()
+    dump["budgets"]["delta_v_margin_km_per_s"] = None
+    undefined = MissionAnalysis.model_validate(dump)
+    d = compute_deltas(base, undefined)
+    assert "delta_v_margin_km_per_s" not in d
+    assert "dry_mass_kg" in d
