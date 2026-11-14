@@ -3,6 +3,8 @@
 import { useState } from "react";
 
 import { ErrorState, LoadingState } from "@/components/common/States";
+import { ConceptCard } from "@/components/learning/ConceptCard";
+import { PredictionPrompt } from "@/components/learning/Prediction";
 import { LaunchPanel } from "@/components/mission-control/LaunchPanel";
 import { Counterfactual } from "@/components/review/Counterfactual";
 import { ScheduleBoard } from "@/components/schedule/ScheduleBoard";
@@ -36,15 +38,21 @@ export function ArchitectPage() {
   return (
     <div className="space-y-4" data-testid="architect-page">
       <LaunchPanel />
+      <PredictionPrompt missionId={mission.missionId} />
       <div className="grid gap-4 lg:grid-cols-[22fr_48fr_30fr]">
         <aside aria-label="Subsystem selection" data-testid="architect-left" className="min-w-0">
           <CategoryNav mission={mission} index={catalog.index} active={category} onSelect={setCategory} />
         </aside>
         <div data-testid="architect-center" className="min-w-0">
-          <OptionsPanel mission={mission} groups={catalog.groups} index={catalog.index} category={category} />
+          <div className="space-y-4">
+            {category === "power" ? <ConceptCard id="lo3" /> : null}
+            {category === "propulsion" ? <ConceptCard id="lo4" /> : null}
+            <OptionsPanel mission={mission} groups={catalog.groups} index={catalog.index} category={category} />
+          </div>
         </div>
         <aside aria-label="Budgets and constraints" data-testid="architect-right" className="min-w-0 space-y-6">
           <BudgetPanel onRetry={retryAnalysis} />
+          <ConceptCard id="lo2" />
           <ConstraintPanel selectedId={explainId} onExplain={setExplainId} />
           <Counterfactual />
         </aside>

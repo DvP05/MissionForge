@@ -1,4 +1,5 @@
 import { ImportButton } from "@/components/persistence/PackageControls";
+import { LearningCheck } from "@/components/learning/LearningCheck";
 import { ScenarioGrid } from "@/components/scenario/ScenarioGrid";
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
         </h2>
         <ScenarioGrid />
       </section>
+      <LearningCheck phase="pre" />
       <section aria-labelledby="import-heading" className="space-y-3">
         <h2 id="import-heading" className="text-xl font-semibold">
           Continue from a package

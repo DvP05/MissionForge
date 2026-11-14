@@ -202,7 +202,8 @@ test.describe("status components (legend on /about)", () => {
   for (const [fidelity, text] of fidelities) {
     test(`FidelityBadge ${fidelity} renders icon and text`, async ({ page }) => {
       await page.goto("/about");
-      const badge = page.getByTestId(`fidelity-badge-${fidelity}`);
+      // the legend's badge (the fidelity-tier list on /about repeats each badge)
+      const badge = page.getByTestId(`fidelity-badge-${fidelity}`).first();
       await expect(badge).toContainText(text);
       await expect(badge.locator("svg")).toHaveCount(1);
     });

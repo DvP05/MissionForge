@@ -8,6 +8,10 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
+  // One in-memory backend serves every worker and the passport export is CPU-heavy;
+  // more browsers than this only queue on it. PW_WORKERS overrides.
+  workers: process.env.PW_WORKERS ? Number(process.env.PW_WORKERS) : 8,
+  timeout: 60_000,
   reporter: "list",
   use: {
     baseURL: FRONTEND_URL,

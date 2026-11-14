@@ -8,6 +8,9 @@ import { PHASE_LABEL } from "@/components/mission-control/playback";
 import { TelemetryResidual } from "@/components/mission-control/TelemetryResidual";
 import { formatFraction } from "@/lib/format";
 import type { RunData } from "@/lib/persistence/run-cache";
+import { ConceptCard } from "@/components/learning/ConceptCard";
+import { LearningCheck } from "@/components/learning/LearningCheck";
+import { PredictionResult } from "@/components/learning/Prediction";
 import { ExportDossier } from "./ExportDossier";
 import { MarginsChart } from "./MarginsChart";
 import { RunCounterfactuals } from "./RunCounterfactuals";
@@ -91,7 +94,13 @@ export function ReviewPage({ data }: { data: RunData }) {
       </Section>
 
       <Section id="review-science" title="Science collected and returned">
+        <ConceptCard id="lo5" />
         <p className="text-sm text-muted">Collected data is not the same as data returned to Earth; only returned data counts toward the objective.</p>
+        <PredictionResult
+          missionId={run.missionId}
+          collected={run.scienceOutcomes.reduce((s, o) => s + o.collectedFraction, 0)}
+          returned={run.scienceOutcomes.reduce((s, o) => s + o.returnedFraction, 0)}
+        />
         <table className="w-full text-left text-sm">
           <thead className="text-xs text-muted">
             <tr>
@@ -112,6 +121,7 @@ export function ReviewPage({ data }: { data: RunData }) {
         </table>
       </Section>
 
+      <ConceptCard id="lo6" />
       <MarginsChart analysis={data.analysis} />
 
       <Section id="review-timeline" title="Operations timeline">
@@ -198,6 +208,8 @@ export function ReviewPage({ data }: { data: RunData }) {
           ))}
         </ul>
       </Section>
+
+      <LearningCheck phase="post" />
 
       <ExportDossier data={data} />
     </article>

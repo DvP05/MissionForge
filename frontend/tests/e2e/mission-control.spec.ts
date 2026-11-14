@@ -410,7 +410,8 @@ test.describe("evidence passport", () => {
     const downloads: import("@playwright/test").Download[] = [];
     page.on("download", (d) => downloads.push(d));
     await page.getByTestId("export-passport").click();
-    await expect(page.getByTestId("export-passport-done")).toContainText(/evidence records/i);
+    // Passport v2 recomputes Phase 6 evidence server-side: allow for a loaded CI machine.
+    await expect(page.getByTestId("export-passport-done")).toContainText(/evidence records/i, { timeout: 30_000 });
     await expect.poll(() => downloads.length).toBe(2);
     const names = downloads.map((d) => d.suggestedFilename()).sort();
     expect(names).toEqual([`missionforge-passport-${runId}.html`, `missionforge-passport-${runId}.json`]);
@@ -439,7 +440,7 @@ test.describe("evidence passport", () => {
     });
     await page.getByTestId("export-passport").click();
     const done = page.getByTestId("export-passport-done");
-    await expect(done).toContainText(/not an identical replay \(diverged\)/);
+    await expect(done).toContainText(/not an identical replay \(diverged\)/, { timeout: 30_000 });
     await expect(done).not.toContainText(/verified identical/);
   });
 

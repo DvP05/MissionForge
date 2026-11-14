@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { ExperimentalBadge } from "@/components/common/ExperimentalBadge";
 import { isImportedRun, type RunData } from "@/lib/persistence/run-cache";
+import { ConceptCard } from "@/components/learning/ConceptCard";
 import { authorityAt, flownContacts } from "./authority";
 import { AuthorityBanner } from "./AuthorityBanner";
 import { AutonomyLog } from "./AutonomyLog";
@@ -66,7 +67,8 @@ export function MissionControl({ data, startDay }: { data: RunData; startDay: nu
         <TelemetryCharts samples={run.telemetry} day={pb.day} duration={pb.duration} linkLimit={linkLimit} />
       </section>
       <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-        <div className="min-w-0">
+        <div className="min-w-0 space-y-4">
+          <ConceptCard id="lo7" />
           <AutonomyLog run={run} day={pb.day} />
         </div>
         <div className="min-w-0">
