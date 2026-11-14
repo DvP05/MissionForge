@@ -51,7 +51,7 @@ export function TraceabilityTable({
   hasAnalysis: boolean;
 }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-border">
+    <div className="overflow-x-auto rounded-xl border border-border" tabIndex={0} role="region" aria-label="Traceability table (scrolls sideways)">
       <table data-testid="traceability-table" className="w-full min-w-[40rem] border-collapse text-left text-sm">
         <caption className="sr-only">
           Science traceability: each objective, its measurement requirements and the selected instruments that

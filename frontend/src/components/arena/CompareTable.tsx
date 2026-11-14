@@ -64,7 +64,7 @@ export function CompareTable({ result, labels }: { result: TradeResult; labels: 
     })),
   ];
   return (
-    <div className="overflow-x-auto rounded-lg border border-border" data-testid="compare-table-scroll">
+    <div className="overflow-x-auto rounded-lg border border-border" data-testid="compare-table-scroll" tabIndex={0} role="region" aria-label="Design comparison table (scrolls sideways)">
       <table data-testid="compare-table" className="w-full min-w-[34rem] border-collapse text-left text-sm">
         <caption className="sr-only">
           Baseline and alternative designs with metric values and differences from the baseline

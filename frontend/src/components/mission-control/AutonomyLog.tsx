@@ -41,7 +41,7 @@ export function AutonomyEntry({ run, decision }: { run: MissionRun; decision: Au
         </StatusPill>
       </div>
       <BeliefBars belief={decision.belief} />
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Candidate utilities (scrolls sideways)">
         <table className="w-full text-left text-xs">
           <caption className="sr-only">Candidate actions and their utilities</caption>
           <thead className="text-muted">

@@ -170,7 +170,7 @@ export function RobustnessLab() {
             </div>
           </div>
 
-          <div className="overflow-x-auto rounded-xl border border-border">
+          <div className="overflow-x-auto rounded-xl border border-border" tabIndex={0} role="region" aria-label="Robustness metrics table (scrolls sideways)">
             <table className="w-full min-w-[32rem] text-left text-sm" data-testid="robustness-metrics">
               <caption className="sr-only">Spread of key results across samples</caption>
               <thead className="bg-surface text-xs uppercase tracking-wide text-muted">

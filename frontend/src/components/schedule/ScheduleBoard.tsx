@@ -229,7 +229,7 @@ export function ScheduleBoard() {
         </p>
       </figure>
 
-      <div className="overflow-x-auto rounded-xl border border-border">
+      <div className="overflow-x-auto rounded-xl border border-border" tabIndex={0} role="region" aria-label="Schedule table (scrolls sideways)">
         <table className="w-full min-w-[36rem] text-left text-sm" data-testid="schedule-table">
           <caption className="sr-only">Every planned observation and the scheduler&apos;s decision</caption>
           <thead className="bg-surface text-xs uppercase tracking-wide text-muted">
