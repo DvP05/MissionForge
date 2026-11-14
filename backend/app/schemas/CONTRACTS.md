@@ -150,6 +150,13 @@ which regenerates `openapi.json` / frontend types only when a route exposes the 
     free `str` whose ids are owned by the simulator. 0..1 channels (state of charge,
     propellant fraction, health flags as 0/1) use unit **`"fraction"`**, not `"%"` (R10 #6).
 13. `DecisionRecord.decision_maker` is `ground | onboard-policy | player`.
+    *Usage note (Task 4.2, no schema change):* `DecisionChoice.effects` keys are the
+    simulator's effects vocabulary (`app.domain.simulation.anomalies.EFFECT_KEYS`):
+    `science_time_lost_days`, `link_outage_days`, `downlink_rate_factor`,
+    `buffer_loss_fraction`, `soc_delta`, `propellant_delta`, `terminate` (float values).
+    A default choice made without the player is recorded with `decision_maker = "ground"`
+    and rationale `"default (no player choice)"`; the event shows `"system"`. Anomaly and
+    scenario events use declared ids `anomaly-<id>` / `scenario-<id>` as decision keys.
 14. `ScienceOutcome` is new. `FinalReport(outcome, summary, score, realized_risks,
     root_causes, counterfactuals, limitations)` adds `realized_risks` (§9.6 output, R10 #8).
 15. `MissionRun` fields:

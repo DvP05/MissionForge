@@ -20,9 +20,16 @@ formula is re-implemented):
   and the capped contact rate (R19). Not reported outside contacts.
 * ``pointing_error_deg`` (deg, gameplay-estimate): proxy = ADCS pointing accuracy from the
   catalogue; attitude dynamics are not modelled.
+
+Event effects (Task 4.2, ``TelemetryOverlay``): every anomaly / scenario event day adds an
+``event`` checkpoint; ``soc_delta`` dips the battery at that checkpoint only (it recovers by
+the next one, gameplay-estimate); ``propellant_delta`` steps apply from their day on; buffer
+losses are subtracted from the buffer from their day on (clamped at 0); after a termination
+no checkpoint is taken except a final one in phase ``terminated``.
 """
 
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from typing import Literal
 
 from app.domain.analysis.context import AnalysisContext
@@ -78,8 +85,32 @@ def propellant_remaining_fraction(
 class Checkpoint:
     mission_day: float
     phase: Phase
-    kind: Literal["transition", "maneuver", "observation", "contact"]
+    kind: Literal["transition", "maneuver", "observation", "contact", "event"]
     contact_index: int | None = None
+
+
+@dataclass(frozen=True)
+class TelemetryOverlay:
+    """Event effects shown in telemetry (see the module docstring)."""
+
+    event_days: tuple[float, ...] = ()
+    soc_dips: Mapping[float, float] = field(default_factory=dict)  # day -> summed delta
+    propellant_steps: tuple[tuple[float, float], ...] = ()  # (day, fraction delta)
+    buffer_losses: tuple[tuple[float, float], ...] = ()  # (day, lost bits)
+    end_day: float | None = None  # termination day
+
+
+def base_soc(ctx: AnalysisContext, schedule: PhaseSchedule, day: float) -> float:
+    """Battery SoC the telemetry shows on ``day`` before any event dip."""
+    if day <= 0.0:
+        return 1.0
+    science = _soc(ctx, "science")
+    cruise = _soc(ctx, "cruise")
+    if schedule.phase_at(day) == "science-ops" and science is not None:
+        return science
+    if cruise is not None:
+        return cruise
+    return science if science is not None else 0.0
 
 
 def _soc(ctx: AnalysisContext, prefix: str) -> float | None:
@@ -98,10 +129,18 @@ def _buffer_fill(ctx: AnalysisContext, day: float) -> float:
     return _clamp01(bits / ctx.buffer_capacity_bits) if ctx.buffer_capacity_bits > 0 else 0.0
 
 
-def checkpoints(state: MissionState, schedule: PhaseSchedule, has_burn: bool) -> list[Checkpoint]:
+def checkpoints(
+    state: MissionState,
+    schedule: PhaseSchedule,
+    has_burn: bool,
+    overlay: TelemetryOverlay | None = None,
+) -> list[Checkpoint]:
     ops = state.operations
+    end = overlay.end_day if overlay is not None else None
     raw: list[tuple[float, int, int, Checkpoint]] = []
     for i, (phase, day) in enumerate(schedule.transitions):
+        if end is not None and (phase == "complete" or day > end):
+            continue
         raw.append((day, 0, i, Checkpoint(day, phase, "transition")))
     if has_burn:
         day = schedule.arrival_day
@@ -112,7 +151,14 @@ def checkpoints(state: MissionState, schedule: PhaseSchedule, has_burn: bool) ->
     for i, d in enumerate(ops.downlink_plan):
         cp = Checkpoint(d.start_day, schedule.phase_at(d.start_day), "contact", i)
         raw.append((d.start_day, 3, i, cp))
-    return [c for *_, c in sorted(raw, key=lambda r: r[:3])]
+    if overlay is not None:
+        for i, day in enumerate(overlay.event_days):
+            raw.append((day, 4, i, Checkpoint(day, schedule.phase_at(day), "event")))
+    out = [c for *_, c in sorted(raw, key=lambda r: r[:3])]
+    if end is not None:
+        out = [c for c in out if c.mission_day <= end]
+        out.append(Checkpoint(end, "terminated", "transition"))
+    return out
 
 
 def telemetry_samples(
@@ -122,6 +168,7 @@ def telemetry_samples(
     *,
     propellant_kg: float,
     pointing_accuracy_deg: float,
+    overlay: TelemetryOverlay | None = None,
 ) -> tuple[TelemetrySample, ...]:
     per = ctx.maneuvers.per_maneuver
     burn_dv = per[-1][1] if per else 0.0
@@ -146,19 +193,30 @@ def telemetry_samples(
             )
         )
 
-    for cp in checkpoints(state, schedule, bool(per)):
+    ov = overlay or TelemetryOverlay()
+    for cp in checkpoints(state, schedule, bool(per), overlay):
         if cp.kind == "transition" and cp.phase == "launch-deployment":
             add(cp, "battery_soc", 1.0, "gameplay-estimate")
         else:
             soc = science_soc if cp.phase == "science-ops" and science_soc is not None else None
-            add(cp, "battery_soc", soc if soc is not None else fallback_soc, "derived")
+            value = soc if soc is not None else fallback_soc
+            if cp.kind == "event" and cp.mission_day in ov.soc_dips:
+                add(cp, "battery_soc", _clamp01(value + ov.soc_dips[cp.mission_day]), "derived")
+            else:
+                add(cp, "battery_soc", value, "derived")
         # the burn is flown at arrival; a phase entered on that same day is shown before it
         burned = bool(per) and (
             cp.mission_day > schedule.arrival_day
             or (cp.mission_day == schedule.arrival_day and cp.kind != "transition")
         )
-        add(cp, "propellant_fraction", after_burn if burned else before_burn, "derived")
-        add(cp, "buffer_fill", _buffer_fill(ctx, cp.mission_day), "derived")
+        prop = after_burn if burned else before_burn
+        prop += sum(d for t, d in ov.propellant_steps if t <= cp.mission_day)
+        add(cp, "propellant_fraction", _clamp01(prop), "derived")
+        fill = _buffer_fill(ctx, cp.mission_day)
+        lost = sum(b for t, b in ov.buffer_losses if t <= cp.mission_day)
+        if lost > 0.0 and ctx.buffer_capacity_bits > 0:
+            fill = _clamp01(fill - lost / ctx.buffer_capacity_bits)
+        add(cp, "buffer_fill", fill, "derived")
         if cp.contact_index is not None:
             add(cp, "link_margin_db", ctx.contact_links[cp.contact_index].margin_db, "derived")
         add(cp, "pointing_error_deg", pointing_accuracy_deg, "gameplay-estimate")
@@ -170,6 +228,8 @@ __all__ = [
     "TELEMETRY_CHANNELS",
     "TELEMETRY_UNITS",
     "Checkpoint",
+    "TelemetryOverlay",
+    "base_soc",
     "checkpoints",
     "propellant_remaining_fraction",
     "telemetry_samples",

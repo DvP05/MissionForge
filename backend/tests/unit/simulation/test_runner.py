@@ -10,8 +10,10 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
+from app.config import DEFAULT_SCENARIOS_DIR
 from app.domain.catalog.loader import Catalog
 from app.domain.errors import DomainValidationError
+from app.domain.simulation.anomalies import load_event_sets
 from app.domain.simulation.runner import LaunchBlocked, run_mission
 from app.domain.simulation.telemetry import TELEMETRY_CHANNELS, TELEMETRY_UNITS
 from app.schemas.mission import MissionState
@@ -21,6 +23,7 @@ from tests.unit.simulation.conftest import APP_VERSION, MEDIUM, SimFactory, make
 GOLDEN = Path(__file__).resolve().parents[2] / "golden" / "neo_run_seed42.json"
 REGEN_HINT = "UPDATE_GOLDEN=1 uv run python -m pytest tests/unit/simulation/test_runner.py"
 SCENARIO_VERSION = "0.1.0"
+EVENT_SETS = load_event_sets(DEFAULT_SCENARIOS_DIR)
 
 
 def _run(
@@ -38,6 +41,7 @@ def _run(
     return run_mission(
         sim,
         catalog,
+        event_sets=EVENT_SETS,
         scenario=scenario,
         decisions=decisions,
         scenario_version=SCENARIO_VERSION,
@@ -104,7 +108,7 @@ def test_simulation_under_one_second(sim_input_for: SimFactory, catalog: Catalog
     sim, scenario = sim_input_for(make_state(communications_id=MEDIUM))
     t0 = time.perf_counter()
     run_mission(
-        sim, catalog, scenario=scenario, scenario_version=SCENARIO_VERSION,
+        sim, catalog, scenario=scenario, event_sets=EVENT_SETS, scenario_version=SCENARIO_VERSION,
         app_version=APP_VERSION,
     )  # fmt: skip
     assert time.perf_counter() - t0 < 1.0
@@ -172,7 +176,12 @@ def test_analysis_for_another_revision_is_rejected(
     )
     with pytest.raises(DomainValidationError) as exc:
         run_mission(
-            stale, catalog, scenario=scenario, scenario_version="0.1.0", app_version="0.1.0"
+            stale,
+            catalog,
+            scenario=scenario,
+            event_sets=EVENT_SETS,
+            scenario_version="0.1.0",
+            app_version="0.1.0",
         )
     assert exc.value.code == "ANALYSIS_REVISION_MISMATCH"
 

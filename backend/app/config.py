@@ -44,3 +44,6 @@ DEFAULT_CATALOG_DIR = Path(__file__).resolve().parents[2] / "data" / "catalog"
 
 # <repo>/data/missions: scenario templates (explicit path passed into the pure domain layer).
 DEFAULT_MISSIONS_DIR = Path(__file__).resolve().parents[2] / "data" / "missions"
+
+# <repo>/data/scenarios: scenario event sets (explicit path passed into the simulation).
+DEFAULT_SCENARIOS_DIR = Path(__file__).resolve().parents[2] / "data" / "scenarios"

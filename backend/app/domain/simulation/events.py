@@ -7,6 +7,13 @@ Generators return ``EventSpec`` records; ``build_events`` sorts them by
 Every trigger names its cause: ``source`` is ``"design"`` (a MissionState value, ``ref``
 is its camelCase JSON path) or ``"scenario-event"`` (a declared scenario event, injected
 from Task 4.2 on). No event is random or unrelated to the design.
+
+Task 4.2: anomaly / scenario events carry a declared, stable id (``EventSpec.id``:
+``anomaly-<id>`` / ``scenario-<id>``) so a player's decision keys do not depend on the
+seed; they do not consume the per-(phase, type) counters. Events changed by an effect carry
+``caused_by`` (the causing event id) in their trigger. ``science_specs`` / ``downlink_specs``
+take the as-flown plan plus ``plan_index`` (the planned index of each flown item) so titles
+and ``plan_item`` refs keep the design's numbering.
 """
 
 from collections.abc import Mapping, Sequence
@@ -32,13 +39,15 @@ from app.schemas.simulation import (
 )
 from app.schemas.units import Scalar
 
-# Same-day ordering: phase transitions, maneuvers, observations, contacts, then scenario
-# events (anomalies / decisions, Task 4.2).
+# Same-day ordering: phase transitions, maneuvers, observations, contacts, scenario events
+# (anomalies / decisions, Task 4.2), their consequences (skipped / missed items), termination.
 RANK_TRANSITION = 0
 RANK_MANEUVER = 1
 RANK_SCIENCE = 2
 RANK_DOWNLINK = 3
 RANK_SCENARIO = 4
+RANK_EFFECT = 5  # consequences of a same-day scenario-layer event (after its cause)
+RANK_TERMINATION = 6
 
 
 @dataclass(frozen=True)
@@ -54,6 +63,7 @@ class EventSpec:
     choices: tuple[DecisionChoice, ...] = ()
     resolved_by: str | None = None
     decision_maker: EventDecisionMaker | None = "system"
+    id: str | None = None  # declared stable id (scenario layer); None: phase-type-n scheme
 
 
 def _design(ref: str, **values: Scalar) -> dict[str, Scalar]:
@@ -224,11 +234,15 @@ def _observation_problem(
 
 
 def science_specs(
-    state: MissionState, instruments: Sequence[CatalogComponent], ctx: AnalysisContext
+    state: MissionState,
+    instruments: Sequence[CatalogComponent],
+    ctx: AnalysisContext,
+    plan_index: Sequence[int] | None = None,
 ) -> list[EventSpec]:
     reqs = {r.id: r for o in state.science_objectives for r in o.required_measurements}
     out: list[EventSpec] = []
-    for i, item in enumerate(state.operations.observation_plan):
+    for k, item in enumerate(state.operations.observation_plan):
+        i = plan_index[k] if plan_index is not None else k
         req = reqs.get(item.measurement_id)
         capable = req is not None and any(
             req.instrument_capability in inst.capabilities for inst in instruments
@@ -262,15 +276,18 @@ def science_specs(
     return out
 
 
-def downlink_specs(state: MissionState, ctx: AnalysisContext) -> list[EventSpec]:
+def downlink_specs(
+    state: MissionState, ctx: AnalysisContext, plan_index: Sequence[int] | None = None
+) -> list[EventSpec]:
     plan = state.operations.downlink_plan
     # the data ledger reports contacts sorted (stably) by start time
     order = sorted(range(len(plan)), key=lambda k: plan[k].start_day)
     results = {k: ctx.data.per_contact[j] for j, k in enumerate(order)}
     out: list[EventSpec] = []
-    for i, item in enumerate(plan):
-        margin = ctx.contact_links[i].margin_db
-        res = results[i]
+    for k, item in enumerate(plan):
+        i = plan_index[k] if plan_index is not None else k
+        margin = ctx.contact_links[k].margin_db
+        res = results[k]
         if res.rate_bps > 0.0:
             severity: EventSeverity = "info"
             ref = f"operations.downlinkPlan[{i}]"
@@ -308,11 +325,12 @@ def build_events(specs: Sequence[EventSpec], schedule: PhaseSchedule) -> tuple[M
     out: list[MissionEvent] = []
     for seq, (_, s) in enumerate(ordered):
         phase = s.phase if s.phase is not None else schedule.phase_at(s.mission_day)
-        n = counters.get((phase, s.type), 0) + 1
-        counters[(phase, s.type)] = n
+        if s.id is None:
+            n = counters.get((phase, s.type), 0) + 1
+            counters[(phase, s.type)] = n
         out.append(
             MissionEvent(
-                id=f"{phase}-{s.type}-{n}",
+                id=s.id if s.id is not None else f"{phase}-{s.type}-{n}",
                 sequence=seq,
                 mission_day=s.mission_day,
                 phase=phase,
@@ -331,9 +349,11 @@ def build_events(specs: Sequence[EventSpec], schedule: PhaseSchedule) -> tuple[M
 
 __all__ = [
     "RANK_DOWNLINK",
+    "RANK_EFFECT",
     "RANK_MANEUVER",
     "RANK_SCENARIO",
     "RANK_SCIENCE",
+    "RANK_TERMINATION",
     "RANK_TRANSITION",
     "EventSpec",
     "build_events",

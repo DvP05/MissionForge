@@ -1,0 +1,9 @@
+{
+  "eventSetId": "neo-rendezvous-nominal-v1",
+  "version": "0.1.0",
+  "title": "Nominal run (no anomalies, no decisions; any scenario)",
+  "scenarioIds": [],
+  "assumptions": [],
+  "anomalies": [],
+  "scenarioEvents": []
+}
