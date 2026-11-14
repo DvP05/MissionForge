@@ -292,6 +292,21 @@ test.describe("review", () => {
     await expect(page.getByTestId("score-dimension-operations-quality")).toContainText("weight 10");
   });
 
+  test("the Mission Analyst explains the flown design on the review (Phase 4-6 join)", async ({ page }) => {
+    const runId = await launchFeasible(page);
+    const asked = page.waitForRequest(
+      (req) => req.url().endsWith("/api/mission/recommend") && req.method() === "POST",
+    );
+    await page.goto(`/review/${runId}`);
+    const body = (await asked).postDataJSON() as { missionState: { missionId: string } };
+    expect(body.missionState.missionId).toBeTruthy();
+    const analyst = page.getByTestId("run-analyst");
+    await expect(analyst).toContainText(/design-time analysis of the flown design/i);
+    await expect(analyst.getByTestId(/^run-analyst-(rec-|none)/).first()).toBeVisible();
+    // read-only: a past run is never edited from the review
+    await expect(analyst.getByRole("button", { name: /apply/i })).toHaveCount(0);
+  });
+
   test("an empty counterfactual list says none was computed", async ({ page }) => {
     const runId = await launchFeasible(page);
     await page.route(`**/api/mission/run/${runId}`, async (route) => {

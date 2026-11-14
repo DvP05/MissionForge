@@ -29,9 +29,9 @@ const TARGET_CATEGORY: Record<string, ComponentCategory> = {
   "architecture.groundSegmentId": "ground",
 };
 
-const CONFIDENCE_TONE = { high: "ok", medium: "info", low: "neutral" } as const;
+export const CONFIDENCE_TONE = { high: "ok", medium: "info", low: "neutral" } as const;
 
-function metricLine(rec: Recommendation, key: string, label: string, kind: "number" | "fraction" | "musd") {
+export function metricLine(rec: Recommendation, key: string, label: string, kind: "number" | "fraction" | "musd") {
   const b = rec.metricBefore[key];
   const a = rec.metricAfter[key];
   if (b === undefined || a === undefined || b === a) return null;

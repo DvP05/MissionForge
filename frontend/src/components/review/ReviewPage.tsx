@@ -8,6 +8,7 @@ import { formatFraction } from "@/lib/format";
 import type { RunData } from "@/lib/persistence/run-cache";
 import { ExportDossier } from "./ExportDossier";
 import { MarginsChart } from "./MarginsChart";
+import { RunCounterfactuals } from "./RunCounterfactuals";
 
 const H2 = "text-lg font-semibold";
 const OUTCOME = { success: "Success", partial: "Partial success", failure: "Failure", terminated: "Mission terminated" } as const;
@@ -148,6 +149,10 @@ export function ReviewPage({ data }: { data: RunData }) {
 
       <Section id="review-counterfactuals" title="Counterfactuals">
         <ListOrNone items={report.counterfactuals} none="No counterfactual computed for this run." />
+      </Section>
+
+      <Section id="review-analyst" title="What one part change would have done">
+        <RunCounterfactuals run={run} />
       </Section>
 
       <Section id="review-limitations" title="Data limitations">
