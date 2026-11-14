@@ -36,7 +36,14 @@ def create_app() -> FastAPI:
     )
 
     # Added innermost-first: size limit, then CORS, then the request id (outermost).
-    app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.max_request_bytes)
+    app.add_middleware(
+        BodySizeLimitMiddleware,
+        max_bytes=settings.max_request_bytes,
+        path_limits={
+            "/api/mission/import": settings.max_import_bytes,
+            "/api/mission/replay": settings.max_import_bytes,
+        },
+    )
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,

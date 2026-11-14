@@ -376,4 +376,13 @@ test.describe("robustness and design-time limit", () => {
     await expect(data.locator("table")).toBeVisible();
     await expect(data.locator("tbody tr").first()).toContainText(/\d/);
   });
+
+  test("the skip-to-end confirmation closes when a decision becomes pending", async ({ page }) => {
+    await launchFeasible(page);
+    await page.getByTestId("skip-to-end").click();
+    await expect(page.getByTestId("skip-end-confirm")).toBeVisible();
+    await page.getByTestId("playback-play").click(); // playing reaches the first decision
+    await expect(page.getByTestId("decision-card")).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByTestId("skip-end-confirm")).toHaveCount(0);
+  });
 });

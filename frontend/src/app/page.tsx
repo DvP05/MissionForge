@@ -1,3 +1,4 @@
+import { ImportButton } from "@/components/persistence/PackageControls";
 import { ScenarioGrid } from "@/components/scenario/ScenarioGrid";
 
 export default function Home() {
@@ -19,6 +20,16 @@ export default function Home() {
           Choose a scenario
         </h2>
         <ScenarioGrid />
+      </section>
+      <section aria-labelledby="import-heading" className="space-y-3">
+        <h2 id="import-heading" className="text-xl font-semibold">
+          Continue from a package
+        </h2>
+        <p className="max-w-2xl text-sm text-muted">
+          Import a mission package exported from MISSIONFORGE. The file is checked by the engine first; nothing you
+          have saved changes unless it is accepted.
+        </p>
+        <ImportButton />
       </section>
     </div>
   );

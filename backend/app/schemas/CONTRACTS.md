@@ -282,3 +282,18 @@ Consumers must read these rules before interpreting the plain-float fields.
 - `dataMarginFraction` = total downlink capacity / generated − 1. This is the same measure
   as the `data-return` constraint, and it differs from the ledger's
   (downlinked − generated) / generated.
+
+## Import and replay (Task 4.5)
+
+- `POST /api/mission/import` takes the raw `MissionPackage` JSON as the body (limit 4 MiB, `max_import_bytes`;
+  the default 256 KiB applies elsewhere). It rejects non-standard JSON (`NaN`, `Infinity`), an unsupported
+  `packageSchemaVersion` / mission `schemaVersion` (never reinterpreted), more than 20 runs, duplicate run ids,
+  run/mission mismatches and unknown catalogue components. Titles are sanitised by the schema. Nothing is stored.
+- On success the response carries the validated package (`latestAnalysis` recomputed here) plus one
+  `{runId, status, mismatches, analysis}` per run. `status` compares the run manifest (engine, catalogue,
+  scenario, schema versions, event-set availability) with this server; `analysis` is the snapshot re-analysed by
+  the current engine (derived, may differ from the recorded run when versions differ).
+- `POST /api/mission/replay` re-runs `run.inputSnapshot` with its seed, event set and recorded player decisions.
+  `identical` is true only after comparing the re-run to the recorded run (canonical JSON, numbers by value so a
+  JS round trip's `275` equals `275.0`). A version difference returns `version-mismatch` without re-running.
+  `manifest.appVersion` is a metadata stamp and does not make a run non-identical.

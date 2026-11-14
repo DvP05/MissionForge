@@ -1,16 +1,24 @@
-from typing import Annotated
+import json
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
-from pydantic import Field, StrictBool, StrictInt
+from pydantic import Field, StrictBool, StrictInt, ValidationError
 
 from app.api.deps import Clock, get_clock, get_mission_service, get_simulation_service
-from app.api.errors import CATALOG_ITEM_NOT_FOUND, VALIDATION_ERROR, error_response
+from app.api.errors import (
+    CATALOG_ITEM_NOT_FOUND,
+    VALIDATION_ERROR,
+    error_response,
+    validation_fields_from_pydantic,
+)
 from app.config import Settings, get_settings
 from app.domain.errors import DomainValidationError
+from app.domain.mission.migrations import migrate_mission
 from app.domain.simulation.runner import LaunchBlocked
 from app.schemas.analysis import MissionAnalysis
 from app.schemas.api import ApiMeta, ApiResult, ContractModel
+from app.schemas.evidence import MissionPackage
 from app.schemas.mission import MissionState
 from app.schemas.optimization import TradeStudyResult
 from app.schemas.simulation import FinalReport, MissionEvent, MissionRun, TelemetrySample
@@ -20,9 +28,12 @@ from app.services.simulation_service import (
     RunNotFoundError,
     SimulationService,
     StoredRun,
+    VersionMismatch,
 )
 
 MAX_TRADE_ALTERNATIVES = 3
+MAX_PACKAGE_RUNS = 20
+SUPPORTED_PACKAGE_VERSION = "1.0"
 
 
 class ValidateRequest(ContractModel):
@@ -70,6 +81,39 @@ class SimulateData(ContractModel):
     events: tuple[MissionEvent, ...]
     final_report: FinalReport
     notes: list[str] = Field(default_factory=list)
+
+
+class VersionMismatchItem(ContractModel):
+    field: str
+    recorded: str
+    current: str
+
+
+class RunReplayStatus(ContractModel):
+    """Per imported run: can it be replayed identically here? (versions only, no re-run)."""
+
+    run_id: str
+    status: Literal["identical-replay", "version-mismatch"]
+    mismatches: list[VersionMismatchItem]
+    # The run's design re-analysed by THIS engine (derived, may differ from the recorded
+    # run when versions differ). Null when the design no longer validates here.
+    analysis: MissionAnalysis | None = None
+
+
+class ImportData(ContractModel):
+    package: MissionPackage
+    replay: list[RunReplayStatus]
+
+
+class ReplayRequest(ContractModel):
+    run: MissionRun
+
+
+class ReplayData(ContractModel):
+    identical: bool
+    status: Literal["identical-replay", "version-mismatch", "diverged"]
+    mismatches: list[VersionMismatchItem]
+    run: MissionRun | None = None
 
 
 # Domain codes that are the caller's fault (422). Anything else is a server fault and stays a 500.
@@ -274,4 +318,148 @@ def get_run(
         return _run_not_found(request)
     return ApiResult[SimulateData](
         ok=True, data=_simulate_data(stored), meta=ApiMeta(request_id=request.state.request_id)
+    )
+
+
+def _mismatch_items(items: tuple[VersionMismatch, ...] | list[VersionMismatch]) -> list[Any]:
+    return [
+        VersionMismatchItem(field=m.field, recorded=m.recorded, current=m.current) for m in items
+    ]
+
+
+def _reject_constant(name: str) -> Any:
+    raise ValueError(f"non-standard JSON constant {name}")
+
+
+@router.post("/mission/import", response_model=ApiResult[ImportData])
+async def import_package(
+    request: Request,
+    service: Annotated[SimulationService, Depends(get_simulation_service)],
+    missions: Annotated[MissionService, Depends(get_mission_service)],
+    clock: Annotated[Clock, Depends(get_clock)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> ApiResult[ImportData] | JSONResponse:
+    """Validate an exported MissionPackage (architecture 13, 16). Body = the raw package JSON.
+
+    All-or-nothing: nothing is stored server-side and any failure returns an error envelope,
+    so the client replaces its saved state only on ok=true. Titles are sanitised by the
+    schema; the analysis is recomputed here (the exported one is derived, never trusted).
+    """
+    body = await request.body()
+    try:
+        raw = json.loads(body, parse_constant=_reject_constant)
+    except (ValueError, RecursionError):
+        return error_response(
+            request,
+            422,
+            "INVALID_JSON",
+            "The file is not valid JSON (NaN, Infinity and malformed text are rejected).",
+        )
+    if not isinstance(raw, dict):
+        return error_response(
+            request, 422, "INVALID_PACKAGE", "A mission package must be a JSON object."
+        )
+    version = raw.get("packageSchemaVersion", raw.get("package_schema_version"))
+    if version != SUPPORTED_PACKAGE_VERSION:
+        return error_response(
+            request,
+            422,
+            "UNSUPPORTED_PACKAGE_VERSION",
+            "This package uses a package format this version cannot read, and it is not "
+            f"guessed at. Supported package version: {SUPPORTED_PACKAGE_VERSION}.",
+            details={"supported": SUPPORTED_PACKAGE_VERSION, "found": str(version)[:40]},
+        )
+    mission_raw = raw.get("mission")
+    if not isinstance(mission_raw, dict):
+        return error_response(
+            request,
+            422,
+            "INVALID_PACKAGE",
+            "The package has no mission object.",
+            details={"fields": [{"path": "mission", "message": "required", "type": "missing"}]},
+        )
+    try:
+        raw["mission"] = migrate_mission(mission_raw)
+    except DomainValidationError as exc:
+        return error_response(
+            request,
+            422,
+            exc.code,
+            "The mission schema version in this package is not supported; it is not "
+            "silently reinterpreted.",
+            details={"field": exc.field, "supported": "1.0"},
+        )
+    runs_raw = raw.get("runs")
+    if isinstance(runs_raw, list) and len(runs_raw) > MAX_PACKAGE_RUNS:
+        return error_response(
+            request,
+            422,
+            "PACKAGE_TOO_MANY_RUNS",
+            f"A package may contain at most {MAX_PACKAGE_RUNS} runs.",
+            details={"max": MAX_PACKAGE_RUNS},
+        )
+    try:
+        package = MissionPackage.model_validate(raw)
+    except ValidationError as exc:
+        return error_response(
+            request,
+            422,
+            "INVALID_PACKAGE",
+            "The package does not match the mission package format.",
+            details={"fields": validation_fields_from_pydantic(exc)},
+        )
+    run_ids = [r.run_id for r in package.runs]
+    if len(set(run_ids)) != len(run_ids):
+        return error_response(
+            request, 422, "INVALID_PACKAGE", "The package contains duplicate run ids."
+        )
+    now = clock()
+    outcome = missions.validate(package.mission, now)
+    if outcome.analysis is None:
+        return _failure_response(request, settings, outcome)
+    package.latest_analysis = outcome.analysis  # derived: always recomputed on import
+    statuses: list[RunReplayStatus] = []
+    for run in package.runs:
+        mismatches = service.version_mismatches(run)
+        analysis = service.run_analysis(run, now).analysis
+        if analysis is None and not mismatches:
+            mismatches = [VersionMismatch("design", "valid", "fails validation in this catalogue")]
+        statuses.append(
+            RunReplayStatus(
+                run_id=run.run_id,
+                status="version-mismatch" if mismatches else "identical-replay",
+                mismatches=_mismatch_items(mismatches),
+                analysis=analysis,
+            )
+        )
+    return ApiResult[ImportData](
+        ok=True,
+        data=ImportData(package=package, replay=statuses),
+        meta=ApiMeta(request_id=request.state.request_id),
+    )
+
+
+@router.post("/mission/replay", response_model=ApiResult[ReplayData])
+def replay_run(
+    body: ReplayRequest,
+    request: Request,
+    service: Annotated[SimulationService, Depends(get_simulation_service)],
+    clock: Annotated[Clock, Depends(get_clock)],
+) -> ApiResult[ReplayData]:
+    """Replay a recorded run. `identical` is true only after comparing the re-run with the
+    recorded run (canonical JSON; numbers compare by value, as 275 vs 275.0 after a JS round trip).
+
+    Differing engine / catalogue / scenario / schema versions or a missing event set return
+    ok=true with status "version-mismatch" and no re-run: never a claim of identity.
+    """
+    outcome = service.replay(body.run, clock())
+    return ApiResult[ReplayData](
+        ok=True,
+        data=ReplayData(
+            identical=outcome.identical,
+            status=outcome.status,
+            mismatches=_mismatch_items(outcome.mismatches),
+            run=outcome.run,
+        ),
+        meta=ApiMeta(request_id=request.state.request_id),
     )

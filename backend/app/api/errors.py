@@ -13,6 +13,7 @@ from typing import Any
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from pydantic import ValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.schemas.api import ApiError, ApiMeta, ApiResult
@@ -83,6 +84,19 @@ def validation_fields(exc: RequestValidationError) -> list[dict[str, str]]:
             {"path": _loc_path(loc), "message": str(err.get("msg", "invalid")), "type": err["type"]}
         )
     return fields
+
+
+def validation_fields_from_pydantic(exc: ValidationError) -> list[dict[str, str]]:
+    """Field issues from a model_validate failure (paths and messages only, never input values)."""
+    fields = [
+        {
+            "path": _loc_path(tuple(err.get("loc", ()))),
+            "message": str(err.get("msg", "invalid")),
+            "type": err["type"],
+        }
+        for err in exc.errors(include_input=False, include_url=False)
+    ]
+    return fields[:50]
 
 
 def register_error_handlers(app: FastAPI, cors_origins: list[str]) -> None:

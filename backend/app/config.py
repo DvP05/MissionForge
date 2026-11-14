@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     # Request body limit (architecture 13): bodies above this are rejected with 413.
     max_request_bytes: int = 256 * 1024
 
+    # Mission packages (import) and replay carry whole runs (~80 KiB each, up to 20), so these
+    # two routes get a dedicated higher limit.
+    max_import_bytes: int = 4 * 1024 * 1024
+
     # Monte Carlo cap for /mission/simulate (architecture 11.3 SIMULATION_LIMIT_EXCEEDED).
     max_monte_carlo_samples: int = 1000
 

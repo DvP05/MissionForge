@@ -38,6 +38,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/mission/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import Package
+         * @description Validate an exported MissionPackage (architecture 13, 16). Body = the raw package JSON.
+         *
+         *     All-or-nothing: nothing is stored server-side and any failure returns an error envelope,
+         *     so the client replaces its saved state only on ok=true. Titles are sanitised by the
+         *     schema; the analysis is recomputed here (the exported one is derived, never trusted).
+         */
+        post: operations["import_package_api_mission_import_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission/replay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Replay Run
+         * @description Replay a recorded run. `identical` is true only after comparing the re-run with the
+         *     recorded run (canonical JSON; numbers compare by value, as 275 vs 275.0 after a JS round trip).
+         *
+         *     Differing engine / catalogue / scenario / schema versions or a missing event set return
+         *     ok=true with status "version-mismatch" and no re-run: never a claim of identity.
+         */
+        post: operations["replay_run_api_mission_replay_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/mission/run/{run_id}": {
         parameters: {
             query?: never;
@@ -217,9 +265,25 @@ export interface components {
             /** Ok */
             ok: boolean;
         };
+        /** ApiResult[ImportData] */
+        ApiResult_ImportData_: {
+            data?: components["schemas"]["ImportData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
         /** ApiResult[MissionState] */
         ApiResult_MissionState_: {
             data?: components["schemas"]["MissionState"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[ReplayData] */
+        ApiResult_ReplayData_: {
+            data?: components["schemas"]["ReplayData"] | null;
             error?: components["schemas"]["ApiError"] | null;
             meta: components["schemas"]["ApiMeta"];
             /** Ok */
@@ -467,6 +531,38 @@ export interface components {
             /** Startday */
             startDay: number;
         };
+        /** EvidenceRecord */
+        EvidenceRecord: {
+            /** Assumptions */
+            assumptions?: string[];
+            /** Conversionnotes */
+            conversionNotes?: string | null;
+            /**
+             * Fidelity
+             * @enum {string}
+             */
+            fidelity: "source-backed" | "derived" | "gameplay-estimate" | "not-modelled";
+            /** Id */
+            id: string;
+            /** Limitations */
+            limitations?: string[];
+            /** Publishedat */
+            publishedAt?: string | null;
+            /** Relatedids */
+            relatedIds?: string[];
+            /** Retrievedat */
+            retrievedAt?: string | null;
+            /** Sourcetitle */
+            sourceTitle?: string | null;
+            /** Sourceurl */
+            sourceUrl?: string | null;
+            /** Sourceversion */
+            sourceVersion?: string | null;
+            /** Subjectid */
+            subjectId: string;
+            /** Unit */
+            unit?: ("kg" | "m" | "s" | "day" | "km" | "km/s" | "m/s" | "W" | "Wh" | "J" | "bit/s" | "bit" | "Hz" | "dB" | "dBW" | "K" | "USD" | "USD_2026" | "%" | "rad" | "deg" | "fraction") | null;
+        };
         /** FailureMode */
         FailureMode: {
             /** Affectedmetric */
@@ -526,6 +622,12 @@ export interface components {
             hypothesisId: string;
             /** Probability */
             probability: number;
+        };
+        /** ImportData */
+        ImportData: {
+            package: components["schemas"]["MissionPackage"];
+            /** Replay */
+            replay: components["schemas"]["RunReplayStatus"][];
         };
         /** JplAdapterStatus */
         JplAdapterStatus: {
@@ -644,6 +746,38 @@ export interface components {
              * @enum {string}
              */
             type: "milestone" | "telemetry" | "anomaly" | "decision" | "science" | "downlink";
+        };
+        /** MissionPackage */
+        MissionPackage: {
+            /** Evidence */
+            evidence?: components["schemas"]["EvidenceRecord"][];
+            /**
+             * Exportedat
+             * Format: date-time
+             */
+            exportedAt: string;
+            latestAnalysis?: components["schemas"]["MissionAnalysis"] | null;
+            manifest: components["schemas"]["MissionPackageManifest"];
+            mission: components["schemas"]["MissionState"];
+            /**
+             * Packageschemaversion
+             * @default 1.0
+             * @constant
+             */
+            packageSchemaVersion: "1.0";
+            /** Runs */
+            runs?: components["schemas"]["MissionRun"][];
+        };
+        /** MissionPackageManifest */
+        MissionPackageManifest: {
+            /** Appversion */
+            appVersion: string;
+            /** Catalogversion */
+            catalogVersion: string;
+            /** Engineversion */
+            engineVersion: string;
+            /** Scenarioversion */
+            scenarioVersion: string;
         };
         /** MissionRun */
         MissionRun: {
@@ -837,6 +971,39 @@ export interface components {
             riskIndex: number;
             /** Singlepointfailures */
             singlePointFailures: string[];
+        };
+        /** ReplayData */
+        ReplayData: {
+            /** Identical */
+            identical: boolean;
+            /** Mismatches */
+            mismatches: components["schemas"]["VersionMismatchItem"][];
+            run?: components["schemas"]["MissionRun"] | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "identical-replay" | "version-mismatch" | "diverged";
+        };
+        /** ReplayRequest */
+        ReplayRequest: {
+            run: components["schemas"]["MissionRun"];
+        };
+        /**
+         * RunReplayStatus
+         * @description Per imported run: can it be replayed identically here? (versions only, no re-run).
+         */
+        RunReplayStatus: {
+            analysis?: components["schemas"]["MissionAnalysis"] | null;
+            /** Mismatches */
+            mismatches: components["schemas"]["VersionMismatchItem"][];
+            /** Runid */
+            runId: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "identical-replay" | "version-mismatch";
         };
         /** ScenarioTemplate */
         ScenarioTemplate: {
@@ -1143,6 +1310,15 @@ export interface components {
             /** Error Type */
             type: string;
         };
+        /** VersionMismatchItem */
+        VersionMismatchItem: {
+            /** Current */
+            current: string;
+            /** Field */
+            field: string;
+            /** Recorded */
+            recorded: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -1188,6 +1364,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_HealthData_"];
+                };
+            };
+        };
+    };
+    import_package_api_mission_import_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_ImportData_"];
+                };
+            };
+        };
+    };
+    replay_run_api_mission_replay_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplayRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_ReplayData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

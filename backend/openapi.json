@@ -161,6 +161,44 @@
         "title": "ApiResult[HealthData]",
         "type": "object"
       },
+      "ApiResult_ImportData_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImportData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[ImportData]",
+        "type": "object"
+      },
       "ApiResult_MissionState_": {
         "additionalProperties": false,
         "properties": {
@@ -197,6 +235,44 @@
           "meta"
         ],
         "title": "ApiResult[MissionState]",
+        "type": "object"
+      },
+      "ApiResult_ReplayData_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReplayData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[ReplayData]",
         "type": "object"
       },
       "ApiResult_SimulateData_": {
@@ -1008,6 +1084,160 @@
         "title": "DownlinkPlanItem",
         "type": "object"
       },
+      "EvidenceRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "conversionNotes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversionnotes"
+          },
+          "fidelity": {
+            "enum": [
+              "source-backed",
+              "derived",
+              "gameplay-estimate",
+              "not-modelled"
+            ],
+            "title": "Fidelity",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedat"
+          },
+          "relatedIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Relatedids",
+            "type": "array"
+          },
+          "retrievedAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrievedat"
+          },
+          "sourceTitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourcetitle"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceurl"
+          },
+          "sourceVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceversion"
+          },
+          "subjectId": {
+            "title": "Subjectid",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "enum": [
+                  "kg",
+                  "m",
+                  "s",
+                  "day",
+                  "km",
+                  "km/s",
+                  "m/s",
+                  "W",
+                  "Wh",
+                  "J",
+                  "bit/s",
+                  "bit",
+                  "Hz",
+                  "dB",
+                  "dBW",
+                  "K",
+                  "USD",
+                  "USD_2026",
+                  "%",
+                  "rad",
+                  "deg",
+                  "fraction"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "id",
+          "subjectId",
+          "fidelity"
+        ],
+        "title": "EvidenceRecord",
+        "type": "object"
+      },
       "FailureMode": {
         "additionalProperties": false,
         "properties": {
@@ -1184,6 +1414,27 @@
           "probability"
         ],
         "title": "HypothesisProbability",
+        "type": "object"
+      },
+      "ImportData": {
+        "additionalProperties": false,
+        "properties": {
+          "package": {
+            "$ref": "#/components/schemas/MissionPackage"
+          },
+          "replay": {
+            "items": {
+              "$ref": "#/components/schemas/RunReplayStatus"
+            },
+            "title": "Replay",
+            "type": "array"
+          }
+        },
+        "required": [
+          "package",
+          "replay"
+        ],
+        "title": "ImportData",
         "type": "object"
       },
       "JplAdapterStatus": {
@@ -1548,6 +1799,88 @@
           "trigger"
         ],
         "title": "MissionEvent",
+        "type": "object"
+      },
+      "MissionPackage": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceRecord"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "exportedAt": {
+            "format": "date-time",
+            "title": "Exportedat",
+            "type": "string"
+          },
+          "latestAnalysis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MissionAnalysis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "manifest": {
+            "$ref": "#/components/schemas/MissionPackageManifest"
+          },
+          "mission": {
+            "$ref": "#/components/schemas/MissionState"
+          },
+          "packageSchemaVersion": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Packageschemaversion",
+            "type": "string"
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/MissionRun"
+            },
+            "title": "Runs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "exportedAt",
+          "mission",
+          "manifest"
+        ],
+        "title": "MissionPackage",
+        "type": "object"
+      },
+      "MissionPackageManifest": {
+        "additionalProperties": false,
+        "properties": {
+          "appVersion": {
+            "title": "Appversion",
+            "type": "string"
+          },
+          "catalogVersion": {
+            "title": "Catalogversion",
+            "type": "string"
+          },
+          "engineVersion": {
+            "title": "Engineversion",
+            "type": "string"
+          },
+          "scenarioVersion": {
+            "title": "Scenarioversion",
+            "type": "string"
+          }
+        },
+        "required": [
+          "appVersion",
+          "engineVersion",
+          "catalogVersion",
+          "scenarioVersion"
+        ],
+        "title": "MissionPackageManifest",
         "type": "object"
       },
       "MissionRun": {
@@ -2126,6 +2459,103 @@
           "singlePointFailures"
         ],
         "title": "ReliabilityAnalysis",
+        "type": "object"
+      },
+      "ReplayData": {
+        "additionalProperties": false,
+        "properties": {
+          "identical": {
+            "title": "Identical",
+            "type": "boolean"
+          },
+          "mismatches": {
+            "items": {
+              "$ref": "#/components/schemas/VersionMismatchItem"
+            },
+            "title": "Mismatches",
+            "type": "array"
+          },
+          "run": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MissionRun"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "identical-replay",
+              "version-mismatch",
+              "diverged"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "identical",
+          "status",
+          "mismatches"
+        ],
+        "title": "ReplayData",
+        "type": "object"
+      },
+      "ReplayRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "run": {
+            "$ref": "#/components/schemas/MissionRun"
+          }
+        },
+        "required": [
+          "run"
+        ],
+        "title": "ReplayRequest",
+        "type": "object"
+      },
+      "RunReplayStatus": {
+        "additionalProperties": false,
+        "description": "Per imported run: can it be replayed identically here? (versions only, no re-run).",
+        "properties": {
+          "analysis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MissionAnalysis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mismatches": {
+            "items": {
+              "$ref": "#/components/schemas/VersionMismatchItem"
+            },
+            "title": "Mismatches",
+            "type": "array"
+          },
+          "runId": {
+            "title": "Runid",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "identical-replay",
+              "version-mismatch"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "runId",
+          "status",
+          "mismatches"
+        ],
+        "title": "RunReplayStatus",
         "type": "object"
       },
       "ScenarioTemplate": {
@@ -3063,6 +3493,30 @@
         ],
         "title": "ValidationError",
         "type": "object"
+      },
+      "VersionMismatchItem": {
+        "additionalProperties": false,
+        "properties": {
+          "current": {
+            "title": "Current",
+            "type": "string"
+          },
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "recorded": {
+            "title": "Recorded",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "recorded",
+          "current"
+        ],
+        "title": "VersionMismatchItem",
+        "type": "object"
       }
     }
   },
@@ -3106,6 +3560,64 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/mission/import": {
+      "post": {
+        "description": "Validate an exported MissionPackage (architecture 13, 16). Body = the raw package JSON.\n\nAll-or-nothing: nothing is stored server-side and any failure returns an error envelope,\nso the client replaces its saved state only on ok=true. Titles are sanitised by the\nschema; the analysis is recomputed here (the exported one is derived, never trusted).",
+        "operationId": "import_package_api_mission_import_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_ImportData_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Import Package"
+      }
+    },
+    "/api/mission/replay": {
+      "post": {
+        "description": "Replay a recorded run. `identical` is true only after comparing the re-run with the\nrecorded run (canonical JSON; numbers compare by value, as 275 vs 275.0 after a JS round trip).\n\nDiffering engine / catalogue / scenario / schema versions or a missing event set return\nok=true with status \"version-mismatch\" and no re-run: never a claim of identity.",
+        "operationId": "replay_run_api_mission_replay_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplayRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_ReplayData_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Replay Run"
       }
     },
     "/api/mission/run/{run_id}": {

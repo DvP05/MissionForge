@@ -11,6 +11,9 @@ const BTN =
 export function PlaybackControls({ pb }: { pb: Playback }) {
   const [confirming, setConfirming] = useState(false);
   const n = pb.undecidedAhead;
+  // A decision becoming pending (e.g. a playing run reached one) invalidates the confirmation.
+  // (state adjusted during render, so a stale dialog never reappears once the decision is made)
+  if (confirming && pb.pending) setConfirming(false);
   const requestSkip = () => (n > 0 ? setConfirming(true) : pb.skipToEnd());
   return (
     <section aria-label="Playback controls" className="flex flex-wrap items-center gap-2">
@@ -66,7 +69,7 @@ export function PlaybackControls({ pb }: { pb: Playback }) {
           ))}
         </div>
       )}
-      {confirming && n > 0 ? (
+      {confirming && n > 0 && !pb.pending ? (
         <div data-testid="skip-end-confirm" role="alertdialog" aria-label="Confirm skip to end" className="w-full space-y-2 rounded-lg border border-accent-amber/60 p-3 text-sm">
           <p>
             Skipping to the end means {n} undecided {n === 1 ? "decision" : "decisions"} will use ground defaults.

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 
+import { ExportButton, ImportButton } from "@/components/persistence/PackageControls";
+import { RunsPanel } from "@/components/persistence/RunsPanel";
 import { StatusPill } from "@/components/common/StatusPill";
 import { LoadingState, NotFoundState } from "@/components/common/States";
 import { selectSaveState } from "@/state/selectors";
@@ -80,6 +82,15 @@ export function MissionWorkspace({
         <p data-testid="workspace-mission-id" className="break-all font-mono text-xs text-muted">
           {mission.missionId}
         </p>
+        {saveState === "not-saved" ? (
+          <div data-testid="storage-export-prompt" role="alert" className="flex max-w-2xl flex-wrap items-center gap-3 rounded-lg border border-accent-amber/60 p-3 text-sm">
+            <p>
+              Your browser could not save this mission (storage is full or blocked). You can keep working, but changes
+              will be lost on reload. Export a package to keep your design.
+            </p>
+            <ExportButton testId="storage-export-button" label="Export package now" />
+          </div>
+        ) : null}
         <nav aria-label="Mission workspace" className="flex flex-wrap gap-2">
           {TABS.map((tab) => (
             <Link
@@ -97,6 +108,11 @@ export function MissionWorkspace({
           ))}
         </nav>
       </header>
+      <div className="flex flex-wrap items-start gap-2" data-testid="package-controls">
+        <ExportButton />
+        <ImportButton />
+      </div>
+      <RunsPanel missionId={missionId} />
       <div>{children}</div>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { ReplayBanner } from "@/components/persistence/ReplayBanner";
 import { ErrorState, LoadingState, NotFoundState } from "@/components/common/States";
 import type { RunData } from "@/lib/persistence/run-cache";
 import { useRun } from "./useRun";
@@ -12,5 +13,10 @@ export function RunGate({ runId, children }: { runId: string; children: (data: R
     return <NotFoundState title="Run not found" message="No simulation run with this ID exists in this browser or on the server." />;
   }
   if (state.kind === "error") return <ErrorState title="Run unavailable" message={state.message} onRetry={retry} />;
-  return <>{children(state.data)}</>;
+  return (
+    <>
+      <ReplayBanner data={state.data} />
+      {children(state.data)}
+    </>
+  );
 }
