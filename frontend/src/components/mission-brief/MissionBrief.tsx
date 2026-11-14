@@ -13,6 +13,7 @@ import { useAnalysis } from "@/hooks/useAnalysis";
 import { useMissionStore, type ScienceObjective } from "@/state/mission-store";
 import { ConceptCard } from "./ConceptCard";
 import { ObjectiveSelector, type ObjectiveChoice } from "./ObjectiveSelector";
+import { TargetPicker } from "./TargetPicker";
 import { useReferenceData } from "./useReferenceData";
 
 /** Mission brief (M02a): scenario, top constraints, objective confirmation, traceability. */
@@ -101,6 +102,8 @@ export function MissionBrief() {
           </ul>
         </div>
       </section>
+
+      <TargetPicker />
 
       <ObjectiveSelector choices={choices} onToggle={onToggle} onPriority={onPriority} />
 

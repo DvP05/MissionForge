@@ -92,6 +92,8 @@ export interface MissionStoreState {
   removeObjective: (objectiveId: string) => void;
   updateOperations: (patch: Partial<OperationsPlan>) => void;
   updateConstraints: (patch: Partial<MissionConstraints>) => void;
+  /** Phase 5: use a served JPL option as the trajectory + destination (new revision). */
+  setTrajectory: (trajectory: MissionState["trajectory"], destination: MissionState["destination"]) => void;
   commitRevision: () => void;
   setCalculating: () => void;
   /** Applies a backend analysis only if it matches the current design revision. */
@@ -246,6 +248,11 @@ export const useMissionStore = create<MissionStoreState>()((set, get) => {
 
     updateConstraints(patch) {
       edit((m) => ({ ...m, constraints: { ...m.constraints, ...patch } }));
+    },
+
+    setTrajectory(trajectory, destination) {
+      edit((m) => ({ ...m, trajectory, destination }));
+      get().commitRevision();
     },
 
     commitRevision() {

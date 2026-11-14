@@ -1,7 +1,7 @@
 # MISSIONFORGE release checklist (Task 7.5, Gate G6)
 
 Status as of 2026-11-14. Ticked items have automated evidence in the repository; open items
-need a person, or Phase 5 (JPL adapter), which is not built yet.
+need a person (Phase 5, the JPL adapter, is built; its real snapshot must be captured by a person).
 
 Commands (this machine blocks some `.exe` shims; see the project notes):
 
@@ -16,12 +16,12 @@ cd backend && uv run python -m pytest -q --cov=app
 - [x] Clean `uv sync` in `backend/` and `pnpm install` in `frontend/` succeed from a fresh clone, and `scripts/check_all.sh` passes there (verified 2026-11-14 on a local clone; this check found that `typecheck` needed `next typegen` first).
 - [x] Lint, typecheck, tests and build pass (`scripts/check_all.sh`: ruff, mypy, pytest, catalogue validator, API-type freshness, eslint, tsc, next build).
 - [x] Core Playwright flow passes: `tests/e2e/demo-journey.spec.ts` runs the demo route at 1280 and 375 px; the whole suite is green.
-- [x] No browser-side JPL requests: the frontend calls only the MISSIONFORGE API; JPL links in the passport are plain links checked server-side (R36).
-- [ ] JPL version check, serialisation, cache and fallback verified: **Phase 5 not built.**
+- [x] No browser-side JPL requests: `tests/e2e/jpl.spec.ts` asserts every browser request goes to the MISSIONFORGE frontend or API host.
+- [x] JPL version check, serialisation, cache and fallback verified against a mocked upstream (`tests/unit/jpl`): 1 request in flight, identical requests shared, Retry-After, capped backoff, no retry on 4xx, stale cache then snapshot. **Not yet exercised against the live API** (ruling R6: a person runs the capture).
 - [x] No unlabelled numerical assumptions: every catalogue value carries a fidelity label and provenance (catalogue validator); engine assumptions are listed per analysis and run. All catalogue values are gameplay estimates (R3) until the human source audit below.
 - [x] No failed constraint hidden behind the overall score: hard constraints gate launch; failed constraints are shown separately from the score (AC tests in `architect.spec.ts`).
 - [x] Same seeded mission produces the same result: golden analysis and run fixtures, replay tests, `test_all_scenarios.py`, demo-package drift test.
-- [ ] Works without JPL network access: **true today because nothing calls JPL**; re-check once Phase 5 adds the live adapter and its offline snapshot.
+- [x] Works without JPL network access: live access is off by default; the bundled snapshot is served and labelled (SYNTHETIC until captured, then DEMO — captured <date>).
 - [x] Mobile layout verified at 375 px: no horizontal overflow on brief, architect, control and review; axe at 375 px.
 - [x] WebGL fallback: there is no WebGL view (3D was cut per the cut order); the 2D mission map is the only map.
 - [x] Credits and non-endorsement statement visible: footer on every page and `/about` (credits, sources, fidelity tiers, non-endorsement, no NASA/JPL logos).
@@ -42,9 +42,10 @@ cd backend && uv run python -m pytest -q --cov=app
 - [x] Backend type / lint checks and frontend TypeScript checks pass.
 - [x] Lint, unit, contract, integration and build checks pass.
 - [x] Engineering equations have independent test vectors (known-answer tests in `tests/unit/analysis`).
-- [ ] JPL adapter: server-side request, serial queue, cache, User-Agent, version check: **Phase 5.**
+- [x] JPL adapter: server-side request, serial queue, cache, User-Agent, version check (Phase 5).
 - [x] No direct client-to-JPL fetch.
-- [ ] Offline snapshot path works: the seeded demo package (`data/demo/demo-saved.json`, "Load saved demo mission") works offline; the **JPL offline snapshot is Phase 5**.
+- [x] Offline snapshot path works: seeded demo package and the JPL offline snapshot both serve with no network.
+- [ ] **Capture a real JPL snapshot** (needs a person, R6): `cd backend && uv run python -m scripts.capture_demo_data --contact you@example.org`. Until then the target list is a SYNTHETIC example, never shown as JPL data. If the capture reports a schema mismatch, update `ALIASES` / `SUPPORTED_SIGNATURE_VERSIONS` in `backend/app/integrations/jpl/normalize.py` (decision D6).
 - [x] Reproducibility check passes (replay, golden fixtures, demo drift test).
 
 ### Trust and communication
