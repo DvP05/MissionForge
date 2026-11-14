@@ -180,10 +180,10 @@ export function apiGet<P extends GetPath>(
 export function apiPost<P extends PostPath>(
   path: P,
   body: RequestBodyOf<PostOp<P>>,
-  options: CommonOptions = {},
+  options: CommonOptions & { pathParams?: Record<string, unknown> } = {},
 ): Promise<ApiResponse<OkResponse<PostOp<P>>>> {
   return request(
-    buildUrl(path, undefined, undefined),
+    buildUrl(path, options.pathParams, undefined),
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

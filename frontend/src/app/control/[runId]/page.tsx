@@ -1,11 +1,15 @@
-import { NotFoundState } from "@/components/common/States";
+import { ControlRoute } from "@/components/mission-control/ControlRoute";
 
-// Simulation runs are not persisted yet; until a run store exists every run ID is unknown.
-export default function ControlPage() {
-  return (
-    <NotFoundState
-      title="Run not found"
-      message="No simulation run with this ID exists in this browser yet."
-    />
-  );
+export default async function ControlPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ runId: string }>;
+  searchParams: Promise<{ day?: string }>;
+}) {
+  const { runId } = await params;
+  const { day } = await searchParams;
+  const parsed = Number(day);
+  const startDay = Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+  return <ControlRoute runId={runId} startDay={startDay} />;
 }

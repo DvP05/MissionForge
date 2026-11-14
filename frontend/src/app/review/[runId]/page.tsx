@@ -1,11 +1,6 @@
-import { NotFoundState } from "@/components/common/States";
+import { ReviewRoute } from "@/components/review/ReviewRoute";
 
-// Simulation runs are not persisted yet; until a run store exists every run ID is unknown.
-export default function ReviewPage() {
-  return (
-    <NotFoundState
-      title="Run not found"
-      message="No simulation run with this ID exists in this browser yet."
-    />
-  );
+export default async function Page({ params }: { params: Promise<{ runId: string }> }) {
+  const { runId } = await params;
+  return <ReviewRoute runId={runId} />;
 }
