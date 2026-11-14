@@ -18,21 +18,14 @@ async function expectNoHorizontalOverflow(page: Page) {
 }
 
 test.describe("landing", () => {
-  test("shows three scenario cards; only NEO is enabled, others are labelled preview", async ({
-    page,
-  }) => {
+  test("shows three scenario cards, all playable (Task 7.1)", async ({ page }) => {
     await page.goto("/");
     const cards = page.locator('[data-testid^="scenario-card-"]');
     await expect(cards).toHaveCount(3);
-
-    await expect(
-      page.getByTestId(NEO).getByRole("button", { name: /start mission/i }),
-    ).toBeEnabled();
-
-    for (const id of ["lunar-polar-scout", "earth-observation"]) {
+    for (const id of ["neo-rendezvous", "lunar-polar-scout", "earth-observation"]) {
       const card = page.getByTestId(`scenario-card-${id}`);
-      await expect(card.getByText("Preview", { exact: true })).toBeVisible();
-      await expect(card.getByRole("button")).toBeDisabled();
+      await expect(card.getByRole("button", { name: /start mission/i })).toBeEnabled();
+      await expect(card.getByText("Preview", { exact: true })).toHaveCount(0);
     }
   });
 

@@ -11,8 +11,12 @@ import { useMissionStore, type ScenarioId } from "@/state/mission-store";
 type Templates = DataOf<Awaited<ReturnType<typeof apiGet<"/api/templates">>>>;
 type Template = Templates[number];
 
-/** Only NEO is playable until Task 7.1 ships the other scenarios. */
-const ENABLED: ReadonlySet<ScenarioId> = new Set<ScenarioId>(["neo-rendezvous"]);
+/** Task 7.1: all three scenarios are playable end to end. */
+const ENABLED: ReadonlySet<ScenarioId> = new Set<ScenarioId>([
+  "neo-rendezvous",
+  "lunar-polar-scout",
+  "earth-observation",
+]);
 
 type Load =
   | { kind: "loading" }
