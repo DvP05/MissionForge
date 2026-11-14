@@ -149,15 +149,23 @@ def _is_http(url: str | None) -> bool:
 
 
 def _jpl_link(ref: str | None) -> str | None:
-    """The reference only when it points at the JPL API host exactly (linkable, not verified)."""
-    if not ref:
+    """A link only for a plain https URL on the JPL API host (still not verified).
+
+    Rejects backslashes (browsers read them as "/"), whitespace and control characters,
+    userinfo and ports, then emits a URL rebuilt from the host plus path and query only.
+    """
+    if not ref or any(c == "\\" or c.isspace() or ord(c) < 32 or ord(c) == 127 for c in ref):
         return None
     try:
         parts = urlsplit(ref)
-        host = parts.hostname
+        host, user, password, port = parts.hostname, parts.username, parts.password, parts.port
     except ValueError:
         return None
-    return ref if parts.scheme == "https" and host == JPL_API_HOST else None
+    if parts.scheme != "https" or host != JPL_API_HOST:
+        return None
+    if user is not None or password is not None or port is not None or "@" in parts.netloc:
+        return None
+    return f"https://{JPL_API_HOST}{parts.path}" + (f"?{parts.query}" if parts.query else "")
 
 
 CLAIMED_JPL = "claimed JPL source — not verified by this server"

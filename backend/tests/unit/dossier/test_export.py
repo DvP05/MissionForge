@@ -97,6 +97,14 @@ def test_trajectory_values_are_scenario_preset_estimates(env: Env, run: MissionR
         ("https://ssd-api.jpl.nasa.gov/mdesign.api?des=1", True),
         ("https://ssd-api.jpl.nasa.gov.evil.example/x", False),
         ("javascript:alert(1)", False),
+        ("https://evil.example/ssd-api.jpl.nasa.gov", False),
+        ("https://ssd-api.jpl.nasa.gov@evil.example/", False),
+        ("https://evil.example@ssd-api.jpl.nasa.gov/", False),
+        ("https://evil.example\@ssd-api.jpl.nasa.gov/", False),
+        (" https://ssd-api.jpl.nasa.gov/mdesign.api", False),
+        ("https://ssd-api.jpl.nasa.gov/mdesign.api ", False),
+        ("https://ssd-api.jpl.nasa.gov/mdesign\t.api", False),
+        ("https://ssd-api.jpl.nasa.gov/mdesign\n.api", False),
         (None, False),
     ],
 )
@@ -116,6 +124,10 @@ def test_claimed_jpl_trajectory_is_never_source_backed(
         if not linkable:
             assert any(x.startswith(UNAVAILABLE) for x in r.limitations)
     html = _export(env, claimed).html
+    assert (
+        "href=" not in html.split("Sources and assumptions</h2>")[1].split("</section>")[0]
+        or linkable
+    )
     if ref and not linkable:
         assert f'href="{ref}' not in html
         assert 'href="https://evil.example' not in html
