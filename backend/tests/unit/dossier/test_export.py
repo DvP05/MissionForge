@@ -288,3 +288,29 @@ def test_undefined_margin_renders_dash_with_reason_r38(env: Env) -> None:
     budgets = _export(env, run).html.split("Budgets and margins</h2>")[1].split("</section>")[0]
     assert "<td>data margin</td><td>— (not defined:" in budgets
     assert "<td>data margin</td><td>0.0%" not in budgets
+
+
+def _header(html: str) -> str:
+    return html.split("<header>")[1].split("</header>")[0]
+
+
+@pytest.mark.parametrize(
+    "replay",
+    [
+        None,
+        ReplayCheck("version-mismatch", ("engineVersion",)),
+        ReplayCheck("diverged", ("events",)),
+    ],
+)
+def test_unverified_replay_has_prominent_banner_r39(
+    env: Env, run: MissionRun, replay: ReplayCheck | None
+) -> None:
+    """R39: a passport that is not a verified identical replay says so up front."""
+    html = _export(env, run, replay=replay).html
+    assert "Unverified" in _header(html)
+    assert "Unverified" in _summary(html)
+
+
+def test_verified_replay_has_no_unverified_banner_r39(env: Env, run: MissionRun) -> None:
+    html = _export(env, run, replay=ReplayCheck("identical-replay", ())).html
+    assert "Unverified" not in html

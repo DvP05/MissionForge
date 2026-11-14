@@ -61,6 +61,7 @@ footer{margin-top:32px;border-top:1px solid var(--line);padding-top:12px;font-si
 .table-wrap{overflow:visible}
 h2{break-after:avoid}
 table,.banner{break-inside:avoid}
+.unverified{border:2px solid #9a3412;background:#fff7ed;color:#7c2d12;font-weight:600}
 a{color:inherit;text-decoration:none}}
 """
 
@@ -106,7 +107,25 @@ def _section(title: str, body: str) -> str:
     return f"<section><h2>{_e(title)}</h2>{body}</section>"
 
 
-def _summary(run: MissionRun, analysis: MissionAnalysis | None) -> str:
+def _unverified_text(replay: ReplayCheck | None) -> str | None:
+    """R39: the up-front warning for any passport that is not a verified identical replay."""
+    if replay is not None and replay.status == "identical-replay":
+        return None
+    if replay is None:
+        why = "the replay was not checked at export time"
+    elif replay.status == "version-mismatch":
+        why = "engine, catalogue or scenario versions differ from the recorded run"
+    else:
+        why = "re-running the recorded inputs did not reproduce this run"
+    return (
+        f"Unverified: {why}. Treat the results below as a record of a claimed run, "
+        "not a verified reproducible result."
+    )
+
+
+def _summary(
+    run: MissionRun, analysis: MissionAnalysis | None, replay: ReplayCheck | None = None
+) -> str:
     rep = run.final_report
     achieved = sum(o.status == "achieved" for o in run.science_outcomes)
     total = len(run.science_outcomes)
@@ -116,7 +135,9 @@ def _summary(run: MissionRun, analysis: MissionAnalysis | None) -> str:
         "failure": f"The simulated flight did not achieve its objectives ({achieved} of {total} achieved).",  # noqa: E501
         "terminated": "The simulated mission ended before it completed operations; see root causes below.",  # noqa: E501
     }[rep.outcome]
+    unverified = _unverified_text(replay)
     parts = [
+        *([f'<p class="banner unverified">{_e(unverified)}</p>'] if unverified else []),
         f'<p class="outcome">{_e(_OUTCOME_LABEL[rep.outcome])}</p>',
         f"<p>{_e(sentence)}</p>",
         f"<p>{_e(rep.summary)}</p>",
@@ -518,9 +539,13 @@ def render_html(
     app_version: str,
 ) -> str:
     title = run.input_snapshot.title
+    unverified = _unverified_text(replay)
+    unverified_banner = (
+        f'<p class="banner unverified" role="alert">{_e(unverified)}</p>' if unverified else ""
+    )
     body = "".join(
         [
-            _summary(run, analysis),
+            _summary(run, analysis, replay),
             _brief(run, catalog),
             _architecture(run, catalog),
             _budgets(run, analysis),
@@ -539,6 +564,7 @@ def render_html(
         f"<title>MISSIONFORGE Evidence Passport: {_e(title)}</title><style>{_CSS}</style></head>"
         f"<body><main><header><h1>Evidence Passport: {_e(title)}</h1>"
         f'<p class="muted">Run <span class="mono">{_e(run.run_id)}</span> · exported {_e(_ts(exported_at))}</p>'  # noqa: E501
+        f"{unverified_banner}"
         f'<p class="banner">{_e(NON_ENDORSEMENT)}</p></header>{body}'
         f"<footer>{_e(NON_ENDORSEMENT)}</footer></main></body></html>\n"
     )
