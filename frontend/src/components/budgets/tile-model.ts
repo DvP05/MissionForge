@@ -131,7 +131,7 @@ export function buildTiles(a: MissionAnalysis): TileModel[] {
         scalarRow(a, "margin", "Downlink margin", b.dataMarginFraction, formatFraction),
       ],
     },
-    { id: "cost", title: "Cost", rows: [q("cost", "Estimated cost", b.estimatedCostUsd)] },
+    { id: "cost", title: "Cost", rows: [quantityRow("cost", "Estimated cost", b.estimatedCostUsd)] },
     {
       id: "science",
       title: "Science",

@@ -50,7 +50,7 @@ test.describe("compare view", () => {
     await expect(page.getByTestId("add-alternative")).toBeDisabled();
     await expect(page.getByTestId("compare-view")).toContainText(/up to 3 alternatives/i);
     // a copy starts identical to the baseline
-    await expect(page.getByTestId("alt-select-A-communications")).toHaveValue("comms-xband-low");
+    await expect(page.getByTestId("alt-select-A-communications")).toHaveValue("comms-xband-lowgain");
     await page.getByTestId("remove-alternative-B").click();
     await expect(page.locator('[data-testid^="alternative-card-"]')).toHaveCount(2);
     await expect(page.getByTestId("add-alternative")).toBeEnabled();
@@ -63,7 +63,7 @@ test.describe("compare view", () => {
     const deltas = body.data.alternatives[0].deltas as Record<string, number>;
     const table = page.getByTestId("compare-table");
     await expect(table).toBeVisible();
-    await expect(table.getByRole("columnheader", { name: /baseline/i })).toBeVisible();
+    await expect(table.getByRole("columnheader", { name: "Baseline", exact: true })).toBeVisible();
     await expect(table.getByRole("columnheader", { name: /alternative a/i })).toBeVisible();
 
     let directional = 0;
@@ -92,7 +92,8 @@ test.describe("compare view", () => {
     await expect(page.getByTestId("compare-feasibility-base")).toContainText(/infeasible/i);
     await expect(page.getByTestId("compare-feasibility-base")).toContainText(/not mission-ready/i);
     await expect(page.getByTestId("compare-feasibility-A")).toContainText(/^\s*feasible/i);
-    await expect(page.getByTestId("compare-feasibility-A")).toContainText(/^(?!.*not mission-ready).*mission-ready/is);
+    await expect(page.getByTestId("compare-feasibility-A")).not.toContainText(/not mission-ready/i);
+    await expect(page.getByTestId("compare-feasibility-A")).toContainText(/mission-ready/i);
   });
 
   test("the baseline is untouched: stored mission, revision and request body", async ({ page }) => {
@@ -108,7 +109,7 @@ test.describe("compare view", () => {
     expect(requestBody!.alternatives[0].architecture.communicationsId).toBe("comms-xband-medium");
     const after = await stored(page, id);
     expect(after).toEqual(before);
-    expect(after.architecture.communicationsId).toBe("comms-xband-low");
+    expect(after.architecture.communicationsId).toBe("comms-xband-lowgain");
     await expect(page.getByTestId("revision-pill")).toHaveText("Revision 0");
   });
 
@@ -124,7 +125,7 @@ test.describe("compare view", () => {
   test("editing an alternative after a run marks the table out of date", async ({ page }) => {
     await openArena(page);
     await runWithMediumRadio(page);
-    await page.getByTestId("alt-select-A-communications").selectOption("comms-xband-low");
+    await page.getByTestId("alt-select-A-communications").selectOption("comms-xband-lowgain");
     await expect(page.getByTestId("compare-stale")).toContainText(/out of date/i);
     await page.getByTestId("run-trade-study").click();
     await expect(page.getByTestId("compare-stale")).toHaveCount(0);
