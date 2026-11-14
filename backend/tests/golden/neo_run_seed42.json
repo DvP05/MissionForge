@@ -512,7 +512,7 @@
       "type": "milestone",
       "severity": "info",
       "title": "Target approach",
-      "description": "Approach and rendezvous preparation ahead of arrival on day 275; science starts on day 290.",
+      "description": "Approach preparation ahead of arrival on day 275 (time of flight); science starts on day 290.",
       "trigger": {
         "source": "design",
         "ref": "trajectory.timeOfFlightDays",
@@ -529,8 +529,8 @@
       "phase": "approach",
       "type": "milestone",
       "severity": "info",
-      "title": "Rendezvous burn",
-      "description": "Spacecraft maneuver at arrival uses 250 m/s of the 514 m/s available (margin after reserve 214 m/s); 48.4% of the propellant remains.",
+      "title": "Arrival maneuver",
+      "description": "Spacecraft maneuver at arrival (day 275, rendezvous / orbit insertion) uses 250 m/s of the 514 m/s available (margin after reserve 214 m/s); 48.4% of the propellant remains.",
       "trigger": {
         "source": "design",
         "ref": "trajectory.missionDeltaVKmPerS",
@@ -571,6 +571,7 @@
       "trigger": {
         "source": "design",
         "ref": "operations.observationPlan[0]",
+        "plan_item": "operations.observationPlan[0]",
         "measurement_id": "meas-shape-model",
         "duration_hours": 4.0,
         "duty_cycle": 0.015
@@ -654,6 +655,7 @@
       "trigger": {
         "source": "design",
         "ref": "operations.observationPlan[1]",
+        "plan_item": "operations.observationPlan[1]",
         "measurement_id": "meas-shape-model",
         "duration_hours": 4.0,
         "duty_cycle": 0.015
@@ -758,6 +760,7 @@
       "trigger": {
         "source": "design",
         "ref": "operations.observationPlan[2]",
+        "plan_item": "operations.observationPlan[2]",
         "measurement_id": "meas-vnir-spectra",
         "duration_hours": 8.0,
         "duty_cycle": 0.025
@@ -841,6 +844,7 @@
       "trigger": {
         "source": "design",
         "ref": "operations.observationPlan[3]",
+        "plan_item": "operations.observationPlan[3]",
         "measurement_id": "meas-vnir-spectra",
         "duration_hours": 8.0,
         "duty_cycle": 0.025
@@ -1509,7 +1513,8 @@
       "trigger": {
         "source": "design",
         "ref": "operations.missionDurationDays",
-        "value": 420.0
+        "value": 420.0,
+        "end_day": 420.0
       },
       "choices": [],
       "resolvedBy": null,
@@ -3593,9 +3598,14 @@
     "counterfactuals": [],
     "limitations": [
       "deterministic event simulation; not orbital propagation",
-      "Resources are read from the engineering analysis at phase, maneuver, observation and contact checkpoints; subsystems are not time-stepped.",
-      "Phase lengths for launch, commissioning, mid-course and approach are gameplay defaults.",
-      "Pointing error telemetry is a proxy equal to the ADCS pointing accuracy.",
+      "Launch/deployment lasts 1 d and commissioning 14 d (gameplay defaults, capped to 5 % / 25 % of the time of flight, or of the time before science when there is no transfer).",
+      "Approach starts 30 d before arrival (at most half the transfer); mid-course starts halfway through the cruise (gameplay defaults).",
+      "Without an interplanetary transfer, cruise (orbit raising / checkout) and mid-course (orbit trim) each last 1 d (gameplay durations).",
+      "Science operations span the observation plan; downlink-return runs to the end of the mission.",
+      "Telemetry is sampled at phase, maneuver, observation and contact checkpoints from the engineering analysis; it is not a time-stepped subsystem simulation.",
+      "Battery state of charge is the end-of-cycle value of the analysis representative power cycle for the phase; the battery is full at launch (gameplay-estimate).",
+      "Pointing error is a proxy equal to the ADCS pointing accuracy (gameplay-estimate).",
+      "Link margin is reported at contacts only, at the scenario reference Earth range.",
       "Nominal run: no anomalies or decisions are injected.",
       "All catalogue values are illustrative gameplay-estimate archetypes."
     ]

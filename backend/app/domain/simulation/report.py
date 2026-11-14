@@ -21,6 +21,8 @@ returned anything (or there are no objectives); otherwise ``partial``.
 from collections.abc import Sequence
 
 from app.domain.analysis.context import AnalysisContext
+from app.domain.simulation.phases import PHASE_ASSUMPTIONS
+from app.domain.simulation.telemetry import TELEMETRY_ASSUMPTIONS
 from app.schemas.analysis import MissionAnalysis
 from app.schemas.mission import MissionState
 from app.schemas.simulation import FinalReport, ScienceOutcome
@@ -29,10 +31,8 @@ ACHIEVED_RETURNED_FRACTION = 0.8  # gameplay-estimate threshold
 
 LIMITATIONS: tuple[str, ...] = (
     "deterministic event simulation; not orbital propagation",
-    "Resources are read from the engineering analysis at phase, maneuver, observation and "
-    "contact checkpoints; subsystems are not time-stepped.",
-    "Phase lengths for launch, commissioning, mid-course and approach are gameplay defaults.",
-    "Pointing error telemetry is a proxy equal to the ADCS pointing accuracy.",
+    *PHASE_ASSUMPTIONS,
+    *TELEMETRY_ASSUMPTIONS,
     "Nominal run: no anomalies or decisions are injected.",
     "All catalogue values are illustrative gameplay-estimate archetypes.",
 )

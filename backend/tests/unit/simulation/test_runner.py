@@ -335,3 +335,60 @@ def test_empty_plans_run_without_nan(sim_input_for: SimFactory, catalog: Catalog
     assert all(o.status == "missed" for o in run.science_outcomes)
     assert run.final_report.outcome == "failure"
     assert "NaN" not in run.model_dump_json()
+
+
+# --- fix round 1: schedule wording, missing science, extended end, single-source limits ---
+
+
+def test_leo_run_uses_orbit_wording(sim_input_for: SimFactory, catalog: Catalog) -> None:
+    run = _run(sim_input_for, catalog, make_state("earth-observation"), experimental=True)
+    entered = {t.phase for t in run.phase_transitions}
+    assert entered == set(run.phases) and len(run.phases) == 8
+    text = " ".join(f"{e.title} {e.description}" for e in run.events).lower()
+    assert "rendezvous" not in text and "transfer toward" not in text
+    burn = next(e for e in run.events if e.trigger.get("ref") == "trajectory.missionDeltaVKmPerS")
+    assert burn.title == "Primary maneuver"
+
+
+def test_lunar_run_arrives_on_time_of_flight(sim_input_for: SimFactory, catalog: Catalog) -> None:
+    run = _run(sim_input_for, catalog, make_state("lunar-polar-scout"), experimental=True)
+    burn = next(e for e in run.events if e.trigger.get("ref") == "trajectory.missionDeltaVKmPerS")
+    assert burn.mission_day == 5.0 and burn.title == "Arrival maneuver"
+    cruise = next(e for e in run.events if e.id == "cruise-milestone-1")
+    assert "arrival on day 5." in cruise.description
+
+
+def test_observation_never_claims_storage_for_missing_science(
+    sim_input_for: SimFactory, catalog: Catalog
+) -> None:
+    sim, _ = sim_input_for(make_state(), experimental=True)
+    missing = set(sim.analysis.science.missing_requirements)
+    run = _run(sim_input_for, catalog, make_state(), experimental=True)
+    flagged = [
+        e for e in run.events if e.type == "science" and e.trigger["measurement_id"] in missing
+    ]
+    assert flagged
+    for e in flagged:
+        assert e.severity == "warning"
+        assert "data is stored" not in e.description
+        assert e.trigger["ref"] == "architecture.communicationsId"
+
+
+def test_complete_text_uses_extended_end_day(sim_input_for: SimFactory, catalog: Catalog) -> None:
+    dump = make_state(communications_id=MEDIUM).model_dump()
+    dump["operations"] = {**dump["operations"], "mission_duration_days": 400.0}
+    run = _run(sim_input_for, catalog, MissionState.model_validate(dump), experimental=True)
+    done = next(e for e in run.events if e.phase == "complete")
+    assert done.mission_day == pytest.approx(408.0 + 8.0 / 24.0)
+    assert "ends on day 408.333" in done.description and "planned 400 d" in done.description
+
+
+def test_limitations_reuse_assumption_constants(
+    sim_input_for: SimFactory, catalog: Catalog
+) -> None:
+    from app.domain.simulation.phases import PHASE_ASSUMPTIONS
+    from app.domain.simulation.telemetry import TELEMETRY_ASSUMPTIONS
+
+    limits = _run(sim_input_for, catalog).final_report.limitations
+    assert set(PHASE_ASSUMPTIONS) <= set(limits) and set(TELEMETRY_ASSUMPTIONS) <= set(limits)
+    assert len(limits) == len(set(limits))

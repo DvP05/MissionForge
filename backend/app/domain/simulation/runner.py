@@ -143,7 +143,7 @@ def run_mission(
     specs = [
         *milestone_specs(state, schedule),
         *maneuver_specs(state, schedule, ctx, remaining),
-        *science_specs(state, resolved.instruments),
+        *science_specs(state, resolved.instruments, ctx),
         *downlink_specs(state, ctx),
         *scenario_event_specs(state, schedule, ctx, rng, sim_input.scenario_event_set_id),
     ]

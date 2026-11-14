@@ -62,3 +62,55 @@ def test_empty_plans_still_schedule_all_phases() -> None:
     assert [p for p, _ in s.transitions] == [*SIM_PHASES, "complete"]
     days = [d for _, d in s.transitions]
     assert days == sorted(days) and days[-1] == 420.0
+
+
+STARTERS = ("neo-rendezvous", "lunar-polar-scout", "earth-observation")
+
+
+@pytest.mark.parametrize("scenario", STARTERS)
+def test_every_starter_phase_has_positive_length(scenario: str) -> None:
+    s = build_schedule(make_state(scenario))
+    days = [d for _, d in s.transitions]
+    lengths = {p: b - a for (p, a), b in zip(s.transitions, days[1:], strict=False)}
+    assert set(lengths) == set(SIM_PHASES)
+    assert all(v > 0.0 for v in lengths.values()), lengths
+
+
+@pytest.mark.parametrize("scenario", STARTERS)
+def test_arrival_is_time_of_flight_when_transfer_fits(scenario: str) -> None:
+    state = make_state(scenario)
+    s = build_schedule(state)
+    tof = state.trajectory.time_of_flight_days
+    assert tof is not None
+    if tof > s.start_of("cruise"):
+        assert s.transfer and s.arrival_day == tof
+        assert s.start_of("cruise") < s.start_of("mid-course") < s.start_of("approach") < tof
+
+
+def test_lunar_schedule_days() -> None:
+    s = build_schedule(make_state("lunar-polar-scout"))  # TOF 5 d, first observation day 20
+    days = dict(s.transitions)
+    assert s.transfer and s.arrival_day == 5.0
+    assert days["commissioning"] == pytest.approx(0.25)  # 5 % of TOF
+    assert days["cruise"] == pytest.approx(1.5)  # + 25 % of TOF
+    assert days["approach"] == pytest.approx(3.25)  # at most half the transfer
+    assert days["mid-course"] == pytest.approx(2.375)
+    assert days["science-ops"] == 20.0
+
+
+def test_leo_schedule_has_orbit_phases() -> None:
+    s = build_schedule(make_state("earth-observation"))  # TOF 0, first observation day 30
+    days = dict(s.transitions)
+    assert not s.transfer
+    assert days["cruise"] == pytest.approx(8.5)  # 1 d launch + 7.5 d commissioning (25 % of S)
+    assert days["mid-course"] == pytest.approx(9.5)  # 1 d orbit raising (gameplay)
+    assert days["approach"] == pytest.approx(10.5)  # 1 d orbit trim (gameplay)
+    assert s.arrival_day == days["approach"]
+    assert days["science-ops"] == 30.0
+
+
+def test_mission_end_extends_to_last_contact() -> None:
+    state = _with_ops(make_state(), mission_duration_days=400.0)  # last contact ends 408.33
+    s = build_schedule(state)
+    assert s.end_day == pytest.approx(408.0 + 8.0 / 24.0)
+    assert s.planned_end_day == 400.0

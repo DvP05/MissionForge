@@ -13,6 +13,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 from app.domain.analysis.context import AnalysisContext
+from app.domain.analysis.science import REASON_NO_CAPABILITY
 from app.domain.simulation.phases import (
     COMMISSIONING_DAYS,
     LAUNCH_DEPLOYMENT_DAYS,
@@ -84,17 +85,38 @@ def milestone_specs(state: MissionState, schedule: PhaseSchedule) -> list[EventS
             "Transfer toward the target on the selected trajectory "
             f"{state.trajectory.option_id}; arrival on day {schedule.arrival_day:g}.",
             _design("trajectory.timeOfFlightDays", **tof_vals),
+        )
+        if schedule.transfer
+        else (
+            "Orbit raising and checkout",
+            "No interplanetary transfer on this trajectory: the spacecraft raises and checks "
+            f"its orbit for {days['mid-course'] - days['cruise']:g} d (gameplay duration).",
+            _design("trajectory.timeOfFlightDays", **tof_vals),
         ),
         "mid-course": (
             "Mid-course phase",
             "Halfway through the cruise (gameplay timing): navigation checks before the "
             f"approach on day {days['approach']:g}.",
             _design("trajectory.timeOfFlightDays", **tof_vals),
+        )
+        if schedule.transfer
+        else (
+            "Orbit trim",
+            f"Orbit trim and navigation checks for {days['approach'] - days['mid-course']:g} d "
+            "(gameplay duration) before the spacecraft settles on its operating orbit.",
+            _design("trajectory.timeOfFlightDays", **tof_vals),
         ),
         "approach": (
             "Target approach",
-            f"Approach and rendezvous preparation ahead of arrival on day "
-            f"{schedule.arrival_day:g}; science starts on day {days['science-ops']:g}.",
+            f"Approach preparation ahead of arrival on day {schedule.arrival_day:g} "
+            f"(time of flight); science starts on day {days['science-ops']:g}.",
+            _design("trajectory.timeOfFlightDays", **tof_vals),
+        )
+        if schedule.transfer
+        else (
+            "Orbit acquisition",
+            f"The spacecraft is on its operating orbit from day {schedule.arrival_day:g}; "
+            f"instruments are prepared until science starts on day {days['science-ops']:g}.",
             _design("trajectory.timeOfFlightDays", **tof_vals),
         ),
         "science-ops": (
@@ -112,9 +134,19 @@ def milestone_specs(state: MissionState, schedule: PhaseSchedule) -> list[EventS
         ),
         "complete": (
             "Mission complete",
-            f"The planned mission duration ({ops.mission_duration_days:g} d) has elapsed and "
-            "the final report is compiled.",
-            _design("operations.missionDurationDays", value=ops.mission_duration_days),
+            (
+                f"The planned mission duration ({ops.mission_duration_days:g} d) has elapsed "
+                "and the final report is compiled."
+                if schedule.end_day <= ops.mission_duration_days
+                else f"The mission ends on day {schedule.end_day:g}, after the planned "
+                f"{ops.mission_duration_days:g} d, so the last planned activity completes; "
+                "the final report is compiled."
+            ),
+            _design(
+                "operations.missionDurationDays",
+                value=ops.mission_duration_days,
+                end_day=schedule.end_day,
+            ),
         ),
     }
     out: list[EventSpec] = []
@@ -136,8 +168,14 @@ def maneuver_specs(
     dv_ms = per[-1][1]
     margin = ctx.maneuvers.margin_ms
     severity: EventSeverity = "info" if margin >= 0.0 else "warning"
+    if schedule.transfer:
+        title = "Arrival maneuver"
+        when = f"at arrival (day {schedule.arrival_day:g}, rendezvous / orbit insertion)"
+    else:
+        title = "Primary maneuver"
+        when = f"on reaching the operating orbit (day {schedule.arrival_day:g})"
     text = (
-        f"Spacecraft maneuver at arrival uses {dv_ms:.0f} m/s of the "
+        f"Spacecraft maneuver {when} uses {dv_ms:.0f} m/s of the "
         f"{ctx.maneuvers.available_ms:.0f} m/s available (margin after reserve {margin:.0f} m/s); "
         f"{remaining_fraction_after:.1%} of the propellant remains."
     )
@@ -148,13 +186,46 @@ def maneuver_specs(
     )
     return [
         EventSpec(
-            schedule.arrival_day, "milestone", severity, "Rendezvous burn", text, trig,
+            schedule.arrival_day, "milestone", severity, title, text, trig,
             RANK_MANEUVER,
         )
     ]  # fmt: skip
 
 
-def science_specs(state: MissionState, instruments: Sequence[CatalogComponent]) -> list[EventSpec]:
+def _observation_problem(
+    req_id: str, capable: bool, ctx: AnalysisContext
+) -> tuple[str, str] | None:
+    """(trigger ref, explanation) when the analysis says this observation's data is lost."""
+    reason = dict(ctx.science_missing).get(req_id)
+    if not capable or reason == REASON_NO_CAPABILITY:
+        return (
+            "architecture.instrumentIds",
+            "no selected instrument provides this capability, so no data is made.",
+        )
+    if reason is None:
+        return None
+    if not ctx.pointing_ok:
+        return (
+            "architecture.adcsId",
+            "the ADCS pointing accuracy does not meet the instrument requirement, so the "
+            "analysis credits no usable data.",
+        )
+    if not ctx.power_ok:
+        return (
+            "architecture.powerId",
+            "the power system cannot supply the instrument load, so the analysis credits no "
+            "usable data.",
+        )
+    return (
+        "architecture.communicationsId",
+        "data is collected, but the analysis returns none of it to the ground over the "
+        "planned contacts.",
+    )
+
+
+def science_specs(
+    state: MissionState, instruments: Sequence[CatalogComponent], ctx: AnalysisContext
+) -> list[EventSpec]:
     reqs = {r.id: r for o in state.science_objectives for r in o.required_measurements}
     out: list[EventSpec] = []
     for i, item in enumerate(state.operations.observation_plan):
@@ -166,14 +237,18 @@ def science_specs(state: MissionState, instruments: Sequence[CatalogComponent]) 
             f"Observation of {item.measurement_id} for {item.duration_hours:g} h at duty cycle "
             f"{item.duty_cycle:g}"
         )
-        if capable:
+        problem = _observation_problem(item.measurement_id, capable, ctx)
+        ref = f"operations.observationPlan[{i}]"
+        if problem is None:
             severity: EventSeverity = "info"
             text = f"{base}; data is stored in the onboard buffer until the next contact."
         else:
             severity = "warning"
-            text = f"{base}: no selected instrument provides this capability, so no data is made."
+            ref, why = problem
+            text = f"{base}: {why}"
         trig = _design(
-            f"operations.observationPlan[{i}]",
+            ref,
+            plan_item=f"operations.observationPlan[{i}]",
             measurement_id=item.measurement_id,
             duration_hours=item.duration_hours,
             duty_cycle=item.duty_cycle,
