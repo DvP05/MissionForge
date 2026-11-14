@@ -43,9 +43,15 @@ class TradeStudyRequest(ContractModel):
 class SimulateRequest(ContractModel):
     mission_state: MissionState
     random_seed: StrictInt
-    scenario_event_set_id: str | None = Field(default=None, max_length=100)
+    scenario_event_set_id: str | None = Field(default=None, min_length=1, max_length=100)
     experimental: StrictBool = False
-    decisions: dict[str, str] | None = None
+    decisions: (
+        dict[
+            Annotated[str, Field(min_length=1, max_length=200)],
+            Annotated[str, Field(min_length=1, max_length=200)],
+        ]
+        | None
+    ) = Field(default=None, max_length=50)
     monte_carlo_samples: StrictInt | None = Field(default=None, ge=1)
 
 

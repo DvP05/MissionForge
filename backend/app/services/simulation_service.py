@@ -98,7 +98,7 @@ class SimulationService:
         self._app_version = app_version
         self._store: RunStore[StoredRun] = store if store is not None else RunStore()
 
-    def _run(self, sim_input: SimulationInput, decisions: dict[str, str]) -> StoredRun:
+    def _build(self, sim_input: SimulationInput, decisions: dict[str, str]) -> StoredRun:
         state = sim_input.mission_state
         template = self._templates.get(state.scenario_id)
         scenario = self._templates.scenario_inputs(state.scenario_id)
@@ -113,8 +113,11 @@ class SimulationService:
             app_version=self._app_version,
             decisions=decisions,
         )
-        stored = StoredRun(run=run, sim_input=sim_input, decisions=dict(decisions))
-        self._store.put(run.run_id, stored)
+        return StoredRun(run=run, sim_input=sim_input, decisions=dict(decisions))
+
+    def _run(self, sim_input: SimulationInput, decisions: dict[str, str]) -> StoredRun:
+        stored = self._build(sim_input, decisions)
+        self._store.put(stored.run.run_id, stored)
         return stored
 
     def simulate(
@@ -156,4 +159,10 @@ class SimulationService:
             d.event_id == event_id and d.decision_maker == "player" for d in source.run.decisions
         ):
             raise DecisionAlreadyMadeError(event_id)
-        return self._run(source.sim_input, {**source.decisions, event_id: choice_id})
+        # The new choice may end the mission earlier and cancel later carried-over decisions.
+        # Probe with the new decision alone (strict: it raises if the new decision is invalid),
+        # then keep only the earlier player choices whose events still happen on this branch.
+        probe = self._build(source.sim_input, {event_id: choice_id})
+        occurring = {d.event_id for d in probe.run.decisions}
+        kept = {k: v for k, v in source.decisions.items() if k in occurring and k != event_id}
+        return self._run(source.sim_input, {**kept, event_id: choice_id})

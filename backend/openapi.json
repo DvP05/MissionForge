@@ -2466,7 +2466,14 @@
             "anyOf": [
               {
                 "additionalProperties": {
+                  "maxLength": 200,
+                  "minLength": 1,
                   "type": "string"
+                },
+                "maxProperties": 50,
+                "propertyNames": {
+                  "maxLength": 200,
+                  "minLength": 1
                 },
                 "type": "object"
               },
@@ -2504,6 +2511,7 @@
             "anyOf": [
               {
                 "maxLength": 100,
+                "minLength": 1,
                 "type": "string"
               },
               {

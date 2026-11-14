@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 
 from app.api.deps import get_clock
 from app.main import create_app
+from app.services.simulation_service import RunStore, SimulationService
 
 NOW = datetime(2026, 11, 13, 12, 0, tzinfo=UTC)
 SIM = "/api/mission/simulate"
@@ -217,3 +218,59 @@ def test_decision_after_termination_rejected(client: TestClient) -> None:
     assert t.json()["data"]["run"]["finalReport"]["outcome"] == "terminated"
     later = _decide(client, t.json()["data"]["run"]["runId"], SOLAR, "continue")
     assert later.status_code == 422 and later.json()["error"]["code"] == "UNKNOWN_DECISION_EVENT"
+
+
+def test_branching_earlier_ending_choice_prunes_cancelled_later_decisions(
+    client: TestClient,
+) -> None:
+    state = _state(client, propulsionId="prop-cold-gas", communicationsId="comms-xband-medium")
+    src = _sim(client, state, experimental=True).json()["data"]["run"]["runId"]
+    a = _decide(client, src, SOLAR, "continue")  # later event decided first
+    assert a.status_code == 200
+    b = _decide(
+        client, a.json()["data"]["run"]["runId"], "anomaly-correction-shortfall", "abort-mission"
+    )
+    assert b.status_code == 200, b.text
+    run = b.json()["data"]["run"]
+    assert run["finalReport"]["outcome"] == "terminated"
+    assert SOLAR not in [d["eventId"] for d in run["decisions"]]
+    assert SOLAR not in [e["id"] for e in run["events"]]
+    # the newly supplied event is still strictly validated
+    t = _decide(client, run["runId"], SOLAR, "continue")
+    assert t.status_code == 422 and t.json()["error"]["code"] == "UNKNOWN_DECISION_EVENT"
+
+
+def test_request_bounds_on_event_set_and_decisions(client: TestClient) -> None:
+    state = _medium(client)
+    r = _sim(client, state, scenarioEventSetId="")
+    assert r.status_code == 422 and r.json()["error"]["code"] == "VALIDATION_ERROR"
+    r = _sim(client, state, decisions={"k" * 201: "x"})
+    assert r.status_code == 422 and r.json()["error"]["code"] == "VALIDATION_ERROR"
+    r = _sim(client, state, decisions={SOLAR: "v" * 201})
+    assert r.status_code == 422 and r.json()["error"]["code"] == "VALIDATION_ERROR"
+    r = _sim(client, state, decisions={SOLAR: ""})
+    assert r.status_code == 422 and r.json()["error"]["code"] == "VALIDATION_ERROR"
+
+
+def test_evicted_run_returns_404(client: TestClient) -> None:
+    app = client.app
+    old = app.state.simulation_service  # type: ignore[attr-defined]
+    app.state.simulation_service = SimulationService(  # type: ignore[attr-defined]
+        old._missions,
+        old._catalog,
+        old._templates,
+        old._event_sets,  # noqa: SLF001
+        engine_version=old._engine_version,
+        app_version=old._app_version,  # noqa: SLF001
+        store=RunStore(capacity=2),
+    )
+    state = _medium(client)
+    ids = [
+        _sim(client, state, scenarioEventSetId=es).json()["data"]["run"]["runId"]
+        for es in ("nominal-v1", "neo-default-v1", "generic-design-v1")
+    ]
+    assert len(set(ids)) == 3
+    gone = client.get(f"/api/mission/run/{ids[0]}")
+    assert gone.status_code == 404 and gone.json()["error"]["code"] == "RUN_NOT_FOUND"
+    assert _decide(client, ids[0], SOLAR, "continue").status_code == 404
+    assert client.get(f"/api/mission/run/{ids[2]}").status_code == 200
