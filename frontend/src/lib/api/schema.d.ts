@@ -60,6 +60,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/mission/graph": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mission Graph
+         * @description Dependency graph plus STM/MTM tables for one design revision (architecture 19.1).
+         */
+        post: operations["mission_graph_api_mission_graph_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission/impact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mission Impact
+         * @description What one edit changed: metrics, constraints and science objectives (19.1 behaviour 7).
+         */
+        post: operations["mission_impact_api_mission_impact_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/mission/import": {
         parameters: {
             query?: never;
@@ -84,6 +124,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/mission/optimize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mission Optimize
+         * @description Candidate designs, the feasible Pareto front, archetypes and near misses (19.2).
+         */
+        post: operations["mission_optimize_api_mission_optimize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission/recommend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mission Recommend
+         * @description Deterministic one-step improvements computed by the engine (architecture 19.8).
+         */
+        post: operations["mission_recommend_api_mission_recommend_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/mission/replay": {
         parameters: {
             query?: never;
@@ -102,6 +182,26 @@ export interface paths {
          *     ok=true with status "version-mismatch" and no re-run: never a claim of identity.
          */
         post: operations["replay_run_api_mission_replay_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission/robustness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mission Robustness
+         * @description Seeded Monte Carlo robustness proxy (architecture 19.3); default 250 samples.
+         */
+        post: operations["mission_robustness_api_mission_robustness_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -142,6 +242,26 @@ export interface paths {
          * @description Branch a stored run with one player decision. Returns a NEW run; the source is unchanged.
          */
         post: operations["decide_api_mission_run__run_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mission Schedule
+         * @description Which planned observations fit storage, energy, pointing and contacts (19.6).
+         */
+        post: operations["mission_schedule_api_mission_schedule_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -199,6 +319,26 @@ export interface paths {
         put?: never;
         /** Validate Mission */
         post: operations["validate_mission_api_mission_validate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/science/belief": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Science Belief
+         * @description Bayesian belief over scenario hypotheses plus the most informative next observation.
+         */
+        post: operations["science_belief_api_science_belief_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -271,6 +411,14 @@ export interface components {
             /** Sourcestatus */
             sourceStatus?: ("live" | "cached" | "demo") | null;
         };
+        /** ApiResult[BeliefData] */
+        ApiResult_BeliefData_: {
+            data?: components["schemas"]["BeliefData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
         /** ApiResult[CatalogData] */
         ApiResult_CatalogData_: {
             data?: components["schemas"]["CatalogData"] | null;
@@ -287,9 +435,25 @@ export interface components {
             /** Ok */
             ok: boolean;
         };
+        /** ApiResult[GraphData] */
+        ApiResult_GraphData_: {
+            data?: components["schemas"]["GraphData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
         /** ApiResult[HealthData] */
         ApiResult_HealthData_: {
             data?: components["schemas"]["HealthData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[ImpactData] */
+        ApiResult_ImpactData_: {
+            data?: components["schemas"]["ImpactData"] | null;
             error?: components["schemas"]["ApiError"] | null;
             meta: components["schemas"]["ApiMeta"];
             /** Ok */
@@ -311,9 +475,41 @@ export interface components {
             /** Ok */
             ok: boolean;
         };
+        /** ApiResult[OptimizeData] */
+        ApiResult_OptimizeData_: {
+            data?: components["schemas"]["OptimizeData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[RecommendData] */
+        ApiResult_RecommendData_: {
+            data?: components["schemas"]["RecommendData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
         /** ApiResult[ReplayData] */
         ApiResult_ReplayData_: {
             data?: components["schemas"]["ReplayData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[RobustnessData] */
+        ApiResult_RobustnessData_: {
+            data?: components["schemas"]["RobustnessData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[ScheduleData] */
+        ApiResult_ScheduleData_: {
+            data?: components["schemas"]["ScheduleData"] | null;
             error?: components["schemas"]["ApiError"] | null;
             meta: components["schemas"]["ApiMeta"];
             /** Ok */
@@ -352,6 +548,50 @@ export interface components {
             /** Ok */
             ok: boolean;
         };
+        /** ArchitectureEdge */
+        ArchitectureEdge: {
+            /** Fromid */
+            fromId: string;
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "satisfies" | "allocated-to" | "depends-on" | "consumes" | "generates" | "constrains" | "downlinks-through";
+            /** Rationale */
+            rationale: string;
+            /** Toid */
+            toId: string;
+        };
+        /**
+         * ArchitectureGraph
+         * @description Typed directed mission graph (19.1); a projection of canonical state, never edited.
+         */
+        ArchitectureGraph: {
+            /** Edges */
+            edges: components["schemas"]["ArchitectureEdge"][];
+            /** Nodes */
+            nodes: components["schemas"]["ArchitectureNode"][];
+        };
+        /** ArchitectureNode */
+        ArchitectureNode: {
+            /** Attributes */
+            attributes?: {
+                [key: string]: string | boolean | number;
+            };
+            /** Entityid */
+            entityId?: string | null;
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "science-objective" | "measurement-requirement" | "instrument" | "spacecraft-subsystem" | "launch-option" | "trajectory-option" | "observation-task" | "contact-window" | "science-product";
+            /** Label */
+            label: string;
+        };
         /** AutonomyDecision */
         AutonomyDecision: {
             belief: components["schemas"]["BeliefState"];
@@ -371,6 +611,35 @@ export interface components {
             reason: string;
             /** Selectedactionid */
             selectedActionId?: string | null;
+        };
+        /** BeliefData */
+        BeliefData: {
+            belief: components["schemas"]["BeliefState"];
+            /** Designrevision */
+            designRevision: number;
+            /** Disclaimer */
+            disclaimer: string;
+            /** History */
+            history: components["schemas"]["ObservationIn"][];
+            /** Hypotheses */
+            hypotheses: components["schemas"]["ScienceHypothesis"][];
+            lastOutcome: components["schemas"]["ObservationIn"] | null;
+            /** Likelihoods */
+            likelihoods: components["schemas"]["ObservationLikelihood"][];
+            /** Missionid */
+            missionId: string;
+            /** Modelversion */
+            modelVersion: string;
+            /** Nextobservations */
+            nextObservations: components["schemas"]["NextObservationOut"][];
+        };
+        /** BeliefRequest */
+        BeliefRequest: {
+            /** History */
+            history?: components["schemas"]["ObservationIn"][];
+            missionState: components["schemas"]["MissionState"];
+            /** Observewith */
+            observeWith?: string | null;
         };
         /** BeliefState */
         BeliefState: {
@@ -403,6 +672,46 @@ export interface components {
             propellantMassKg: components["schemas"]["Quantity"];
             requiredDeltaVKmPerS: components["schemas"]["Quantity"];
             wetMassKg: components["schemas"]["Quantity"];
+        };
+        /** BufferPoint */
+        BufferPoint: {
+            /** Bits */
+            bits: number;
+            /** T */
+            t: number;
+        };
+        /** CandidateSummary */
+        CandidateSummary: {
+            architecture: components["schemas"]["SpacecraftArchitecture"];
+            /** Drymasskg */
+            dryMassKg: number;
+            /** Estimatedcostusd */
+            estimatedCostUsd: number;
+            /** Explanation */
+            explanation: string[];
+            /** Failedconstraints */
+            failedConstraints: string[];
+            /**
+             * Feasibility
+             * @enum {string}
+             */
+            feasibility: "feasible" | "marginal" | "infeasible";
+            /** Feasible */
+            feasible: boolean;
+            /** Generation */
+            generation: number;
+            /** Id */
+            id: string;
+            /** Objectivevector */
+            objectiveVector: {
+                [key: string]: number;
+            };
+            /** Returnedfraction */
+            returnedFraction: number;
+            /** Sciencecoveragescore */
+            scienceCoverageScore: number;
+            /** Scoretotal */
+            scoreTotal: number;
         };
         /** CatalogComponent */
         CatalogComponent: {
@@ -506,6 +815,21 @@ export interface components {
             /** Suggestedactions */
             suggestedActions?: components["schemas"]["SuggestedAction"][];
         };
+        /** ContactWindow */
+        ContactWindow: {
+            /** End */
+            end: number;
+            /** Id */
+            id: string;
+            /** Linkmargindb */
+            linkMarginDb: number;
+            /** Maxdownlinkbits */
+            maxDownlinkBits: number;
+            /** Start */
+            start: number;
+            /** Stationid */
+            stationId: string;
+        };
         /** DecisionChoice */
         DecisionChoice: {
             /** Effects */
@@ -541,6 +865,22 @@ export interface components {
             choiceId: string;
             /** Eventid */
             eventId: string;
+        };
+        /** DesignMutation */
+        DesignMutation: {
+            /** Description */
+            description: string;
+            /** Fromvalue */
+            fromValue?: string | boolean | number | null;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "swap-component" | "add-instrument" | "remove-instrument" | "change-operations";
+            /** Target */
+            target: string;
+            /** Tovalue */
+            toValue?: string | boolean | number | null;
         };
         /** Destination */
         Destination: {
@@ -647,6 +987,22 @@ export interface components {
             /** Summary */
             summary: string;
         };
+        /** GraphData */
+        GraphData: {
+            /** Designrevision */
+            designRevision: number;
+            graph: components["schemas"]["ArchitectureGraph"];
+            /** Missionid */
+            missionId: string;
+            /** Missiontraceability */
+            missionTraceability: components["schemas"]["MissionTraceRowOut"][];
+            /** Sciencetraceability */
+            scienceTraceability: components["schemas"]["ScienceTraceRowOut"][];
+        };
+        /** GraphRequest */
+        GraphRequest: {
+            missionState: components["schemas"]["MissionState"];
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -672,6 +1028,34 @@ export interface components {
             hypothesisId: string;
             /** Probability */
             probability: number;
+        };
+        /** ImpactData */
+        ImpactData: {
+            /** Afterrevision */
+            afterRevision: number;
+            /** Beforerevision */
+            beforeRevision: number;
+            graph: components["schemas"]["ArchitectureGraph"];
+            impact: components["schemas"]["ImpactReport"];
+        };
+        /**
+         * ImpactReport
+         * @description Effect of one design edit (19.1 behaviour 7).
+         */
+        ImpactReport: {
+            /** Affectedobjectives */
+            affectedObjectives: string[];
+            /** Changedmetrics */
+            changedMetrics: components["schemas"]["MetricChange"][];
+            /** Improved */
+            improved: string[];
+            /** Newlyviolated */
+            newlyViolated: string[];
+        };
+        /** ImpactRequest */
+        ImpactRequest: {
+            afterMissionState: components["schemas"]["MissionState"];
+            beforeMissionState: components["schemas"]["MissionState"];
         };
         /** ImportData */
         ImportData: {
@@ -703,6 +1087,28 @@ export interface components {
              */
             required: boolean;
             targetThreshold?: components["schemas"]["Quantity"] | null;
+        };
+        /** MetricChange */
+        MetricChange: {
+            /** After */
+            after: number;
+            /** Before */
+            before: number;
+            /** Metric */
+            metric: string;
+            /** Unit */
+            unit: string;
+        };
+        /** MetricQuantiles */
+        MetricQuantiles: {
+            /** Median */
+            median: number;
+            /** P10 */
+            p10: number;
+            /** P90 */
+            p90: number;
+            /** Unit */
+            unit: string;
         };
         /** MissionAnalysis */
         MissionAnalysis: {
@@ -891,6 +1297,27 @@ export interface components {
             /** Seed */
             seed: number;
         };
+        /** MissionSchedule */
+        MissionSchedule: {
+            /** Accepted */
+            accepted: string[];
+            /** Buffertimeline */
+            bufferTimeline: components["schemas"]["BufferPoint"][];
+            /** Cycles */
+            cycles: components["schemas"]["ScheduledDataCycle"][];
+            /**
+             * Datalossriskaccepted
+             * @default false
+             */
+            dataLossRiskAccepted: boolean;
+            /**
+             * Datalostbits
+             * @default 0
+             */
+            dataLostBits: number;
+            /** Rejected */
+            rejected: components["schemas"]["RejectedOpportunity"][];
+        };
         /** MissionState */
         MissionState: {
             architecture: components["schemas"]["SpacecraftArchitecture"];
@@ -930,6 +1357,69 @@ export interface components {
              */
             updatedAt: string;
         };
+        /** MissionTraceRowOut */
+        MissionTraceRowOut: {
+            /** Instrumentid */
+            instrumentId: string;
+            /** Instrumentname */
+            instrumentName: string;
+            /** Observationcount */
+            observationCount: number;
+            /** Requirementids */
+            requirementIds: string[];
+            /** Subsystemids */
+            subsystemIds: string[];
+        };
+        /** NextObservationOut */
+        NextObservationOut: {
+            /** Expectedinformationgainbits */
+            expectedInformationGainBits: number;
+            /** Instrumentid */
+            instrumentId: string;
+            /** Outcomeprobabilities */
+            outcomeProbabilities: {
+                [key: string]: number;
+            };
+        };
+        /** ObservationIn */
+        ObservationIn: {
+            /** Instrumentid */
+            instrumentId: string;
+            /** Outcomeid */
+            outcomeId: string;
+        };
+        /** ObservationLikelihood */
+        ObservationLikelihood: {
+            /** Instrumentid */
+            instrumentId: string;
+            /** Likelihoodbyhypothesis */
+            likelihoodByHypothesis: {
+                [key: string]: number;
+            };
+            /** Outcomeid */
+            outcomeId: string;
+        };
+        /** ObservationOpportunity */
+        ObservationOpportunity: {
+            /** Compatibleattitude */
+            compatibleAttitude: string;
+            /** End */
+            end: number;
+            /** Energyjoules */
+            energyJoules: number;
+            /** Expectedsciencevalue */
+            expectedScienceValue: number;
+            /** Generateddatabits */
+            generatedDataBits: number;
+            /** Id */
+            id: string;
+            /** Instrumentid */
+            instrumentId: string;
+            /** Slewseconds */
+            slewSeconds: number;
+            /** Start */
+            start: number;
+        };
         /** ObservationPlanItem */
         ObservationPlanItem: {
             /** Durationhours */
@@ -968,6 +1458,58 @@ export interface components {
              * @enum {string}
              */
             safeModePolicy: "conservative" | "balanced" | "aggressive";
+        };
+        /** OptimizationObjective */
+        OptimizationObjective: {
+            /**
+             * Direction
+             * @enum {string}
+             */
+            direction: "minimize" | "maximize";
+            /**
+             * Key
+             * @enum {string}
+             */
+            key: "lifecycle_cost" | "dry_mass" | "duration_days" | "negative_science_return" | "negative_robustness";
+            /** Weight */
+            weight?: number | null;
+        };
+        /** OptimizeData */
+        OptimizeData: {
+            /** Archetypes */
+            archetypes: {
+                [key: string]: string;
+            };
+            /** Candidates */
+            candidates: components["schemas"]["CandidateSummary"][];
+            /** Designrevision */
+            designRevision: number;
+            /** Missionid */
+            missionId: string;
+            /** Nearmisses */
+            nearMisses: string[];
+            /** Objectives */
+            objectives: components["schemas"]["OptimizationObjective"][];
+            /** Paretofrontids */
+            paretoFrontIds: string[];
+            /** Seed */
+            seed: number;
+        };
+        /** OptimizeRequest */
+        OptimizeRequest: {
+            /**
+             * Cap
+             * @default 150
+             */
+            cap: number;
+            missionState: components["schemas"]["MissionState"];
+            /**
+             * Robustnesssamples
+             * @default 20
+             */
+            robustnessSamples: number;
+            /** Seed */
+            seed?: number | null;
         };
         /** PhaseTransition */
         PhaseTransition: {
@@ -1013,6 +1555,63 @@ export interface components {
             /** Value */
             value: number;
         };
+        /** RecommendData */
+        RecommendData: {
+            /** Designrevision */
+            designRevision: number;
+            /** Explanations */
+            explanations: {
+                [key: string]: string[];
+            };
+            /** Missionid */
+            missionId: string;
+            /** Recommendations */
+            recommendations: components["schemas"]["Recommendation"][];
+        };
+        /** RecommendRequest */
+        RecommendRequest: {
+            /**
+             * Maxn
+             * @default 3
+             */
+            maxN: number;
+            missionState: components["schemas"]["MissionState"];
+        };
+        /** Recommendation */
+        Recommendation: {
+            /**
+             * Confidencelabel
+             * @enum {string}
+             */
+            confidenceLabel: "high" | "medium" | "low";
+            /** Explanation */
+            explanation: string;
+            /** Id */
+            id: string;
+            /** Metricafter */
+            metricAfter: {
+                [key: string]: number;
+            };
+            /** Metricbefore */
+            metricBefore: {
+                [key: string]: number;
+            };
+            mutation: components["schemas"]["DesignMutation"];
+            /** Sourcerefs */
+            sourceRefs?: string[];
+            /** Tradeoffs */
+            tradeoffs: string[];
+        };
+        /** RejectedOpportunity */
+        RejectedOpportunity: {
+            /** Id */
+            id: string;
+            /**
+             * Reasoncode
+             * @enum {string}
+             */
+            reasonCode: "INSTRUMENT_CONFLICT" | "ENERGY" | "POINTING" | "BUFFER_OVERFLOW_BEFORE_CONTACT" | "NO_CONTACT" | "PHASE" | "THERMAL";
+        };
         /** ReliabilityAnalysis */
         ReliabilityAnalysis: {
             /** Nominalreliability */
@@ -1038,6 +1637,53 @@ export interface components {
         /** ReplayRequest */
         ReplayRequest: {
             run: components["schemas"]["MissionRun"];
+        };
+        /** RobustnessData */
+        RobustnessData: {
+            /** Designrevision */
+            designRevision: number;
+            /** Missionid */
+            missionId: string;
+            result: components["schemas"]["RobustnessResult"];
+        };
+        /** RobustnessRequest */
+        RobustnessRequest: {
+            missionState: components["schemas"]["MissionState"];
+            /**
+             * Samples
+             * @default 250
+             */
+            samples: number;
+            /** Seed */
+            seed?: number | null;
+        };
+        /** RobustnessResult */
+        RobustnessResult: {
+            /** Assumptions */
+            assumptions: string[];
+            /** Disclaimer */
+            disclaimer: string;
+            /** Failurecounts */
+            failureCounts: {
+                [key: string]: number;
+            };
+            /** Feasibilitywilson95 */
+            feasibilityWilson95: [
+                number,
+                number
+            ];
+            /** Metrics */
+            metrics: {
+                [key: string]: components["schemas"]["MetricQuantiles"];
+            };
+            /** Probabilityfeasible */
+            probabilityFeasible: number;
+            /** Profileversion */
+            profileVersion: string;
+            /** Samples */
+            samples: number;
+            /** Seed */
+            seed: number;
         };
         /**
          * RunReplayStatus
@@ -1080,6 +1726,52 @@ export interface components {
             /** Topconstraints */
             topConstraints: string[];
         };
+        /** ScheduleData */
+        ScheduleData: {
+            /** Algorithm */
+            algorithm: string;
+            /** Buffercapacitybits */
+            bufferCapacityBits: number;
+            /** Contacts */
+            contacts: components["schemas"]["ContactWindow"][];
+            /** Designrevision */
+            designRevision: number;
+            /** Maxenergyperobservationjoules */
+            maxEnergyPerObservationJoules: number;
+            /** Measurementof */
+            measurementOf: {
+                [key: string]: string;
+            };
+            /** Missionid */
+            missionId: string;
+            /** Opportunities */
+            opportunities: components["schemas"]["ObservationOpportunity"][];
+            schedule: components["schemas"]["MissionSchedule"];
+        };
+        /** ScheduleRequest */
+        ScheduleRequest: {
+            /**
+             * Acceptdataloss
+             * @default false
+             */
+            acceptDataLoss: boolean;
+            missionState: components["schemas"]["MissionState"];
+        };
+        /** ScheduledDataCycle */
+        ScheduledDataCycle: {
+            /** Bufferafterbits */
+            bufferAfterBits: number;
+            /** Bufferbeforebits */
+            bufferBeforeBits: number;
+            /** Contactwindowid */
+            contactWindowId?: string | null;
+            /** Explanation */
+            explanation: string;
+            /** Id */
+            id: string;
+            /** Observations */
+            observations: string[];
+        };
         /** ScienceAnalysis */
         ScienceAnalysis: {
             /** Collectedfraction */
@@ -1094,6 +1786,17 @@ export interface components {
             weightedObjectiveCoverage: {
                 [key: string]: number;
             };
+        };
+        /** ScienceHypothesis */
+        ScienceHypothesis: {
+            /** Description */
+            description: string;
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Priorprobability */
+            priorProbability: number;
         };
         /** ScienceObjective */
         ScienceObjective: {
@@ -1121,6 +1824,27 @@ export interface components {
              * @enum {string}
              */
             status: "achieved" | "partial" | "missed";
+        };
+        /** ScienceTraceRowOut */
+        ScienceTraceRowOut: {
+            /** Capability */
+            capability: string;
+            /** Instrumentids */
+            instrumentIds: string[];
+            /** Objectiveid */
+            objectiveId: string;
+            /** Objectivetitle */
+            objectiveTitle: string;
+            /** Observationcount */
+            observationCount: number;
+            /** Required */
+            required: boolean;
+            /** Requirementdescription */
+            requirementDescription: string;
+            /** Requirementid */
+            requirementId: string;
+            /** Status */
+            status: string;
         };
         /** ScoreBreakdown */
         ScoreBreakdown: {
@@ -1453,6 +2177,72 @@ export interface operations {
             };
         };
     };
+    mission_graph_api_mission_graph_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GraphRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_GraphData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mission_impact_api_mission_impact_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImpactRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_ImpactData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     import_package_api_mission_import_post: {
         parameters: {
             query?: never;
@@ -1469,6 +2259,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_ImportData_"];
+                };
+            };
+        };
+    };
+    mission_optimize_api_mission_optimize_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OptimizeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_OptimizeData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mission_recommend_api_mission_recommend_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecommendRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_RecommendData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1493,6 +2349,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_ReplayData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mission_robustness_api_mission_robustness_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RobustnessRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_RobustnessData_"];
                 };
             };
             /** @description Validation Error */
@@ -1559,6 +2448,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_SimulateData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mission_schedule_api_mission_schedule_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_ScheduleData_"];
                 };
             };
             /** @description Validation Error */
@@ -1658,6 +2580,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_ValidateData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    science_belief_api_science_belief_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BeliefRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_BeliefData_"];
                 };
             };
             /** @description Validation Error */

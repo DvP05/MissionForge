@@ -1,0 +1,43 @@
+{
+  "scenarioId": "neo-rendezvous",
+  "version": "0.1.0",
+  "fidelity": "gameplay-estimate",
+  "note": "Synthetic hypotheses and likelihood tables for the game's illustrative target. They are not claims about any real asteroid.",
+  "hypotheses": [
+    {
+      "id": "volatile-rich",
+      "label": "Volatile-rich surface",
+      "priorProbability": 0.34,
+      "description": "Dark, carbon- and water-bearing material, like primitive carbonaceous meteorites."
+    },
+    {
+      "id": "silicate-dominated",
+      "label": "Silicate-dominated surface",
+      "priorProbability": 0.33,
+      "description": "Stony rock rich in pyroxene and olivine, like ordinary chondrite meteorites."
+    },
+    {
+      "id": "metal-rich",
+      "label": "Metal-rich surface",
+      "priorProbability": 0.33,
+      "description": "Iron-nickel metal exposed at the surface, like the core of a broken-up small body."
+    }
+  ],
+  "likelihoods": [
+    { "instrumentId": "inst-vnir-spectrometer", "outcomeId": "hydration-band", "likelihoodByHypothesis": { "volatile-rich": 0.7, "silicate-dominated": 0.1, "metal-rich": 0.05 } },
+    { "instrumentId": "inst-vnir-spectrometer", "outcomeId": "pyroxene-band", "likelihoodByHypothesis": { "volatile-rich": 0.1, "silicate-dominated": 0.75, "metal-rich": 0.15 } },
+    { "instrumentId": "inst-vnir-spectrometer", "outcomeId": "featureless-red-slope", "likelihoodByHypothesis": { "volatile-rich": 0.2, "silicate-dominated": 0.15, "metal-rich": 0.8 } },
+
+    { "instrumentId": "inst-thermal-ir", "outcomeId": "high-thermal-inertia", "likelihoodByHypothesis": { "volatile-rich": 0.2, "silicate-dominated": 0.4, "metal-rich": 0.85 } },
+    { "instrumentId": "inst-thermal-ir", "outcomeId": "low-thermal-inertia", "likelihoodByHypothesis": { "volatile-rich": 0.8, "silicate-dominated": 0.6, "metal-rich": 0.15 } },
+
+    { "instrumentId": "inst-hires-camera", "outcomeId": "dark-surface", "likelihoodByHypothesis": { "volatile-rich": 0.75, "silicate-dominated": 0.25, "metal-rich": 0.4 } },
+    { "instrumentId": "inst-hires-camera", "outcomeId": "bright-surface", "likelihoodByHypothesis": { "volatile-rich": 0.25, "silicate-dominated": 0.75, "metal-rich": 0.6 } },
+
+    { "instrumentId": "inst-wide-camera", "outcomeId": "dark-surface", "likelihoodByHypothesis": { "volatile-rich": 0.65, "silicate-dominated": 0.3, "metal-rich": 0.4 } },
+    { "instrumentId": "inst-wide-camera", "outcomeId": "bright-surface", "likelihoodByHypothesis": { "volatile-rich": 0.35, "silicate-dominated": 0.7, "metal-rich": 0.6 } },
+
+    { "instrumentId": "inst-magnetometer", "outcomeId": "remanent-field", "likelihoodByHypothesis": { "volatile-rich": 0.1, "silicate-dominated": 0.15, "metal-rich": 0.7 } },
+    { "instrumentId": "inst-magnetometer", "outcomeId": "no-field", "likelihoodByHypothesis": { "volatile-rich": 0.9, "silicate-dominated": 0.85, "metal-rich": 0.3 } }
+  ]
+}

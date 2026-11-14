@@ -4,6 +4,9 @@ import { useState } from "react";
 
 import { ErrorState, LoadingState } from "@/components/common/States";
 import { LaunchPanel } from "@/components/mission-control/LaunchPanel";
+import { Counterfactual } from "@/components/review/Counterfactual";
+import { ScheduleBoard } from "@/components/schedule/ScheduleBoard";
+import { GraphExplorer } from "@/components/science-traceability/GraphExplorer";
 import { BudgetPanel } from "@/components/budgets/BudgetPanel";
 import { useAnalysis } from "@/hooks/useAnalysis";
 import { useMissionStore, type ComponentCategory } from "@/state/mission-store";
@@ -43,9 +46,12 @@ export function ArchitectPage() {
         <aside aria-label="Budgets and constraints" data-testid="architect-right" className="min-w-0 space-y-6">
           <BudgetPanel onRetry={retryAnalysis} />
           <ConstraintPanel selectedId={explainId} onExplain={setExplainId} />
+          <Counterfactual />
         </aside>
       </div>
       <BottomDrawer explainId={explainId} index={catalog.index} />
+      <GraphExplorer />
+      <ScheduleBoard />
     </div>
   );
 }
