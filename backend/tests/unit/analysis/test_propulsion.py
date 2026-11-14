@@ -146,7 +146,10 @@ def test_budget_invalid(kwargs: dict[str, object]) -> None:
     args.update(kwargs)
     with pytest.raises(DomainValidationError):
         maneuver_budget(
-            prop(), args["dry_kg"], args["required"], args["reserve_ms"],  # type: ignore[arg-type]
+            prop(),
+            args["dry_kg"],
+            args["required"],
+            args["reserve_ms"],  # type: ignore[arg-type]
             propellant_kg=args["propellant_kg"],  # type: ignore[arg-type]
         )
 
