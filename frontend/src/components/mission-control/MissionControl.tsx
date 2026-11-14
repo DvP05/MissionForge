@@ -8,7 +8,7 @@ import { DecisionCard } from "./DecisionCard";
 import { EventLog } from "./EventLog";
 import { PhaseRibbon } from "./PhaseRibbon";
 import { PlaybackControls } from "./PlaybackControls";
-import { currentPhase, visibleEvents } from "./playback";
+import { currentPhase, linkMarginLimit, visibleEvents } from "./playback";
 import { SchematicPanel } from "./SchematicPanel";
 import { TelemetryCards, TelemetryCharts } from "./TelemetryPanel";
 import { usePlayback } from "./usePlayback";
@@ -19,6 +19,7 @@ export function MissionControl({ data, startDay }: { data: RunData; startDay: nu
   const pb = usePlayback(run, startDay);
   const phase = currentPhase(run, pb.day);
   const shown = visibleEvents(pb.events, pb.day);
+  const linkLimit = linkMarginLimit(data.analysis);
 
   return (
     <div data-testid="mission-control" className="space-y-4">
@@ -36,17 +37,17 @@ export function MissionControl({ data, startDay }: { data: RunData; startDay: nu
       </header>
       <PhaseRibbon run={run} day={pb.day} duration={pb.duration} />
       <PlaybackControls pb={pb} />
-      {pb.pending ? <DecisionCard key={pb.pending.id} event={pb.pending} runId={run.runId} telemetry={run.telemetry} /> : null}
+      {pb.pending ? <DecisionCard key={pb.pending.id} event={pb.pending} runId={run.runId} telemetry={run.telemetry} linkLimit={linkLimit} /> : null}
       <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
         <div className="min-w-0 space-y-4">
           <SchematicPanel phase={phase} day={pb.day} />
-          <TelemetryCards samples={run.telemetry} day={pb.day} />
+          <TelemetryCards samples={run.telemetry} day={pb.day} linkLimit={linkLimit} />
         </div>
         <EventLog events={shown} decisions={run.decisions} />
       </div>
       <section aria-label="Telemetry charts" className="space-y-2">
         <h2 className="text-base font-semibold">Telemetry history</h2>
-        <TelemetryCharts samples={run.telemetry} events={pb.events} day={pb.day} duration={pb.duration} />
+        <TelemetryCharts samples={run.telemetry} day={pb.day} duration={pb.duration} linkLimit={linkLimit} />
       </section>
     </div>
   );

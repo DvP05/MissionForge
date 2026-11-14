@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import { apiGet } from "@/lib/api-client";
-import { cacheRun, isValidRunId, loadCachedRun, type RunData } from "@/lib/persistence/run-cache";
+import { cacheRun, isValidRunData, isValidRunId, loadCachedRun, type RunData } from "@/lib/persistence/run-cache";
 
 /** Client-side holder of immutable runs, keyed by runId. Never mutates a run. */
 interface RunStoreState {
@@ -34,6 +34,9 @@ export async function loadRun(runId: string, signal?: AbortSignal): Promise<RunL
   }
   const res = await apiGet("/api/mission/run/{run_id}", { pathParams: { run_id: runId }, signal });
   if (res.ok && res.data) {
+    if (!isValidRunData(res.data, runId)) {
+      return { kind: "error", message: "The server returned a run in an unexpected shape, so it cannot be shown." };
+    }
     useRunStore.getState().putRun(res.data);
     return { kind: "ready", data: res.data };
   }

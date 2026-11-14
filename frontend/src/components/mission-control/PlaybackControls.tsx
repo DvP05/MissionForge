@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { FastForward, Pause, Play, SkipForward, StepForward } from "lucide-react";
 
 import { SPEEDS } from "./playback";
@@ -8,6 +9,9 @@ const BTN =
 
 /** Display pacing only; speed never changes the run. */
 export function PlaybackControls({ pb }: { pb: Playback }) {
+  const [confirming, setConfirming] = useState(false);
+  const n = pb.undecidedAhead;
+  const requestSkip = () => (n > 0 ? setConfirming(true) : pb.skipToEnd());
   return (
     <section aria-label="Playback controls" className="flex flex-wrap items-center gap-2">
       {pb.reducedMotion ? (
@@ -41,7 +45,8 @@ export function PlaybackControls({ pb }: { pb: Playback }) {
         <SkipForward aria-hidden className="h-4 w-4" />
         Skip to next decision
       </button>
-      <button type="button" data-testid="skip-to-end" onClick={pb.skipToEnd} disabled={pb.atEnd && !pb.pending} className={BTN}>
+      <button type="button" data-testid="skip-to-end" onClick={requestSkip} disabled={!!pb.pending || pb.atEnd}
+        title={pb.pending ? "Make the pending decision first" : undefined} className={BTN}>
         <FastForward aria-hidden className="h-4 w-4" />
         Skip to end
       </button>
@@ -61,6 +66,29 @@ export function PlaybackControls({ pb }: { pb: Playback }) {
           ))}
         </div>
       )}
+      {confirming && n > 0 ? (
+        <div data-testid="skip-end-confirm" role="alertdialog" aria-label="Confirm skip to end" className="w-full space-y-2 rounded-lg border border-accent-amber/60 p-3 text-sm">
+          <p>
+            Skipping to the end means {n} undecided {n === 1 ? "decision" : "decisions"} will use ground defaults.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              data-testid="skip-end-confirm-yes"
+              onClick={() => {
+                setConfirming(false);
+                pb.skipToEnd();
+              }}
+              className={BTN}
+            >
+              Skip and use ground defaults
+            </button>
+            <button type="button" data-testid="skip-end-cancel" onClick={() => setConfirming(false)} className={BTN}>
+              Keep playing
+            </button>
+          </div>
+        </div>
+      ) : null}
       <p className="w-full text-xs text-muted">Speed changes display pacing only; the run itself is fixed.</p>
     </section>
   );

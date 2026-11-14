@@ -4,13 +4,13 @@ import { ArrowDown, ArrowRight, ArrowUp, Minus } from "lucide-react";
 import { CartesianGrid, Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
 
 import { FidelityBadge } from "@/components/common/FidelityBadge";
+import { ProvenancePopover } from "@/components/common/ProvenancePopover";
 import { formatFraction, formatNumber, humanize } from "@/lib/format";
 import {
   channelIds,
   channelSnapshots,
   trendOf,
-  triggerThresholds,
-  type MissionEvent,
+  type DesignLimit,
   type TelemetrySample,
   type Trend,
 } from "./playback";
@@ -28,7 +28,27 @@ function show(sample: TelemetrySample): string {
 
 const unitLabel = (u: string) => (u === "fraction" ? "fraction (0 to 1)" : u);
 
-export function TelemetryCards({ samples, day }: { samples: TelemetrySample[]; day: number }) {
+function LimitNote({ limit }: { limit: DesignLimit }) {
+  return (
+    <p data-testid="link-limit" className="flex flex-wrap items-center gap-2 text-xs text-muted">
+      <span>
+        Design-time limit: {formatNumber(limit.value)} {limit.unit}
+      </span>
+      <FidelityBadge fidelity={limit.provenance.fidelity} />
+      <ProvenancePopover provenance={limit.provenance} label="link-margin limit" />
+    </p>
+  );
+}
+
+export function TelemetryCards({
+  samples,
+  day,
+  linkLimit,
+}: {
+  samples: TelemetrySample[];
+  day: number;
+  linkLimit: DesignLimit | null;
+}) {
   const snaps = channelSnapshots(samples, day);
   return (
     <ul aria-label="Telemetry" className="grid gap-2 sm:grid-cols-2">
@@ -57,6 +77,7 @@ export function TelemetryCards({ samples, day }: { samples: TelemetrySample[]; d
             ) : (
               <p className="text-sm text-muted">— no sample yet</p>
             )}
+            {ch === "link_margin_db" && linkLimit ? <LimitNote limit={linkLimit} /> : null}
           </li>
         );
       })}
@@ -66,23 +87,22 @@ export function TelemetryCards({ samples, day }: { samples: TelemetrySample[]; d
 
 export function TelemetryCharts({
   samples,
-  events,
   day,
   duration,
+  linkLimit,
 }: {
   samples: TelemetrySample[];
-  events: MissionEvent[];
   day: number;
   duration: number;
+  linkLimit: DesignLimit | null;
 }) {
-  const thresholds = triggerThresholds(events);
   return (
     <div className="grid gap-3 md:grid-cols-2">
       {channelIds(samples).map((ch) => {
         const own = samples.filter((s) => s.channel === ch);
         const unit = own[0]?.unit ?? "";
         const shown = own.filter((s) => s.missionDay <= day).map((s) => ({ day: s.missionDay, value: s.value }));
-        const thr = thresholds[ch];
+        const thr = ch === "link_margin_db" ? linkLimit : null;
         return (
           <figure
             key={ch}
@@ -109,11 +129,36 @@ export function TelemetryCharts({
                 <YAxis width={44} tick={{ fill: "#8fa0b8", fontSize: 11 }} domain={["auto", "auto"]} />
                 <Line type="linear" dataKey="value" stroke="#22d3ee" dot={{ r: 2 }} isAnimationActive={false} />
                 {thr ? (
-                  <ReferenceLine y={thr.value} stroke="#fbbf24" strokeDasharray="4 2" label={{ value: `threshold ${thr.value} ${unit}`, fill: "#fbbf24", fontSize: 10 }} />
+                  <ReferenceLine y={thr.value} stroke="#fbbf24" strokeDasharray="4 2" label={{ value: `design-time limit ${thr.value} ${thr.unit}`, fill: "#fbbf24", fontSize: 10 }} />
                 ) : null}
               </LineChart>
             </div>
-            <p className="text-xs text-muted">Mission day (d). {thr ? `Dashed line: threshold stated by event ${thr.eventId}.` : "No threshold stated by an event trigger."}</p>
+            <p className="text-xs text-muted">Mission day (d).</p>
+            {thr ? <LimitNote limit={thr} /> : null}
+            <details data-testid={`chart-data-${ch}`} className="text-xs">
+              <summary className="min-h-6 cursor-pointer text-muted">View data table</summary>
+              <div className="max-h-48 overflow-auto">
+                <table className="mt-1 w-full text-left tabular-nums">
+                  <caption className="sr-only">
+                    {humanize(ch)} samples up to the current day
+                  </caption>
+                  <thead className="text-muted">
+                    <tr>
+                      <th className="pr-3 font-normal">Mission day (d)</th>
+                      <th className="font-normal">{humanize(ch)} [{unitLabel(unit)}]</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {shown.map((r, i) => (
+                      <tr key={i}>
+                        <td className="pr-3">{r.day.toFixed(1)}</td>
+                        <td>{formatNumber(r.value)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </details>
           </figure>
         );
       })}

@@ -31,6 +31,13 @@ async function launchFeasible(page: Page): Promise<string> {
   return new URL(page.url()).pathname.split("/").pop() as string;
 }
 
+/** Skip to end; confirms the ground-defaults dialog when decisions are still ahead. */
+async function skipToEnd(page: Page) {
+  await page.getByTestId("skip-to-end").click();
+  const yes = page.getByTestId("skip-end-confirm-yes");
+  if (await yes.isVisible().catch(() => false)) await yes.click();
+}
+
 async function playUntilDecision(page: Page) {
   await page.getByTestId("playback-play").click();
   await expect(page.getByTestId("decision-card")).toBeVisible({ timeout: 60_000 });
@@ -68,14 +75,14 @@ test.describe("mission control", () => {
     expect(await ribbon.locator("[data-testid^='phase-']").count()).toBeGreaterThanOrEqual(6);
     await expect(page.getByTestId("elapsed-day")).toContainText(/day 0/i);
     await expect(page.getByTestId("spacecraft-mode")).toBeVisible();
-    await page.getByTestId("skip-to-end").click();
+    await skipToEnd(page);
     await expect(page.getByTestId("elapsed-day")).toContainText(/day 420/i);
     await expect(page.getByTestId("phase-complete")).toHaveAttribute("data-state", "current");
   });
 
   test("event items show id, mission day, severity text and why; log is filterable", async ({ page }) => {
     await launchFeasible(page);
-    await page.getByTestId("skip-to-end").click();
+    await skipToEnd(page);
     const item = page.getByTestId("event-item-scenario-target-illumination");
     await expect(item).toContainText("scenario-target-illumination");
     await expect(item.getByTestId("event-day")).toContainText(/day 258/i);
@@ -92,7 +99,7 @@ test.describe("mission control", () => {
 
   test("telemetry cards and charts share a mission-day axis and show units and fidelity", async ({ page }) => {
     await launchFeasible(page);
-    await page.getByTestId("skip-to-end").click();
+    await skipToEnd(page);
     for (const ch of ["battery_soc", "propellant_fraction", "buffer_fill", "link_margin_db", "pointing_error_deg"]) {
       const card = page.getByTestId(`telemetry-card-${ch}`);
       await expect(card).toBeVisible();
@@ -134,58 +141,114 @@ test.describe("mission control", () => {
 });
 
 test.describe("decisions", () => {
-  test("playback pauses at a decision; the choice is required, keyboard operable, and lands in log and review", async ({
+  test("keyboard only: play, card takes focus, choose, confirm; the chosen option reaches the POST, log and review", async ({
     page,
   }) => {
     await launchFeasible(page);
-    await playUntilDecision(page);
+    // Reach Play with Tab only, then start playback with Enter.
+    for (let i = 0; i < 40; i += 1) {
+      await page.keyboard.press("Tab");
+      if ((await page.evaluate(() => document.activeElement?.getAttribute("data-testid"))) === "playback-play") break;
+    }
+    await expect(page.getByTestId("playback-play")).toBeFocused();
+    await page.keyboard.press("Enter");
     const card = page.getByTestId("decision-card");
+    await expect(card).toBeVisible({ timeout: 60_000 });
     await expect(card).toContainText(/illumination/i);
     await expect(card).toContainText(/scenario uncertainty/i);
     expect(await card.locator("[data-testid^='choice-']").count()).toBeGreaterThanOrEqual(2);
-    await expect(card.getByTestId("choice-extend-observations").or(card.getByTestId("choice-keep-schedule")).first()).toContainText(/\S/);
     await expect(card.getByTestId("decision-situation")).toBeVisible();
-    // A choice is required: confirm is disabled and play is blocked.
+    await expect(card.getByRole("alert")).toContainText(/decision required/i);
+    // Focus moved to the card heading when it appeared.
+    await expect(card.getByRole("heading", { level: 2 })).toBeFocused();
     await expect(card.getByTestId("confirm-decision")).toBeDisabled();
     await expect(page.getByTestId("playback-play")).toBeDisabled();
-    // Keyboard only: focus the first radio, arrow to the next, confirm with Enter/Space.
-    const first = card.getByRole("radio").first();
-    await first.focus();
+    await expect(page.getByTestId("skip-to-end")).toBeDisabled();
+    // Tab into the radio group, move to the second option, Tab to Confirm.
+    await page.keyboard.press("Tab");
+    await expect(card.getByRole("radio").first()).toBeFocused();
     await page.keyboard.press("ArrowDown");
+    const choiceId = await card.locator("input[type=radio]:checked").getAttribute("value");
+    const choiceLabel = (await card.locator("label:has(input:checked) span.font-medium").innerText()).trim();
+    expect(choiceId).toBeTruthy();
     await page.keyboard.press("Tab");
     await expect(card.getByTestId("confirm-decision")).toBeFocused();
-    const chosenLabel = (await card.locator("input[type=radio]:checked + *, [role=radio][aria-checked=true]").first().innerText()).trim();
-    expect(chosenLabel.length).toBeGreaterThan(0);
+    const request = page.waitForRequest((r) => r.url().includes("/decision") && r.method() === "POST");
     await page.keyboard.press("Enter");
+    expect((await request).postDataJSON()).toEqual({ eventId: "scenario-target-illumination", choiceId });
     await page.waitForURL(/\/control\/[^/?]+\?day=258/, { timeout: 30_000 });
     await expect(page.getByTestId("elapsed-day")).toContainText(/day 258/i);
     await expect(page.getByTestId("decision-card")).toHaveCount(0);
     const item = page.getByTestId("event-item-scenario-target-illumination");
+    await expect(item.getByTestId("decision-maker")).toContainText(choiceLabel);
     await expect(item.getByTestId("decision-maker")).toContainText(/player/i);
-    const newRun = new URL(page.url()).pathname.split("/").pop() as string;
-    await page.getByTestId("skip-to-end").click();
-    await page.getByTestId("open-review").click();
-    await page.waitForURL(new RegExp(`/review/${newRun}`));
-    await expect(page.getByTestId("review-decisions")).toContainText(/illumination/i);
-    await expect(page.getByTestId("review-decisions")).toContainText(/player/i);
   });
 
-  test("0.5x, 1x and 4x playback give identical review text", async ({ page }) => {
-    test.setTimeout(240_000);
+  test("skip to end is disabled while a decision is pending", async ({ page }) => {
+    await launchFeasible(page);
+    await page.getByTestId("skip-next-decision").click();
+    await expect(page.getByTestId("decision-card")).toBeVisible();
+    await expect(page.getByTestId("skip-to-end")).toBeDisabled();
+  });
+
+  test("skip to end asks first and states how many decisions use ground defaults", async ({ page }) => {
+    await launchFeasible(page);
+    await page.getByTestId("skip-to-end").click();
+    const dialog = page.getByTestId("skip-end-confirm");
+    await expect(dialog).toContainText("2 undecided decisions will use ground defaults");
+    await page.getByTestId("skip-end-cancel").click();
+    await expect(dialog).toHaveCount(0);
+    await expect(page.getByTestId("elapsed-day")).toContainText(/day 0/i);
+    await page.getByTestId("skip-to-end").click();
+    await page.getByTestId("skip-end-confirm-yes").click();
+    await expect(page.getByTestId("elapsed-day")).toContainText(/day 420/i);
+    await expect(page.getByTestId("event-item-scenario-solar-event").getByTestId("decision-maker")).toContainText(/ground/i);
+  });
+
+  test("the chosen option lands in the log and the review", async ({ page }) => {
+    await launchFeasible(page);
+    await playUntilDecision(page);
+    const label = (await page.getByTestId("choice-extend-observation").locator("span.font-medium").innerText()).trim();
+    await page.getByTestId("choice-extend-observation").click();
+    await page.getByTestId("confirm-decision").click();
+    await page.waitForURL(/\/control\/[^/?]+\?day=258/, { timeout: 30_000 });
+    await expect(page.getByTestId("event-item-scenario-target-illumination").getByTestId("decision-maker")).toContainText(label);
+    await page.getByTestId("skip-next-decision").click();
+    await page.getByTestId("choice-continue").click();
+    await page.getByTestId("confirm-decision").click();
+    await page.waitForURL(/\/control\/[^/?]+\?day=302/, { timeout: 30_000 });
+    await skipToEnd(page);
+    await page.getByTestId("open-review").click();
+    await expect(page.getByTestId("review-decisions")).toContainText(label);
+    await expect(page.getByTestId("review-decisions")).toContainText(/Continue science/);
+    await expect(page.getByTestId("review-decisions")).not.toContainText(/ground/);
+  });
+
+  test("0.5x, 1x and 4x playback with the same choices give identical review text", async ({ page }) => {
+    test.setTimeout(300_000);
     await launchFeasible(page);
     const controlUrl = page.url();
     const hashes: string[] = [];
     for (const speed of ["0.5", "1", "4"]) {
       await page.goto(controlUrl);
       await expect(page.getByTestId("mission-control")).toBeVisible();
-      await page.getByTestId(`speed-${speed}`).click();
-      await expect(page.getByTestId(`speed-${speed}`)).toHaveAttribute("aria-pressed", "true");
-      await page.getByTestId("playback-play").click();
-      await expect(page.getByTestId("decision-card")).toBeVisible({ timeout: 90_000 });
-      await page.getByTestId("skip-to-end").click();
+      for (const [choice, day] of [
+        ["extend-observation", "258"],
+        ["continue", "302"],
+      ] as const) {
+        await page.getByTestId(`speed-${speed}`).click();
+        await expect(page.getByTestId(`speed-${speed}`)).toHaveAttribute("aria-pressed", "true");
+        await page.getByTestId("playback-play").click();
+        await expect(page.getByTestId("decision-card")).toBeVisible({ timeout: 90_000 });
+        await page.getByTestId(`choice-${choice}`).click();
+        await page.getByTestId("confirm-decision").click();
+        await page.waitForURL(new RegExp(`\\?day=${day}`), { timeout: 30_000 });
+      }
+      await skipToEnd(page);
       await page.getByTestId("open-review").click();
       await page.waitForURL(/\/review\//);
       await expect(page.getByTestId("review-outcome")).toBeVisible();
+      await expect(page.getByTestId("review-decisions")).toContainText(/player/);
       const text = await page.getByTestId("review-page").innerText();
       hashes.push(createHash("sha256").update(text).digest("hex"));
     }
@@ -216,13 +279,16 @@ test.describe("review", () => {
     await expect(page.getByTestId("review-margins").locator(".recharts-wrapper")).toBeVisible();
     await expect(page.getByTestId("review-timeline")).toContainText(/scenario-target-illumination/);
     expect(await page.getByTestId("review-root-causes").locator("li").count()).toBeGreaterThanOrEqual(1);
-    await expect(page.getByTestId("review-root-causes").locator("li").first()).toContainText(/1/);
+    await expect(page.getByTestId("review-root-causes").locator("li").first()).toContainText("Rank 1");
     expect(await page.getByTestId("review-counterfactuals").locator("li").count()).toBeGreaterThanOrEqual(1);
     await expect(page.getByTestId("review-limitations")).toContainText(/not orbital propagation/i);
     const dims = page.getByTestId("review-score").locator("[data-testid^='score-dimension-']");
     expect(await dims.count()).toBe(5);
-    await expect(page.getByTestId("score-dimension-scientific-return")).toContainText(/30/);
-    await expect(page.getByTestId("score-dimension-operations-quality")).toContainText(/10/);
+    await expect(page.getByTestId("score-dimension-scientific-return")).toContainText("weight 30");
+    await expect(page.getByTestId("score-dimension-mission-execution")).toContainText("weight 25");
+    await expect(page.getByTestId("score-dimension-engineering-robustness")).toContainText("weight 20");
+    await expect(page.getByTestId("score-dimension-resource-stewardship")).toContainText("weight 15");
+    await expect(page.getByTestId("score-dimension-operations-quality")).toContainText("weight 10");
   });
 
   test("an empty counterfactual list says none was computed", async ({ page }) => {
@@ -252,5 +318,62 @@ test.describe("review", () => {
   test("unknown run shows not found", async ({ page }) => {
     await page.goto("/review/run-does-not-exist");
     await expect(page.getByTestId("not-found-state")).toBeVisible();
+  });
+});
+
+test.describe("robustness and design-time limit", () => {
+  test("a malformed cached run is discarded and the page recovers via GET", async ({ page }) => {
+    const runId = await launchFeasible(page);
+    await page.evaluate((id) => {
+      window.localStorage.setItem(
+        `missionforge:run:${id}`,
+        JSON.stringify({ analysis: null, run: { runId: id, events: [], telemetry: [] } }),
+      );
+    }, runId);
+    for (const path of [`/control/${runId}`, `/review/${runId}`]) {
+      await page.goto(path);
+      await expect(page.getByTestId(path.startsWith("/control") ? "mission-control" : "review-page")).toBeVisible();
+    }
+  });
+
+  test("a backend run missing required fields shows a recoverable error, not a crash", async ({ page }) => {
+    const runId = await launchFeasible(page);
+    await page.route(`**/api/mission/run/${runId}`, (route) =>
+      route.fulfill({
+        json: { ok: true, data: { run: { runId }, analysis: null }, error: null, meta: { requestId: "t", schemaVersion: "1.0" } },
+      }),
+    );
+    await page.evaluate(() => window.localStorage.clear());
+    await page.goto(`/review/${runId}`);
+    await expect(page.getByTestId("error-state")).toBeVisible();
+  });
+
+  test("a ?day= beyond the first undecided decision is clamped to it", async ({ page }) => {
+    const runId = await launchFeasible(page);
+    await page.goto(`/control/${runId}?day=400`);
+    await expect(page.getByTestId("elapsed-day")).toContainText(/day 258/i);
+    await expect(page.getByTestId("decision-card")).toBeVisible();
+  });
+
+  test("link margin shows the design-time limit with provenance, on card and chart", async ({ page }) => {
+    await launchFeasible(page);
+    await page.getByTestId("skip-next-decision").click();
+    await page.getByTestId("choice-keep-schedule").click();
+    await page.getByTestId("confirm-decision").click();
+    await page.waitForURL(/\?day=258/);
+    await expect(page.getByTestId("telemetry-card-link_margin_db").getByTestId("link-limit")).toContainText(/design-time limit/i);
+    const chart = page.getByTestId("telemetry-chart-link_margin_db");
+    await expect(chart.getByTestId("link-limit")).toContainText(/design-time limit/i);
+    await expect(chart.locator("[data-testid^='fidelity-badge-']").first()).toBeVisible();
+    await expect(page.getByTestId("telemetry-chart-battery_soc").getByTestId("link-limit")).toHaveCount(0);
+  });
+
+  test("each chart has a data table alternative", async ({ page }) => {
+    await launchFeasible(page);
+    await skipToEnd(page);
+    const data = page.getByTestId("chart-data-link_margin_db");
+    await data.locator("summary").click();
+    await expect(data.locator("table")).toBeVisible();
+    await expect(data.locator("tbody tr").first()).toContainText(/\d/);
   });
 });

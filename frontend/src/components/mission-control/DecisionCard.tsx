@@ -1,12 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { apiPost } from "@/lib/api-client";
 import { formatNumber, humanize } from "@/lib/format";
 import { useRunStore } from "@/state/run-store";
-import type { MissionEvent, TelemetrySample } from "./playback";
+import type { DesignLimit, MissionEvent, TelemetrySample } from "./playback";
 
 /** The backend description minus its option list (the options are rendered as choices). */
 function situationText(event: MissionEvent): string {
@@ -22,17 +22,21 @@ export function DecisionCard({
   event,
   runId,
   telemetry,
+  linkLimit,
 }: {
   event: MissionEvent;
   runId: string;
   telemetry: TelemetrySample[];
+  linkLimit: DesignLimit | null;
 }) {
+  const heading = useRef<HTMLHeadingElement>(null);
+  // The card appears while the focused Play button becomes disabled: move focus to the card.
+  useEffect(() => heading.current?.focus(), []);
   const router = useRouter();
   const [choice, setChoice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const isScenario = event.trigger["source"] === "scenario-event";
-  const thresholdDb = event.trigger["threshold_db"];
   const link = [...telemetry].reverse().find((s) => s.channel === "link_margin_db" && s.missionDay <= event.missionDay);
 
   async function confirm() {
@@ -60,10 +64,10 @@ export function DecisionCard({
       className="space-y-3 rounded-lg border border-accent-amber/60 bg-accent-amber/5 p-4"
     >
       <div className="space-y-1">
-        <p className="text-xs font-medium uppercase tracking-wide text-accent-amber">
+        <p role="alert" className="text-xs font-medium uppercase tracking-wide text-accent-amber">
           Decision required — day {event.missionDay.toFixed(1)} — playback paused
         </p>
-        <h2 id="decision-title" className="text-lg font-semibold">
+        <h2 id="decision-title" ref={heading} tabIndex={-1} className="text-lg font-semibold outline-offset-4">
           {event.title}
         </h2>
         <p data-testid="decision-kind" className="text-xs text-muted">
@@ -82,11 +86,12 @@ export function DecisionCard({
             <dd className="break-all">{String(v)}</dd>
           </div>
         ))}
-        {typeof thresholdDb === "number" && link ? (
-          <div className="contents">
-            <dt className="font-mono">link margin now</dt>
+        {linkLimit ? (
+          <div className="contents" data-testid="decision-link-margin">
+            <dt className="font-mono">link margin</dt>
             <dd>
-              {formatNumber(link.value)} dB against threshold {thresholdDb} dB
+              {link ? `${formatNumber(link.value)} dB (day ${link.missionDay.toFixed(1)})` : "not sampled before this day"};
+              design-time limit {formatNumber(linkLimit.value)} {linkLimit.unit} ({linkLimit.provenance.fidelity})
             </dd>
           </div>
         ) : null}

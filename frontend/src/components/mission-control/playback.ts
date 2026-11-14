@@ -121,19 +121,20 @@ export function channelIds(samples: TelemetrySample[]): string[] {
   return seen;
 }
 
+export interface DesignLimit {
+  value: number;
+  unit: string;
+  provenance: components["schemas"]["Provenance"];
+}
+
 /**
- * Thresholds that an event trigger states explicitly. Only `threshold_db` (anomaly
- * trigger for the link margin) maps onto a telemetry channel; nothing is invented.
+ * The design-time link-margin limit: the `limit` Quantity of the run's input-analysis
+ * `link-margin` constraint. Absent (null) when the analysis has no modelled limit.
  */
-export function triggerThresholds(events: MissionEvent[]): Record<string, { value: number; eventId: string }> {
-  const out: Record<string, { value: number; eventId: string }> = {};
-  for (const e of events) {
-    const v = e.trigger["threshold_db"];
-    if (typeof v === "number" && out["link_margin_db"] === undefined) {
-      out["link_margin_db"] = { value: v, eventId: e.id };
-    }
-  }
-  return out;
+export function linkMarginLimit(analysis: components["schemas"]["MissionAnalysis"]): DesignLimit | null {
+  const q = analysis.constraints.find((c) => c.id === "link-margin")?.limit;
+  if (!q || !Number.isFinite(q.value) || q.provenance.fidelity === "not-modelled") return null;
+  return { value: q.value, unit: q.unit, provenance: q.provenance };
 }
 
 export const PHASE_LABEL: Record<Phase, string> = {

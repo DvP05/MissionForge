@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 
 import {
   advance,
+  isUndecided,
   nextDecisionDay,
   nextEventDay,
   pendingDecision,
@@ -38,6 +39,8 @@ export interface Playback {
   reducedMotion: boolean;
   pending: MissionEvent | null;
   atEnd: boolean;
+  /** Undecided decisions still ahead of the position (they would use ground defaults on skip). */
+  undecidedAhead: number;
   hasNextDecision: boolean;
   hasNextEvent: boolean;
   play: () => void;
@@ -56,7 +59,11 @@ export function usePlayback(run: MissionRun, startDay: number): Playback {
   const events = useMemo(() => sortedEvents(run), [run]);
   const duration = useMemo(() => runDuration(run), [run]);
   const reducedMotion = useReducedMotion();
-  const [day, setDay] = useState(() => Math.min(Math.max(startDay, 0), duration));
+  // A requested start day never passes the first undecided decision (that decision must be made).
+  const [day, setDay] = useState(() => {
+    const firstUndecided = events.find((e) => isUndecided(e, run.decisions))?.missionDay ?? duration;
+    return Math.min(Math.max(startDay, 0), duration, firstUndecided);
+  });
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState<Speed>(1);
   const [armed, setArmed] = useState(true);
@@ -119,6 +126,7 @@ export function usePlayback(run: MissionRun, startDay: number): Playback {
     reducedMotion,
     pending,
     atEnd,
+    undecidedAhead: armed ? events.filter((e) => e.missionDay > day && isUndecided(e, run.decisions)).length : 0,
     hasNextDecision: nextDecision !== null && !pending,
     hasNextEvent: nextEvent !== null && !pending,
     play,
