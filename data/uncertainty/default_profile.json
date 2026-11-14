@@ -1,0 +1,62 @@
+{
+  "id": "default",
+  "version": "0.1.0",
+  "parameters": [
+    {
+      "id": "propulsion-isp",
+      "path": "catalog.propulsion.isp",
+      "kind": "aleatory",
+      "distribution": { "kind": "normal", "mean": 1.0, "stdDev": 0.02, "min": 0.94, "max": 1.06 },
+      "rationale": "Specific impulse varies about 2 % from the catalogue value (gameplay-estimate)."
+    },
+    {
+      "id": "launch-delivered-mass",
+      "path": "catalog.launch.launch_mass_limit",
+      "kind": "epistemic",
+      "distribution": { "kind": "uniform", "min": 0.95, "max": 1.0 },
+      "rationale": "Delivered mass to the target orbit may be up to 5 % below the nominal limit (gameplay-estimate)."
+    },
+    {
+      "id": "component-mass-growth",
+      "path": "catalog.components.mass",
+      "kind": "epistemic",
+      "distribution": { "kind": "triangular", "min": 0.97, "mode": 1.03, "max": 1.15 },
+      "rationale": "Early designs usually grow in mass; up to 15 % growth on every selected part (gameplay-estimate)."
+    },
+    {
+      "id": "solar-array-degradation",
+      "path": "catalog.power.array_power_at_1au",
+      "kind": "aleatory",
+      "distribution": { "kind": "triangular", "min": 0.85, "mode": 0.95, "max": 1.0 },
+      "rationale": "Solar arrays lose output with radiation and pointing; 0 to 15 % below nominal (gameplay-estimate)."
+    },
+    {
+      "id": "battery-usable-capacity",
+      "path": "catalog.power.battery_capacity",
+      "kind": "epistemic",
+      "distribution": { "kind": "uniform", "min": 0.85, "max": 1.0 },
+      "rationale": "Usable battery capacity after ageing is uncertain; 85 to 100 % of nominal (gameplay-estimate)."
+    },
+    {
+      "id": "instrument-duty-cycle",
+      "path": "operations.observation_plan.duty_cycle",
+      "kind": "aleatory",
+      "distribution": { "kind": "triangular", "min": 0.9, "mode": 1.0, "max": 1.2 },
+      "rationale": "Operators often observe a little more than planned; duty cycle -10 % to +20 % (gameplay-estimate)."
+    },
+    {
+      "id": "antenna-pointing-loss",
+      "path": "catalog.communications.antenna_gain",
+      "kind": "aleatory",
+      "distribution": { "kind": "triangular", "min": -2.0, "mode": -0.5, "max": 0.0 },
+      "rationale": "Antenna efficiency and pointing losses cost 0 to 2 dB of gain (gameplay-estimate)."
+    },
+    {
+      "id": "ground-contact-availability",
+      "path": "catalog.ground.contact_availability",
+      "kind": "aleatory",
+      "distribution": { "kind": "triangular", "min": 0.8, "mode": 1.0, "max": 1.05 },
+      "rationale": "Ground stations are shared and sometimes unavailable; -20 % to +5 % availability (gameplay-estimate)."
+    }
+  ]
+}

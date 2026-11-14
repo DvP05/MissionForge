@@ -6,11 +6,28 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.errors import register_error_handlers
 from app.api.middleware import BodySizeLimitMiddleware
-from app.api.routes import catalog, health, missions, templates
+from app.api.routes import (
+    analyst,
+    catalog,
+    graph,
+    health,
+    missions,
+    optimization,
+    robustness,
+    schedule,
+    science,
+    templates,
+)
 from app.config import DEFAULT_SCENARIOS_DIR, get_settings
 from app.domain.simulation.anomalies import load_event_sets
+from app.services.analyst_service import AnalystService
 from app.services.catalog_service import CatalogService
+from app.services.graph_service import GraphService
 from app.services.mission_service import MissionService
+from app.services.optimization_service import OptimizationService
+from app.services.robustness_service import RobustnessService, load_profile
+from app.services.schedule_service import ScheduleService
+from app.services.science_service import ScienceService, load_science_models
 from app.services.simulation_service import SimulationService
 from app.services.template_service import TemplateService
 
@@ -34,6 +51,21 @@ def create_app() -> FastAPI:
         engine_version=settings.engine_version,
         app_version=settings.app_version,
     )
+
+    # Phase 6 research differentiators (graph, arena, robustness, analyst, science, schedule).
+    profile = load_profile()
+    app.state.graph_service = GraphService(mission_service, catalogs)
+    app.state.robustness_service = RobustnessService(
+        mission_service, catalogs, template_service, settings.engine_version, profile
+    )
+    app.state.optimization_service = OptimizationService(
+        mission_service, catalogs, template_service, settings.engine_version, profile
+    )
+    app.state.analyst_service = AnalystService(
+        mission_service, catalogs, template_service, settings.engine_version
+    )
+    app.state.science_service = ScienceService(load_science_models())
+    app.state.schedule_service = ScheduleService(mission_service, catalogs)
 
     # Added innermost-first: size limit, then CORS, then the request id (outermost).
     app.add_middleware(
@@ -66,6 +98,12 @@ def create_app() -> FastAPI:
     app.include_router(catalog.router, prefix="/api")
     app.include_router(templates.router, prefix="/api")
     app.include_router(missions.router, prefix="/api")
+    app.include_router(graph.router, prefix="/api")
+    app.include_router(robustness.router, prefix="/api")
+    app.include_router(optimization.router, prefix="/api")
+    app.include_router(analyst.router, prefix="/api")
+    app.include_router(science.router, prefix="/api")
+    app.include_router(schedule.router, prefix="/api")
     return app
 
 
