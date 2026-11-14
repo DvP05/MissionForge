@@ -125,6 +125,10 @@ test.describe("mission control", () => {
     });
     await launchFeasible(page);
     await expect(page.getByTestId("schematic-2d")).toContainText(/illustrative/i);
+    await page.getByRole("button", { name: "3D", exact: true }).click();
+    await expect(page.getByTestId("schematic-3d")).toBeVisible();
+    await page.getByRole("button", { name: "2D", exact: true }).click();
+    await expect(page.getByTestId("schematic-2d")).toBeVisible();
     await playUntilDecision(page);
     await expect(page.getByTestId("schematic-2d")).toBeVisible();
   });

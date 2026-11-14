@@ -7,6 +7,7 @@ import { isImportedRun, type RunData } from "@/lib/persistence/run-cache";
 import { DecisionCard } from "./DecisionCard";
 import { ImportedDecisionNotice } from "./ImportedDecisionNotice";
 import { EventLog } from "./EventLog";
+import { HealthMonitorPanel } from "./HealthMonitorPanel";
 import { PhaseRibbon } from "./PhaseRibbon";
 import { PlaybackControls } from "./PlaybackControls";
 import { currentPhase, linkMarginLimit, visibleEvents } from "./playback";
@@ -42,8 +43,9 @@ export function MissionControl({ data, startDay }: { data: RunData; startDay: nu
       {pb.pending && !isImportedRun(data) ? <DecisionCard key={pb.pending.id} event={pb.pending} runId={run.runId} telemetry={run.telemetry} linkLimit={linkLimit} /> : null}
       <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
         <div className="min-w-0 space-y-4">
-          <SchematicPanel phase={phase} day={pb.day} />
+          <SchematicPanel mission={run.inputSnapshot} phase={phase} day={pb.day} />
           <TelemetryCards samples={run.telemetry} day={pb.day} linkLimit={linkLimit} />
+          <HealthMonitorPanel data={data} />
         </div>
         <EventLog events={shown} decisions={run.decisions} />
       </div>

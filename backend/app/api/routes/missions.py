@@ -1,4 +1,5 @@
 import json
+from collections.abc import Mapping
 from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, Request
@@ -16,13 +17,38 @@ from app.config import Settings, get_settings
 from app.domain.dossier.export_mission_dossier import ReplayCheck, export_mission_dossier
 from app.domain.errors import DomainValidationError
 from app.domain.mission.migrations import migrate_mission
+from app.domain.operations.autonomy import choose_autonomy_action
+from app.domain.operations.scheduler import schedule_data_cycle
+from app.domain.optimization.pareto import optimize_mission
+from app.domain.science_belief.belief import (
+    expected_information_gain,
+    initial_belief,
+    update_belief,
+)
 from app.domain.simulation.runner import LaunchBlocked
+from app.domain.traceability.graph import build_traceability_graph
+from app.domain.uncertainty.robustness import run_robustness
 from app.schemas.analysis import MissionAnalysis
 from app.schemas.api import ApiMeta, ApiResult, ContractModel
 from app.schemas.evidence import MissionPackage
 from app.schemas.mission import MissionState
-from app.schemas.optimization import TradeStudyResult
+from app.schemas.operations import (
+    AutonomyAction,
+    AutonomyDecision,
+    ContactWindow,
+    MissionSchedule,
+    ObservationOpportunity,
+)
+from app.schemas.optimization import ArchitectureGraph, OptimizationResult, TradeStudyResult
+from app.schemas.science_belief import (
+    BeliefState,
+    ObservationLikelihood,
+    ObservationRecord,
+    ScienceHypothesis,
+)
 from app.schemas.simulation import FinalReport, MissionEvent, MissionRun, TelemetrySample
+from app.schemas.uncertainty import RobustnessResult, UncertaintyProfile
+from app.schemas.units import NonNegativeFloat
 from app.services.mission_service import DesignRef, MissionService, ValidationOutcome
 from app.services.simulation_service import (
     DecisionAlreadyMadeError,
@@ -50,6 +76,61 @@ class TradeStudyRequest(ContractModel):
     alternatives: Annotated[
         list[MissionState], Field(min_length=1, max_length=MAX_TRADE_ALTERNATIVES)
     ]
+
+
+class TraceabilityRequest(ContractModel):
+    mission_state: MissionState
+    analysis: MissionAnalysis
+
+
+class OptimizationRequest(ContractModel):
+    mission_state: MissionState
+    seed: StrictInt | None = None
+    max_candidates: StrictInt = Field(default=50, ge=1, le=250)
+
+
+class RobustnessRequest(ContractModel):
+    mission_state: MissionState
+    profile: UncertaintyProfile
+    samples: StrictInt = Field(default=100, ge=0, le=1000)
+    seed: StrictInt | None = None
+
+
+class BeliefUpdateRequest(ContractModel):
+    hypotheses: list[ScienceHypothesis] = Field(min_length=1)
+    likelihood: ObservationLikelihood
+    observation: ObservationRecord
+
+
+class BeliefUpdateResult(ContractModel):
+    prior: BeliefState
+    posterior: BeliefState
+    expected_information_gain: float
+
+
+class BeliefData(ContractModel):
+    result: BeliefUpdateResult
+
+
+class AutonomyRequest(ContractModel):
+    belief: BeliefState
+    actions: list[AutonomyAction]
+    policy: Literal["conservative", "science-first", "resource-aware"]
+    blackout: StrictBool = False
+    available_energy_joules: NonNegativeFloat
+    available_storage_bits: NonNegativeFloat
+
+
+class AutonomyData(ContractModel):
+    decision: AutonomyDecision
+
+
+class ScheduleRequest(ContractModel):
+    opportunities: list[ObservationOpportunity]
+    contacts: list[ContactWindow]
+    storage_capacity_bits: NonNegativeFloat
+    initial_buffer_bits: NonNegativeFloat = 0.0
+    available_energy_joules: NonNegativeFloat | None = None
 
 
 class SimulateRequest(ContractModel):
@@ -134,6 +215,9 @@ class DossierData(ContractModel):
     replay_mismatches: list[str]
 
 
+class TraceabilityData(ContractModel):
+    graph: ArchitectureGraph
+
 # Domain codes that are the caller's fault (422). Anything else is a server fault and stays a 500.
 _CLIENT_DOMAIN_ERRORS: dict[str, str] = {
     "UNKNOWN_EVENT_SET": "The scenario event set does not exist.",
@@ -208,6 +292,172 @@ def trade_study(
         return _failure_response(request, settings, outcome.failure, outcome.failed_design)
     return ApiResult[TradeStudyResult](
         ok=True, data=outcome.result, meta=ApiMeta(request_id=request.state.request_id)
+    )
+
+
+@router.post("/mission/traceability", response_model=ApiResult[TraceabilityData])
+def traceability(
+    body: TraceabilityRequest,
+    request: Request,
+    service: Annotated[MissionService, Depends(get_mission_service)],
+    clock: Annotated[Clock, Depends(get_clock)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> ApiResult[TraceabilityData] | JSONResponse:
+    outcome = service.validate(body.mission_state, clock())
+    if outcome.analysis is None:
+        return _failure_response(request, settings, outcome)
+    graph = build_traceability_graph(body.mission_state, outcome.analysis, service.catalog.catalog)
+    return ApiResult[TraceabilityData](
+        ok=True,
+        data=TraceabilityData(graph=graph),
+        meta=ApiMeta(request_id=request.state.request_id),
+    )
+
+
+@router.post("/mission/optimize", response_model=ApiResult[OptimizationResult])
+def optimize(
+    body: OptimizationRequest,
+    request: Request,
+    service: Annotated[MissionService, Depends(get_mission_service)],
+    clock: Annotated[Clock, Depends(get_clock)],
+) -> ApiResult[OptimizationResult] | JSONResponse:
+    catalogs = service.catalog.catalog
+    scenario = service.templates.scenario_inputs(body.mission_state.scenario_id)
+    if scenario is None:
+        return error_response(
+            request, 422, VALIDATION_ERROR, "The mission scenario is unavailable."
+        )
+
+    def evaluate(state: MissionState) -> MissionAnalysis:
+        outcome = service.validate(state, clock())
+        if outcome.analysis is None:
+            raise ValueError("A generated candidate did not validate.")
+        return outcome.analysis
+
+    result = optimize_mission(
+        body.mission_state,
+        catalogs,
+        evaluate,
+        seed=body.seed,
+        max_candidates=body.max_candidates,
+    )
+    return ApiResult[OptimizationResult](
+        ok=True,
+        data=result,
+        meta=ApiMeta(request_id=request.state.request_id),
+    )
+
+
+@router.post("/mission/robustness", response_model=ApiResult[RobustnessResult])
+def robustness(
+    body: RobustnessRequest,
+    request: Request,
+    service: Annotated[MissionService, Depends(get_mission_service)],
+    clock: Annotated[Clock, Depends(get_clock)],
+) -> ApiResult[RobustnessResult] | JSONResponse:
+    parameter_paths = {parameter.id: parameter.path for parameter in body.profile.parameters}
+
+    def evaluate(state: MissionState, values: Mapping[str, float]) -> MissionAnalysis:
+        updated = state
+        for parameter_id, value in values.items():
+            path = parameter_paths[parameter_id]
+            if path == "constraints.maximum_budget_usd":
+                updated = updated.model_copy(
+                    update={
+                        "constraints": updated.constraints.model_copy(
+                            update={"maximum_budget_usd": value}
+                        )
+                    }
+                )
+            elif path == "constraints.mass_margin_fraction":
+                updated = updated.model_copy(
+                    update={
+                        "constraints": updated.constraints.model_copy(
+                            update={"mass_margin_fraction": value}
+                        )
+                    }
+                )
+            else:
+                raise ValueError(f"Unsupported uncertainty path: {path}")
+        outcome = service.validate(updated, clock())
+        if outcome.analysis is None:
+            raise ValueError("A robustness sample did not validate.")
+        return outcome.analysis
+
+    try:
+        result = run_robustness(
+            body.mission_state,
+            body.profile,
+            evaluate,
+            samples=body.samples,
+            seed=body.seed if body.seed is not None else body.mission_state.random_seed,
+        )
+    except ValueError as exc:
+        return error_response(request, 422, VALIDATION_ERROR, str(exc))
+    return ApiResult[RobustnessResult](
+        ok=True,
+        data=result,
+        meta=ApiMeta(request_id=request.state.request_id),
+    )
+
+
+@router.post("/mission/belief/update", response_model=ApiResult[BeliefData])
+def belief_update(
+    body: BeliefUpdateRequest,
+    request: Request,
+) -> ApiResult[BeliefData]:
+    prior = initial_belief(body.hypotheses)
+    posterior = update_belief(prior, body.likelihood, body.observation)
+    gain = expected_information_gain(prior, {body.observation.outcome_id: body.likelihood})
+    return ApiResult[BeliefData](
+        ok=True,
+        data=BeliefData(
+            result=BeliefUpdateResult(
+                prior=prior,
+                posterior=posterior,
+                expected_information_gain=gain,
+            )
+        ),
+        meta=ApiMeta(request_id=request.state.request_id),
+    )
+
+
+@router.post("/mission/autonomy/choose", response_model=ApiResult[AutonomyData])
+def autonomy_choose(
+    body: AutonomyRequest,
+    request: Request,
+) -> ApiResult[AutonomyData]:
+    decision = choose_autonomy_action(
+        body.belief,
+        body.actions,
+        policy=body.policy,
+        blackout=body.blackout,
+        available_energy_joules=body.available_energy_joules,
+        available_storage_bits=body.available_storage_bits,
+    )
+    return ApiResult[AutonomyData](
+        ok=True,
+        data=AutonomyData(decision=decision),
+        meta=ApiMeta(request_id=request.state.request_id),
+    )
+
+
+@router.post("/mission/schedule", response_model=ApiResult[MissionSchedule])
+def schedule(
+    body: ScheduleRequest,
+    request: Request,
+) -> ApiResult[MissionSchedule]:
+    result = schedule_data_cycle(
+        body.opportunities,
+        body.contacts,
+        storage_capacity_bits=body.storage_capacity_bits,
+        initial_buffer_bits=body.initial_buffer_bits,
+        available_energy_joules=body.available_energy_joules,
+    )
+    return ApiResult[MissionSchedule](
+        ok=True,
+        data=result,
+        meta=ApiMeta(request_id=request.state.request_id),
     )
 
 

@@ -9,6 +9,8 @@ import { StatusPill } from "@/components/common/StatusPill";
 import { ACTION_CLASS, ErrorState, LoadingState } from "@/components/common/States";
 import { buildTraceRows } from "@/components/science-traceability/build-trace-rows";
 import { TraceabilityTable, WeightsNote } from "@/components/science-traceability/TraceabilityTable";
+import { AdvancedMissionLab } from "@/components/arena/AdvancedMissionLab";
+import { JplDataPanel } from "./JplDataPanel";
 import { useAnalysis } from "@/hooks/useAnalysis";
 import { useMissionStore, type ScienceObjective } from "@/state/mission-store";
 import { ConceptCard } from "./ConceptCard";
@@ -76,6 +78,7 @@ export function MissionBrief() {
   return (
     <div className="space-y-8">
       <ConceptCard />
+      <JplDataPanel />
 
       <section aria-labelledby="scenario-heading" className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
@@ -134,6 +137,7 @@ export function MissionBrief() {
         ) : null}
         <TraceabilityTable rows={rows} hasAnalysis={currentAnalysis !== null} />
         <WeightsNote />
+        <AdvancedMissionLab />
       </section>
 
       <div>

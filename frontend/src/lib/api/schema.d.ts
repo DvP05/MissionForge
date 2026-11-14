@@ -38,6 +38,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/mission/autonomy/choose": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Autonomy Choose */
+        post: operations["autonomy_choose_api_mission_autonomy_choose_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission/belief/update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Belief Update */
+        post: operations["belief_update_api_mission_belief_update_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/mission/dossier": {
         parameters: {
             query?: never;
@@ -54,6 +88,23 @@ export interface paths {
          *     passport never relies on client-calculated analysis or a client claim of identity.
          */
         post: operations["export_dossier_api_mission_dossier_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission/health-monitor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Health Monitor */
+        post: operations["health_monitor_api_mission_health_monitor_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -84,6 +135,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/mission/optimize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Optimize */
+        post: operations["optimize_api_mission_optimize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/mission/replay": {
         parameters: {
             query?: never;
@@ -102,6 +170,23 @@ export interface paths {
          *     ok=true with status "version-mismatch" and no re-run: never a claim of identity.
          */
         post: operations["replay_run_api_mission_replay_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission/robustness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Robustness */
+        post: operations["robustness_api_mission_robustness_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -148,6 +233,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/mission/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Schedule */
+        post: operations["schedule_api_mission_schedule_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/mission/simulate": {
         parameters: {
             query?: never;
@@ -162,6 +264,23 @@ export interface paths {
          * @description Run one deterministic simulation (architecture 11.2). Never accepts a client analysis.
          */
         post: operations["simulate_mission_api_mission_simulate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission/traceability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Traceability */
+        post: operations["traceability_api_mission_traceability_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -199,6 +318,40 @@ export interface paths {
         put?: never;
         /** Validate Mission */
         post: operations["validate_mission_api_mission_validate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space-data/neo-accessible": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Neo Accessible */
+        get: operations["neo_accessible_api_space_data_neo_accessible_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space-data/neo/{designation}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Neo By Designation */
+        get: operations["neo_by_designation_api_space_data_neo__designation__get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -243,6 +396,35 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Anomaly */
+        Anomaly: {
+            /** Baseline */
+            baseline: number;
+            /** Channel */
+            channel: string;
+            /** Explanation */
+            explanation: string;
+            /** Observed */
+            observed: number;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "warning" | "critical";
+            /** Subsystems */
+            subsystems: string[];
+            /** Threshold */
+            threshold: number;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "kg" | "m" | "s" | "day" | "km" | "km/s" | "m/s" | "W" | "Wh" | "J" | "bit/s" | "bit" | "Hz" | "dB" | "dBW" | "K" | "USD" | "USD_2026" | "%" | "rad" | "deg" | "fraction";
+            /** Windowend */
+            windowEnd: number;
+            /** Windowstart */
+            windowStart: number;
+        };
         /** ApiError */
         ApiError: {
             /** Code */
@@ -271,6 +453,22 @@ export interface components {
             /** Sourcestatus */
             sourceStatus?: ("live" | "cached" | "demo") | null;
         };
+        /** ApiResult[AutonomyData] */
+        ApiResult_AutonomyData_: {
+            data?: components["schemas"]["AutonomyData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[BeliefData] */
+        ApiResult_BeliefData_: {
+            data?: components["schemas"]["BeliefData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
         /** ApiResult[CatalogData] */
         ApiResult_CatalogData_: {
             data?: components["schemas"]["CatalogData"] | null;
@@ -295,9 +493,25 @@ export interface components {
             /** Ok */
             ok: boolean;
         };
+        /** ApiResult[HealthMonitorData] */
+        ApiResult_HealthMonitorData_: {
+            data?: components["schemas"]["HealthMonitorData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
         /** ApiResult[ImportData] */
         ApiResult_ImportData_: {
             data?: components["schemas"]["ImportData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[MissionSchedule] */
+        ApiResult_MissionSchedule_: {
+            data?: components["schemas"]["MissionSchedule"] | null;
             error?: components["schemas"]["ApiError"] | null;
             meta: components["schemas"]["ApiMeta"];
             /** Ok */
@@ -311,6 +525,14 @@ export interface components {
             /** Ok */
             ok: boolean;
         };
+        /** ApiResult[OptimizationResult] */
+        ApiResult_OptimizationResult_: {
+            data?: components["schemas"]["OptimizationResult"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
         /** ApiResult[ReplayData] */
         ApiResult_ReplayData_: {
             data?: components["schemas"]["ReplayData"] | null;
@@ -319,9 +541,33 @@ export interface components {
             /** Ok */
             ok: boolean;
         };
+        /** ApiResult[RobustnessResult] */
+        ApiResult_RobustnessResult_: {
+            data?: components["schemas"]["RobustnessResult"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
         /** ApiResult[SimulateData] */
         ApiResult_SimulateData_: {
             data?: components["schemas"]["SimulateData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[SpaceDataResponse] */
+        ApiResult_SpaceDataResponse_: {
+            data?: components["schemas"]["SpaceDataResponse"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
+        /** ApiResult[TraceabilityData] */
+        ApiResult_TraceabilityData_: {
+            data?: components["schemas"]["TraceabilityData"] | null;
             error?: components["schemas"]["ApiError"] | null;
             meta: components["schemas"]["ApiMeta"];
             /** Ok */
@@ -352,6 +598,88 @@ export interface components {
             /** Ok */
             ok: boolean;
         };
+        /** ArchitectureCandidate */
+        ArchitectureCandidate: {
+            analysis: components["schemas"]["MissionAnalysis"];
+            /** Explanation */
+            explanation: string[];
+            /** Feasible */
+            feasible: boolean;
+            /** Generation */
+            generation: number;
+            /** Id */
+            id: string;
+            missionState: components["schemas"]["MissionState"];
+            /** Objectivevector */
+            objectiveVector: {
+                [key: string]: number;
+            };
+        };
+        /** ArchitectureEdge */
+        ArchitectureEdge: {
+            /** Fromid */
+            fromId: string;
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "satisfies" | "allocated-to" | "depends-on" | "consumes" | "generates" | "constrains" | "downlinks-through";
+            /** Rationale */
+            rationale: string;
+            /** Toid */
+            toId: string;
+        };
+        /**
+         * ArchitectureGraph
+         * @description Typed directed mission graph (19.1); a projection of canonical state, never edited.
+         */
+        ArchitectureGraph: {
+            /** Edges */
+            edges: components["schemas"]["ArchitectureEdge"][];
+            /** Nodes */
+            nodes: components["schemas"]["ArchitectureNode"][];
+        };
+        /** ArchitectureNode */
+        ArchitectureNode: {
+            /** Attributes */
+            attributes?: {
+                [key: string]: string | boolean | number;
+            };
+            /** Entityid */
+            entityId?: string | null;
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "science-objective" | "measurement-requirement" | "instrument" | "spacecraft-subsystem" | "launch-option" | "trajectory-option" | "observation-task" | "contact-window" | "science-product";
+            /** Label */
+            label: string;
+        };
+        /** AutonomyAction */
+        AutonomyAction: {
+            /** Databits */
+            dataBits: number;
+            /** Energyjoules */
+            energyJoules: number;
+            /** Expectedsciencevalue */
+            expectedScienceValue: number;
+            /** Id */
+            id: string;
+            /** Observationid */
+            observationId: string;
+            /** Risk */
+            risk: number;
+            /** Slewseconds */
+            slewSeconds: number;
+        };
+        /** AutonomyData */
+        AutonomyData: {
+            decision: components["schemas"]["AutonomyDecision"];
+        };
         /** AutonomyDecision */
         AutonomyDecision: {
             belief: components["schemas"]["BeliefState"];
@@ -372,6 +700,30 @@ export interface components {
             /** Selectedactionid */
             selectedActionId?: string | null;
         };
+        /** AutonomyRequest */
+        AutonomyRequest: {
+            /** Actions */
+            actions: components["schemas"]["AutonomyAction"][];
+            /** Availableenergyjoules */
+            availableEnergyJoules: number;
+            /** Availablestoragebits */
+            availableStorageBits: number;
+            belief: components["schemas"]["BeliefState"];
+            /**
+             * Blackout
+             * @default false
+             */
+            blackout: boolean;
+            /**
+             * Policy
+             * @enum {string}
+             */
+            policy: "conservative" | "science-first" | "resource-aware";
+        };
+        /** BeliefData */
+        BeliefData: {
+            result: components["schemas"]["BeliefUpdateResult"];
+        };
         /** BeliefState */
         BeliefState: {
             /** Entropybits */
@@ -382,6 +734,20 @@ export interface components {
             observationHistory: components["schemas"]["ObservationRecord"][];
             /** Version */
             version: number;
+        };
+        /** BeliefUpdateRequest */
+        BeliefUpdateRequest: {
+            /** Hypotheses */
+            hypotheses: components["schemas"]["ScienceHypothesis"][];
+            likelihood: components["schemas"]["ObservationLikelihood"];
+            observation: components["schemas"]["ObservationRecord"];
+        };
+        /** BeliefUpdateResult */
+        BeliefUpdateResult: {
+            /** Expectedinformationgain */
+            expectedInformationGain: number;
+            posterior: components["schemas"]["BeliefState"];
+            prior: components["schemas"]["BeliefState"];
         };
         /** BudgetAnalysis */
         BudgetAnalysis: {
@@ -403,6 +769,13 @@ export interface components {
             propellantMassKg: components["schemas"]["Quantity"];
             requiredDeltaVKmPerS: components["schemas"]["Quantity"];
             wetMassKg: components["schemas"]["Quantity"];
+        };
+        /** BufferPoint */
+        BufferPoint: {
+            /** Bits */
+            bits: number;
+            /** T */
+            t: number;
         };
         /** CatalogComponent */
         CatalogComponent: {
@@ -506,6 +879,21 @@ export interface components {
             /** Suggestedactions */
             suggestedActions?: components["schemas"]["SuggestedAction"][];
         };
+        /** ContactWindow */
+        ContactWindow: {
+            /** End */
+            end: number;
+            /** Id */
+            id: string;
+            /** Linkmargindb */
+            linkMarginDb: number;
+            /** Maxdownlinkbits */
+            maxDownlinkBits: number;
+            /** Start */
+            start: number;
+            /** Stationid */
+            stationId: string;
+        };
         /** DecisionChoice */
         DecisionChoice: {
             /** Effects */
@@ -551,6 +939,48 @@ export interface components {
             /** Name */
             name: string;
             source?: components["schemas"]["Provenance"] | null;
+        };
+        /** DetectorConfig */
+        DetectorConfig: {
+            /** Channel */
+            channel: string;
+            /** Crit */
+            crit: number;
+            /** Expected */
+            expected: number;
+            /** Hardlimit */
+            hardLimit?: number | null;
+            /** Lam */
+            lam: number;
+            /** Persistencek */
+            persistenceK: number;
+            /** Rationale */
+            rationale: string;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "kg" | "m" | "s" | "day" | "km" | "km/s" | "m/s" | "W" | "Wh" | "J" | "bit/s" | "bit" | "Hz" | "dB" | "dBW" | "K" | "USD" | "USD_2026" | "%" | "rad" | "deg" | "fraction";
+            /** Warn */
+            warn: number;
+        };
+        /** DistributionSpec */
+        DistributionSpec: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "normal" | "uniform" | "triangular";
+            /** Max */
+            max?: number | null;
+            /** Mean */
+            mean?: number | null;
+            /** Min */
+            min?: number | null;
+            /** Mode */
+            mode?: number | null;
+            /** Stddev */
+            stdDev?: number | null;
         };
         /**
          * DossierData
@@ -666,6 +1096,19 @@ export interface components {
             /** Schemaversion */
             schemaVersion: string;
         };
+        /** HealthMonitorData */
+        HealthMonitorData: {
+            /** Anomalies */
+            anomalies: components["schemas"]["Anomaly"][];
+            /** Disclaimer */
+            disclaimer: string;
+        };
+        /** HealthMonitorRequest */
+        HealthMonitorRequest: {
+            config: components["schemas"]["DetectorConfig"];
+            /** Telemetry */
+            telemetry: components["schemas"]["TelemetrySample"][];
+        };
         /** HypothesisProbability */
         HypothesisProbability: {
             /** Hypothesisid */
@@ -703,6 +1146,17 @@ export interface components {
              */
             required: boolean;
             targetThreshold?: components["schemas"]["Quantity"] | null;
+        };
+        /** MetricQuantiles */
+        MetricQuantiles: {
+            /** Median */
+            median: number;
+            /** P10 */
+            p10: number;
+            /** P90 */
+            p90: number;
+            /** Unit */
+            unit: string;
         };
         /** MissionAnalysis */
         MissionAnalysis: {
@@ -891,6 +1345,27 @@ export interface components {
             /** Seed */
             seed: number;
         };
+        /** MissionSchedule */
+        MissionSchedule: {
+            /** Accepted */
+            accepted: string[];
+            /** Buffertimeline */
+            bufferTimeline: components["schemas"]["BufferPoint"][];
+            /** Cycles */
+            cycles: components["schemas"]["ScheduledDataCycle"][];
+            /**
+             * Datalossriskaccepted
+             * @default false
+             */
+            dataLossRiskAccepted: boolean;
+            /**
+             * Datalostbits
+             * @default 0
+             */
+            dataLostBits: number;
+            /** Rejected */
+            rejected: components["schemas"]["RejectedOpportunity"][];
+        };
         /** MissionState */
         MissionState: {
             architecture: components["schemas"]["SpacecraftArchitecture"];
@@ -930,6 +1405,38 @@ export interface components {
              */
             updatedAt: string;
         };
+        /** ObservationLikelihood */
+        ObservationLikelihood: {
+            /** Instrumentid */
+            instrumentId: string;
+            /** Likelihoodbyhypothesis */
+            likelihoodByHypothesis: {
+                [key: string]: number;
+            };
+            /** Outcomeid */
+            outcomeId: string;
+        };
+        /** ObservationOpportunity */
+        ObservationOpportunity: {
+            /** Compatibleattitude */
+            compatibleAttitude: string;
+            /** End */
+            end: number;
+            /** Energyjoules */
+            energyJoules: number;
+            /** Expectedsciencevalue */
+            expectedScienceValue: number;
+            /** Generateddatabits */
+            generatedDataBits: number;
+            /** Id */
+            id: string;
+            /** Instrumentid */
+            instrumentId: string;
+            /** Slewseconds */
+            slewSeconds: number;
+            /** Start */
+            start: number;
+        };
         /** ObservationPlanItem */
         ObservationPlanItem: {
             /** Durationhours */
@@ -968,6 +1475,49 @@ export interface components {
              * @enum {string}
              */
             safeModePolicy: "conservative" | "balanced" | "aggressive";
+        };
+        /** OptimizationObjective */
+        OptimizationObjective: {
+            /**
+             * Direction
+             * @enum {string}
+             */
+            direction: "minimize" | "maximize";
+            /**
+             * Key
+             * @enum {string}
+             */
+            key: "lifecycle_cost" | "dry_mass" | "duration_days" | "negative_science_return" | "negative_robustness";
+            /** Weight */
+            weight?: number | null;
+        };
+        /** OptimizationRequest */
+        OptimizationRequest: {
+            /**
+             * Maxcandidates
+             * @default 50
+             */
+            maxCandidates: number;
+            missionState: components["schemas"]["MissionState"];
+            /** Seed */
+            seed?: number | null;
+        };
+        /** OptimizationResult */
+        OptimizationResult: {
+            /** Archetypes */
+            archetypes: {
+                [key: string]: string;
+            };
+            /** Candidates */
+            candidates: components["schemas"]["ArchitectureCandidate"][];
+            /** Nearmisses */
+            nearMisses: string[];
+            /** Objectives */
+            objectives: components["schemas"]["OptimizationObjective"][];
+            /** Paretofrontids */
+            paretoFrontIds: string[];
+            /** Seed */
+            seed: number;
         };
         /** PhaseTransition */
         PhaseTransition: {
@@ -1013,6 +1563,16 @@ export interface components {
             /** Value */
             value: number;
         };
+        /** RejectedOpportunity */
+        RejectedOpportunity: {
+            /** Id */
+            id: string;
+            /**
+             * Reasoncode
+             * @enum {string}
+             */
+            reasonCode: "INSTRUMENT_CONFLICT" | "ENERGY" | "POINTING" | "BUFFER_OVERFLOW_BEFORE_CONTACT" | "NO_CONTACT" | "PHASE" | "THERMAL";
+        };
         /** ReliabilityAnalysis */
         ReliabilityAnalysis: {
             /** Nominalreliability */
@@ -1038,6 +1598,46 @@ export interface components {
         /** ReplayRequest */
         ReplayRequest: {
             run: components["schemas"]["MissionRun"];
+        };
+        /** RobustnessRequest */
+        RobustnessRequest: {
+            missionState: components["schemas"]["MissionState"];
+            profile: components["schemas"]["UncertaintyProfile"];
+            /**
+             * Samples
+             * @default 100
+             */
+            samples: number;
+            /** Seed */
+            seed?: number | null;
+        };
+        /** RobustnessResult */
+        RobustnessResult: {
+            /** Assumptions */
+            assumptions: string[];
+            /** Disclaimer */
+            disclaimer: string;
+            /** Failurecounts */
+            failureCounts: {
+                [key: string]: number;
+            };
+            /** Feasibilitywilson95 */
+            feasibilityWilson95: [
+                number,
+                number
+            ];
+            /** Metrics */
+            metrics: {
+                [key: string]: components["schemas"]["MetricQuantiles"];
+            };
+            /** Probabilityfeasible */
+            probabilityFeasible: number;
+            /** Profileversion */
+            profileVersion: string;
+            /** Samples */
+            samples: number;
+            /** Seed */
+            seed: number;
         };
         /**
          * RunReplayStatus
@@ -1080,6 +1680,37 @@ export interface components {
             /** Topconstraints */
             topConstraints: string[];
         };
+        /** ScheduleRequest */
+        ScheduleRequest: {
+            /** Availableenergyjoules */
+            availableEnergyJoules?: number | null;
+            /** Contacts */
+            contacts: components["schemas"]["ContactWindow"][];
+            /**
+             * Initialbufferbits
+             * @default 0
+             */
+            initialBufferBits: number;
+            /** Opportunities */
+            opportunities: components["schemas"]["ObservationOpportunity"][];
+            /** Storagecapacitybits */
+            storageCapacityBits: number;
+        };
+        /** ScheduledDataCycle */
+        ScheduledDataCycle: {
+            /** Bufferafterbits */
+            bufferAfterBits: number;
+            /** Bufferbeforebits */
+            bufferBeforeBits: number;
+            /** Contactwindowid */
+            contactWindowId?: string | null;
+            /** Explanation */
+            explanation: string;
+            /** Id */
+            id: string;
+            /** Observations */
+            observations: string[];
+        };
         /** ScienceAnalysis */
         ScienceAnalysis: {
             /** Collectedfraction */
@@ -1094,6 +1725,17 @@ export interface components {
             weightedObjectiveCoverage: {
                 [key: string]: number;
             };
+        };
+        /** ScienceHypothesis */
+        ScienceHypothesis: {
+            /** Description */
+            description: string;
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Priorprobability */
+            priorProbability: number;
         };
         /** ScienceObjective */
         ScienceObjective: {
@@ -1189,6 +1831,48 @@ export interface components {
             /** Scenarioeventsetid */
             scenarioEventSetId?: string | null;
         };
+        /** SpaceDataRecord */
+        SpaceDataRecord: {
+            /** Arrival Date */
+            arrival_date?: string | null;
+            /** C3 Km2 Per S2 */
+            c3_km2_per_s2?: number | null;
+            /** Departure Date */
+            departure_date?: string | null;
+            /** Designation */
+            designation: string;
+            /** Fidelity */
+            fidelity: string;
+            /** Mission Delta V Km Per S */
+            mission_delta_v_km_per_s?: number | null;
+            /** Name */
+            name?: string | null;
+            /** Option Id */
+            option_id: string;
+            /** Source Url */
+            source_url: string;
+            /** Source Version */
+            source_version: string;
+            /** Time Of Flight Days */
+            time_of_flight_days?: number | null;
+        };
+        /** SpaceDataResponse */
+        SpaceDataResponse: {
+            /** Cache Ttl Seconds */
+            cache_ttl_seconds: number;
+            /** Message */
+            message?: string | null;
+            /** Records */
+            records: components["schemas"]["SpaceDataRecord"][];
+            /** Retrieved At */
+            retrieved_at: string;
+            /** Source Url */
+            source_url: string;
+            /** Source Version */
+            source_version: string;
+            /** Status */
+            status: string;
+        };
         /** SpacecraftArchitecture */
         SpacecraftArchitecture: {
             /** Adcsid */
@@ -1276,6 +1960,15 @@ export interface components {
             title: string;
             trajectory: components["schemas"]["TrajectorySelection"];
         };
+        /** TraceabilityData */
+        TraceabilityData: {
+            graph: components["schemas"]["ArchitectureGraph"];
+        };
+        /** TraceabilityRequest */
+        TraceabilityRequest: {
+            analysis: components["schemas"]["MissionAnalysis"];
+            missionState: components["schemas"]["MissionState"];
+        };
         /** TradeAlternative */
         TradeAlternative: {
             analysis: components["schemas"]["MissionAnalysis"];
@@ -1325,6 +2018,23 @@ export interface components {
             /** Timeofflightdays */
             timeOfFlightDays?: number | null;
         };
+        /** UncertainParameter */
+        UncertainParameter: {
+            distribution: components["schemas"]["DistributionSpec"];
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "aleatory" | "epistemic";
+            /** Path */
+            path: string;
+            /** Rationale */
+            rationale: string;
+            /** Sourceref */
+            sourceRef?: string | null;
+        };
         /** Uncertainty */
         Uncertainty: {
             /**
@@ -1340,6 +2050,15 @@ export interface components {
             mode?: number | null;
             /** Sigma */
             sigma?: number | null;
+        };
+        /** UncertaintyProfile */
+        UncertaintyProfile: {
+            /** Id */
+            id: string;
+            /** Parameters */
+            parameters: components["schemas"]["UncertainParameter"][];
+            /** Version */
+            version: string;
         };
         /** ValidateData */
         ValidateData: {
@@ -1420,6 +2139,72 @@ export interface operations {
             };
         };
     };
+    autonomy_choose_api_mission_autonomy_choose_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AutonomyRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_AutonomyData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    belief_update_api_mission_belief_update_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BeliefUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_BeliefData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     export_dossier_api_mission_dossier_post: {
         parameters: {
             query?: never;
@@ -1453,6 +2238,39 @@ export interface operations {
             };
         };
     };
+    health_monitor_api_mission_health_monitor_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HealthMonitorRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_HealthMonitorData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     import_package_api_mission_import_post: {
         parameters: {
             query?: never;
@@ -1469,6 +2287,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_ImportData_"];
+                };
+            };
+        };
+    };
+    optimize_api_mission_optimize_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OptimizationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_OptimizationResult_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1493,6 +2344,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_ReplayData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    robustness_api_mission_robustness_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RobustnessRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_RobustnessResult_"];
                 };
             };
             /** @description Validation Error */
@@ -1572,6 +2456,39 @@ export interface operations {
             };
         };
     };
+    schedule_api_mission_schedule_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_MissionSchedule_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     simulate_mission_api_mission_simulate_post: {
         parameters: {
             query?: never;
@@ -1592,6 +2509,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_SimulateData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    traceability_api_mission_traceability_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TraceabilityRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_TraceabilityData_"];
                 };
             };
             /** @description Validation Error */
@@ -1658,6 +2608,57 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_ValidateData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    neo_accessible_api_space_data_neo_accessible_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_SpaceDataResponse_"];
+                };
+            };
+        };
+    };
+    neo_by_designation_api_space_data_neo__designation__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                designation: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_SpaceDataResponse_"];
                 };
             };
             /** @description Validation Error */

@@ -58,6 +58,14 @@ class MissionService:
         self._templates = templates
         self._engine_version = engine_version
 
+    @property
+    def catalog(self) -> CatalogService:
+        return self._catalogs
+
+    @property
+    def templates(self) -> TemplateService:
+        return self._templates
+
     def _component_id(self, state: MissionState, path: str) -> str:
         match = _ARCH_PATH.match(path)
         if not match:

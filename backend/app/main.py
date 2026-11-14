@@ -6,9 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.errors import register_error_handlers
 from app.api.middleware import BodySizeLimitMiddleware
-from app.api.routes import catalog, health, missions, templates
-from app.config import DEFAULT_SCENARIOS_DIR, get_settings
+from app.api.routes import catalog, health, health_monitor, missions, space_data, templates
+from app.config import DEFAULT_JPL_SNAPSHOT, DEFAULT_SCENARIOS_DIR, get_settings
 from app.domain.simulation.anomalies import load_event_sets
+from app.integrations.jpl.client import JplMDesignClient
 from app.services.catalog_service import CatalogService
 from app.services.mission_service import MissionService
 from app.services.simulation_service import SimulationService
@@ -34,6 +35,7 @@ def create_app() -> FastAPI:
         engine_version=settings.engine_version,
         app_version=settings.app_version,
     )
+    app.state.jpl_client = JplMDesignClient(settings, snapshot_path=DEFAULT_JPL_SNAPSHOT)
 
     # Added innermost-first: size limit, then CORS, then the request id (outermost).
     app.add_middleware(
@@ -66,6 +68,8 @@ def create_app() -> FastAPI:
     app.include_router(catalog.router, prefix="/api")
     app.include_router(templates.router, prefix="/api")
     app.include_router(missions.router, prefix="/api")
+    app.include_router(health_monitor.router, prefix="/api")
+    app.include_router(space_data.router, prefix="/api")
     return app
 
 

@@ -1,6 +1,98 @@
 {
   "components": {
     "schemas": {
+      "Anomaly": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline": {
+            "title": "Baseline",
+            "type": "number"
+          },
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "observed": {
+            "title": "Observed",
+            "type": "number"
+          },
+          "severity": {
+            "enum": [
+              "warning",
+              "critical"
+            ],
+            "title": "Severity",
+            "type": "string"
+          },
+          "subsystems": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Subsystems",
+            "type": "array"
+          },
+          "threshold": {
+            "title": "Threshold",
+            "type": "number"
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg",
+              "fraction"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "windowEnd": {
+            "ge": 0,
+            "title": "Windowend",
+            "type": "number"
+          },
+          "windowStart": {
+            "ge": 0,
+            "title": "Windowstart",
+            "type": "number"
+          }
+        },
+        "required": [
+          "channel",
+          "unit",
+          "observed",
+          "baseline",
+          "threshold",
+          "windowStart",
+          "windowEnd",
+          "severity",
+          "subsystems",
+          "explanation"
+        ],
+        "title": "Anomaly",
+        "type": "object"
+      },
       "ApiError": {
         "additionalProperties": false,
         "properties": {
@@ -83,6 +175,82 @@
           "requestId"
         ],
         "title": "ApiMeta",
+        "type": "object"
+      },
+      "ApiResult_AutonomyData_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AutonomyData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[AutonomyData]",
+        "type": "object"
+      },
+      "ApiResult_BeliefData_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BeliefData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[BeliefData]",
         "type": "object"
       },
       "ApiResult_CatalogData_": {
@@ -199,6 +367,44 @@
         "title": "ApiResult[HealthData]",
         "type": "object"
       },
+      "ApiResult_HealthMonitorData_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HealthMonitorData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[HealthMonitorData]",
+        "type": "object"
+      },
       "ApiResult_ImportData_": {
         "additionalProperties": false,
         "properties": {
@@ -235,6 +441,44 @@
           "meta"
         ],
         "title": "ApiResult[ImportData]",
+        "type": "object"
+      },
+      "ApiResult_MissionSchedule_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MissionSchedule"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[MissionSchedule]",
         "type": "object"
       },
       "ApiResult_MissionState_": {
@@ -275,6 +519,44 @@
         "title": "ApiResult[MissionState]",
         "type": "object"
       },
+      "ApiResult_OptimizationResult_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OptimizationResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[OptimizationResult]",
+        "type": "object"
+      },
       "ApiResult_ReplayData_": {
         "additionalProperties": false,
         "properties": {
@@ -313,6 +595,44 @@
         "title": "ApiResult[ReplayData]",
         "type": "object"
       },
+      "ApiResult_RobustnessResult_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RobustnessResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[RobustnessResult]",
+        "type": "object"
+      },
       "ApiResult_SimulateData_": {
         "additionalProperties": false,
         "properties": {
@@ -349,6 +669,82 @@
           "meta"
         ],
         "title": "ApiResult[SimulateData]",
+        "type": "object"
+      },
+      "ApiResult_SpaceDataResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SpaceDataResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[SpaceDataResponse]",
+        "type": "object"
+      },
+      "ApiResult_TraceabilityData_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TraceabilityData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[TraceabilityData]",
         "type": "object"
       },
       "ApiResult_TradeStudyResult_": {
@@ -469,6 +865,252 @@
         "title": "ApiResult[list[ScenarioTemplate]]",
         "type": "object"
       },
+      "ArchitectureCandidate": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis": {
+            "$ref": "#/components/schemas/MissionAnalysis"
+          },
+          "explanation": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Explanation",
+            "type": "array"
+          },
+          "feasible": {
+            "title": "Feasible",
+            "type": "boolean"
+          },
+          "generation": {
+            "minimum": 0.0,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "missionState": {
+            "$ref": "#/components/schemas/MissionState"
+          },
+          "objectiveVector": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Objectivevector",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "missionState",
+          "analysis",
+          "objectiveVector",
+          "feasible",
+          "generation",
+          "explanation"
+        ],
+        "title": "ArchitectureCandidate",
+        "type": "object"
+      },
+      "ArchitectureEdge": {
+        "additionalProperties": false,
+        "properties": {
+          "fromId": {
+            "title": "Fromid",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "satisfies",
+              "allocated-to",
+              "depends-on",
+              "consumes",
+              "generates",
+              "constrains",
+              "downlinks-through"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "toId": {
+            "title": "Toid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "fromId",
+          "toId",
+          "kind",
+          "rationale"
+        ],
+        "title": "ArchitectureEdge",
+        "type": "object"
+      },
+      "ArchitectureGraph": {
+        "additionalProperties": false,
+        "description": "Typed directed mission graph (19.1); a projection of canonical state, never edited.",
+        "properties": {
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/ArchitectureEdge"
+            },
+            "title": "Edges",
+            "type": "array"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/ArchitectureNode"
+            },
+            "title": "Nodes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "nodes",
+          "edges"
+        ],
+        "title": "ArchitectureGraph",
+        "type": "object"
+      },
+      "ArchitectureNode": {
+        "additionalProperties": false,
+        "properties": {
+          "attributes": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            },
+            "title": "Attributes",
+            "type": "object"
+          },
+          "entityId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entityid"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "science-objective",
+              "measurement-requirement",
+              "instrument",
+              "spacecraft-subsystem",
+              "launch-option",
+              "trajectory-option",
+              "observation-task",
+              "contact-window",
+              "science-product"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "label"
+        ],
+        "title": "ArchitectureNode",
+        "type": "object"
+      },
+      "AutonomyAction": {
+        "additionalProperties": false,
+        "properties": {
+          "dataBits": {
+            "ge": 0,
+            "title": "Databits",
+            "type": "number"
+          },
+          "energyJoules": {
+            "ge": 0,
+            "title": "Energyjoules",
+            "type": "number"
+          },
+          "expectedScienceValue": {
+            "ge": 0,
+            "title": "Expectedsciencevalue",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "observationId": {
+            "title": "Observationid",
+            "type": "string"
+          },
+          "risk": {
+            "ge": 0,
+            "title": "Risk",
+            "type": "number"
+          },
+          "slewSeconds": {
+            "ge": 0,
+            "title": "Slewseconds",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "observationId",
+          "expectedScienceValue",
+          "energyJoules",
+          "dataBits",
+          "risk",
+          "slewSeconds"
+        ],
+        "title": "AutonomyAction",
+        "type": "object"
+      },
+      "AutonomyData": {
+        "additionalProperties": false,
+        "properties": {
+          "decision": {
+            "$ref": "#/components/schemas/AutonomyDecision"
+          }
+        },
+        "required": [
+          "decision"
+        ],
+        "title": "AutonomyData",
+        "type": "object"
+      },
       "AutonomyDecision": {
         "additionalProperties": false,
         "properties": {
@@ -525,6 +1167,67 @@
         "title": "AutonomyDecision",
         "type": "object"
       },
+      "AutonomyRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/AutonomyAction"
+            },
+            "title": "Actions",
+            "type": "array"
+          },
+          "availableEnergyJoules": {
+            "ge": 0,
+            "title": "Availableenergyjoules",
+            "type": "number"
+          },
+          "availableStorageBits": {
+            "ge": 0,
+            "title": "Availablestoragebits",
+            "type": "number"
+          },
+          "belief": {
+            "$ref": "#/components/schemas/BeliefState"
+          },
+          "blackout": {
+            "default": false,
+            "title": "Blackout",
+            "type": "boolean"
+          },
+          "policy": {
+            "enum": [
+              "conservative",
+              "science-first",
+              "resource-aware"
+            ],
+            "title": "Policy",
+            "type": "string"
+          }
+        },
+        "required": [
+          "belief",
+          "actions",
+          "policy",
+          "availableEnergyJoules",
+          "availableStorageBits"
+        ],
+        "title": "AutonomyRequest",
+        "type": "object"
+      },
+      "BeliefData": {
+        "additionalProperties": false,
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/BeliefUpdateResult"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "BeliefData",
+        "type": "object"
+      },
       "BeliefState": {
         "additionalProperties": false,
         "properties": {
@@ -560,6 +1263,54 @@
           "version"
         ],
         "title": "BeliefState",
+        "type": "object"
+      },
+      "BeliefUpdateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "hypotheses": {
+            "items": {
+              "$ref": "#/components/schemas/ScienceHypothesis"
+            },
+            "minItems": 1,
+            "title": "Hypotheses",
+            "type": "array"
+          },
+          "likelihood": {
+            "$ref": "#/components/schemas/ObservationLikelihood"
+          },
+          "observation": {
+            "$ref": "#/components/schemas/ObservationRecord"
+          }
+        },
+        "required": [
+          "hypotheses",
+          "likelihood",
+          "observation"
+        ],
+        "title": "BeliefUpdateRequest",
+        "type": "object"
+      },
+      "BeliefUpdateResult": {
+        "additionalProperties": false,
+        "properties": {
+          "expectedInformationGain": {
+            "title": "Expectedinformationgain",
+            "type": "number"
+          },
+          "posterior": {
+            "$ref": "#/components/schemas/BeliefState"
+          },
+          "prior": {
+            "$ref": "#/components/schemas/BeliefState"
+          }
+        },
+        "required": [
+          "prior",
+          "posterior",
+          "expectedInformationGain"
+        ],
+        "title": "BeliefUpdateResult",
         "type": "object"
       },
       "BudgetAnalysis": {
@@ -629,6 +1380,27 @@
           "estimatedCostUsd"
         ],
         "title": "BudgetAnalysis",
+        "type": "object"
+      },
+      "BufferPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "bits": {
+            "ge": 0,
+            "title": "Bits",
+            "type": "number"
+          },
+          "t": {
+            "ge": 0,
+            "title": "T",
+            "type": "number"
+          }
+        },
+        "required": [
+          "t",
+          "bits"
+        ],
+        "title": "BufferPoint",
         "type": "object"
       },
       "CatalogComponent": {
@@ -967,6 +1739,48 @@
         "title": "ConstraintResult",
         "type": "object"
       },
+      "ContactWindow": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {
+            "ge": 0,
+            "title": "End",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "linkMarginDb": {
+            "title": "Linkmargindb",
+            "type": "number"
+          },
+          "maxDownlinkBits": {
+            "ge": 0,
+            "title": "Maxdownlinkbits",
+            "type": "number"
+          },
+          "start": {
+            "ge": 0,
+            "title": "Start",
+            "type": "number"
+          },
+          "stationId": {
+            "title": "Stationid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "start",
+          "end",
+          "maxDownlinkBits",
+          "stationId",
+          "linkMarginDb"
+        ],
+        "title": "ContactWindow",
+        "type": "object"
+      },
       "DecisionChoice": {
         "additionalProperties": false,
         "properties": {
@@ -1093,6 +1907,169 @@
           "bodyType"
         ],
         "title": "Destination",
+        "type": "object"
+      },
+      "DetectorConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "crit": {
+            "ge": 0,
+            "title": "Crit",
+            "type": "number"
+          },
+          "expected": {
+            "title": "Expected",
+            "type": "number"
+          },
+          "hardLimit": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hardlimit"
+          },
+          "lam": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 1.0,
+            "title": "Lam",
+            "type": "number"
+          },
+          "persistenceK": {
+            "minimum": 1.0,
+            "title": "Persistencek",
+            "type": "integer"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg",
+              "fraction"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "warn": {
+            "ge": 0,
+            "title": "Warn",
+            "type": "number"
+          }
+        },
+        "required": [
+          "channel",
+          "unit",
+          "expected",
+          "warn",
+          "crit",
+          "persistenceK",
+          "lam",
+          "rationale"
+        ],
+        "title": "DetectorConfig",
+        "type": "object"
+      },
+      "DistributionSpec": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "normal",
+              "uniform",
+              "triangular"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max"
+          },
+          "mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
+          },
+          "stdDev": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stddev"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "DistributionSpec",
         "type": "object"
       },
       "DossierData": {
@@ -1483,6 +2460,50 @@
         "title": "HealthData",
         "type": "object"
       },
+      "HealthMonitorData": {
+        "additionalProperties": false,
+        "properties": {
+          "anomalies": {
+            "items": {
+              "$ref": "#/components/schemas/Anomaly"
+            },
+            "title": "Anomalies",
+            "type": "array"
+          },
+          "disclaimer": {
+            "title": "Disclaimer",
+            "type": "string"
+          }
+        },
+        "required": [
+          "anomalies",
+          "disclaimer"
+        ],
+        "title": "HealthMonitorData",
+        "type": "object"
+      },
+      "HealthMonitorRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "config": {
+            "$ref": "#/components/schemas/DetectorConfig"
+          },
+          "telemetry": {
+            "items": {
+              "$ref": "#/components/schemas/TelemetrySample"
+            },
+            "maxItems": 10000,
+            "title": "Telemetry",
+            "type": "array"
+          }
+        },
+        "required": [
+          "telemetry",
+          "config"
+        ],
+        "title": "HealthMonitorRequest",
+        "type": "object"
+      },
       "HypothesisProbability": {
         "additionalProperties": false,
         "properties": {
@@ -1588,6 +2609,35 @@
           "coverageWeight"
         ],
         "title": "MeasurementRequirement",
+        "type": "object"
+      },
+      "MetricQuantiles": {
+        "additionalProperties": false,
+        "properties": {
+          "median": {
+            "title": "Median",
+            "type": "number"
+          },
+          "p10": {
+            "title": "P10",
+            "type": "number"
+          },
+          "p90": {
+            "title": "P90",
+            "type": "number"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "p10",
+          "median",
+          "p90",
+          "unit"
+        ],
+        "title": "MetricQuantiles",
         "type": "object"
       },
       "MissionAnalysis": {
@@ -2146,6 +3196,58 @@
         "title": "MissionRunManifest",
         "type": "object"
       },
+      "MissionSchedule": {
+        "additionalProperties": false,
+        "properties": {
+          "accepted": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Accepted",
+            "type": "array"
+          },
+          "bufferTimeline": {
+            "items": {
+              "$ref": "#/components/schemas/BufferPoint"
+            },
+            "title": "Buffertimeline",
+            "type": "array"
+          },
+          "cycles": {
+            "items": {
+              "$ref": "#/components/schemas/ScheduledDataCycle"
+            },
+            "title": "Cycles",
+            "type": "array"
+          },
+          "dataLossRiskAccepted": {
+            "default": false,
+            "title": "Datalossriskaccepted",
+            "type": "boolean"
+          },
+          "dataLostBits": {
+            "default": 0.0,
+            "ge": 0,
+            "title": "Datalostbits",
+            "type": "number"
+          },
+          "rejected": {
+            "items": {
+              "$ref": "#/components/schemas/RejectedOpportunity"
+            },
+            "title": "Rejected",
+            "type": "array"
+          }
+        },
+        "required": [
+          "accepted",
+          "rejected",
+          "cycles",
+          "bufferTimeline"
+        ],
+        "title": "MissionSchedule",
+        "type": "object"
+      },
       "MissionState": {
         "additionalProperties": false,
         "properties": {
@@ -2230,6 +3332,95 @@
           "randomSeed"
         ],
         "title": "MissionState",
+        "type": "object"
+      },
+      "ObservationLikelihood": {
+        "additionalProperties": false,
+        "properties": {
+          "instrumentId": {
+            "title": "Instrumentid",
+            "type": "string"
+          },
+          "likelihoodByHypothesis": {
+            "additionalProperties": {
+              "ge": 0,
+              "le": 1,
+              "type": "number"
+            },
+            "title": "Likelihoodbyhypothesis",
+            "type": "object"
+          },
+          "outcomeId": {
+            "title": "Outcomeid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "instrumentId",
+          "outcomeId",
+          "likelihoodByHypothesis"
+        ],
+        "title": "ObservationLikelihood",
+        "type": "object"
+      },
+      "ObservationOpportunity": {
+        "additionalProperties": false,
+        "properties": {
+          "compatibleAttitude": {
+            "title": "Compatibleattitude",
+            "type": "string"
+          },
+          "end": {
+            "ge": 0,
+            "title": "End",
+            "type": "number"
+          },
+          "energyJoules": {
+            "ge": 0,
+            "title": "Energyjoules",
+            "type": "number"
+          },
+          "expectedScienceValue": {
+            "ge": 0,
+            "title": "Expectedsciencevalue",
+            "type": "number"
+          },
+          "generatedDataBits": {
+            "ge": 0,
+            "title": "Generateddatabits",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "instrumentId": {
+            "title": "Instrumentid",
+            "type": "string"
+          },
+          "slewSeconds": {
+            "ge": 0,
+            "title": "Slewseconds",
+            "type": "number"
+          },
+          "start": {
+            "ge": 0,
+            "title": "Start",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "start",
+          "end",
+          "instrumentId",
+          "expectedScienceValue",
+          "generatedDataBits",
+          "energyJoules",
+          "slewSeconds",
+          "compatibleAttitude"
+        ],
+        "title": "ObservationOpportunity",
         "type": "object"
       },
       "ObservationPlanItem": {
@@ -2339,6 +3530,139 @@
           "autonomyLevel"
         ],
         "title": "OperationsPlan",
+        "type": "object"
+      },
+      "OptimizationObjective": {
+        "additionalProperties": false,
+        "properties": {
+          "direction": {
+            "enum": [
+              "minimize",
+              "maximize"
+            ],
+            "title": "Direction",
+            "type": "string"
+          },
+          "key": {
+            "enum": [
+              "lifecycle_cost",
+              "dry_mass",
+              "duration_days",
+              "negative_science_return",
+              "negative_robustness"
+            ],
+            "title": "Key",
+            "type": "string"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight"
+          }
+        },
+        "required": [
+          "key",
+          "direction"
+        ],
+        "title": "OptimizationObjective",
+        "type": "object"
+      },
+      "OptimizationRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "maxCandidates": {
+            "default": 50,
+            "maximum": 250.0,
+            "minimum": 1.0,
+            "title": "Maxcandidates",
+            "type": "integer"
+          },
+          "missionState": {
+            "$ref": "#/components/schemas/MissionState"
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed"
+          }
+        },
+        "required": [
+          "missionState"
+        ],
+        "title": "OptimizationRequest",
+        "type": "object"
+      },
+      "OptimizationResult": {
+        "additionalProperties": false,
+        "properties": {
+          "archetypes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "enum": [
+                "lean",
+                "science-max",
+                "resilient"
+              ]
+            },
+            "title": "Archetypes",
+            "type": "object"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/ArchitectureCandidate"
+            },
+            "title": "Candidates",
+            "type": "array"
+          },
+          "nearMisses": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Nearmisses",
+            "type": "array"
+          },
+          "objectives": {
+            "items": {
+              "$ref": "#/components/schemas/OptimizationObjective"
+            },
+            "title": "Objectives",
+            "type": "array"
+          },
+          "paretoFrontIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Paretofrontids",
+            "type": "array"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "seed",
+          "objectives",
+          "candidates",
+          "paretoFrontIds",
+          "archetypes",
+          "nearMisses"
+        ],
+        "title": "OptimizationResult",
         "type": "object"
       },
       "PhaseTransition": {
@@ -2519,6 +3843,34 @@
         "title": "Quantity",
         "type": "object"
       },
+      "RejectedOpportunity": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "reasonCode": {
+            "enum": [
+              "INSTRUMENT_CONFLICT",
+              "ENERGY",
+              "POINTING",
+              "BUFFER_OVERFLOW_BEFORE_CONTACT",
+              "NO_CONTACT",
+              "PHASE",
+              "THERMAL"
+            ],
+            "title": "Reasoncode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "reasonCode"
+        ],
+        "title": "RejectedOpportunity",
+        "type": "object"
+      },
       "ReliabilityAnalysis": {
         "additionalProperties": false,
         "properties": {
@@ -2602,6 +3954,121 @@
           "run"
         ],
         "title": "ReplayRequest",
+        "type": "object"
+      },
+      "RobustnessRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "missionState": {
+            "$ref": "#/components/schemas/MissionState"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/UncertaintyProfile"
+          },
+          "samples": {
+            "default": 100,
+            "maximum": 1000.0,
+            "minimum": 0.0,
+            "title": "Samples",
+            "type": "integer"
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed"
+          }
+        },
+        "required": [
+          "missionState",
+          "profile"
+        ],
+        "title": "RobustnessRequest",
+        "type": "object"
+      },
+      "RobustnessResult": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "disclaimer": {
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "failureCounts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Failurecounts",
+            "type": "object"
+          },
+          "feasibilityWilson95": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "ge": 0,
+                "le": 1,
+                "type": "number"
+              },
+              {
+                "ge": 0,
+                "le": 1,
+                "type": "number"
+              }
+            ],
+            "title": "Feasibilitywilson95",
+            "type": "array"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MetricQuantiles"
+            },
+            "title": "Metrics",
+            "type": "object"
+          },
+          "probabilityFeasible": {
+            "ge": 0,
+            "le": 1,
+            "title": "Probabilityfeasible",
+            "type": "number"
+          },
+          "profileVersion": {
+            "title": "Profileversion",
+            "type": "string"
+          },
+          "samples": {
+            "minimum": 0.0,
+            "title": "Samples",
+            "type": "integer"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "samples",
+          "seed",
+          "probabilityFeasible",
+          "feasibilityWilson95",
+          "metrics",
+          "failureCounts",
+          "profileVersion",
+          "assumptions",
+          "disclaimer"
+        ],
+        "title": "RobustnessResult",
         "type": "object"
       },
       "RunReplayStatus": {
@@ -2715,6 +4182,105 @@
         "title": "ScenarioTemplate",
         "type": "object"
       },
+      "ScheduleRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "availableEnergyJoules": {
+            "anyOf": [
+              {
+                "ge": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Availableenergyjoules"
+          },
+          "contacts": {
+            "items": {
+              "$ref": "#/components/schemas/ContactWindow"
+            },
+            "title": "Contacts",
+            "type": "array"
+          },
+          "initialBufferBits": {
+            "default": 0.0,
+            "ge": 0,
+            "title": "Initialbufferbits",
+            "type": "number"
+          },
+          "opportunities": {
+            "items": {
+              "$ref": "#/components/schemas/ObservationOpportunity"
+            },
+            "title": "Opportunities",
+            "type": "array"
+          },
+          "storageCapacityBits": {
+            "ge": 0,
+            "title": "Storagecapacitybits",
+            "type": "number"
+          }
+        },
+        "required": [
+          "opportunities",
+          "contacts",
+          "storageCapacityBits"
+        ],
+        "title": "ScheduleRequest",
+        "type": "object"
+      },
+      "ScheduledDataCycle": {
+        "additionalProperties": false,
+        "properties": {
+          "bufferAfterBits": {
+            "ge": 0,
+            "title": "Bufferafterbits",
+            "type": "number"
+          },
+          "bufferBeforeBits": {
+            "ge": 0,
+            "title": "Bufferbeforebits",
+            "type": "number"
+          },
+          "contactWindowId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactwindowid"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "observations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Observations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "observations",
+          "bufferBeforeBits",
+          "bufferAfterBits",
+          "explanation"
+        ],
+        "title": "ScheduledDataCycle",
+        "type": "object"
+      },
       "ScienceAnalysis": {
         "additionalProperties": false,
         "properties": {
@@ -2760,6 +4326,37 @@
           "returnedFraction"
         ],
         "title": "ScienceAnalysis",
+        "type": "object"
+      },
+      "ScienceHypothesis": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "priorProbability": {
+            "ge": 0,
+            "le": 1,
+            "title": "Priorprobability",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "priorProbability",
+          "description"
+        ],
+        "title": "ScienceHypothesis",
         "type": "object"
       },
       "ScienceObjective": {
@@ -3046,6 +4643,157 @@
         "title": "SimulateRequest",
         "type": "object"
       },
+      "SpaceDataRecord": {
+        "properties": {
+          "arrival_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arrival Date"
+          },
+          "c3_km2_per_s2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "C3 Km2 Per S2"
+          },
+          "departure_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Departure Date"
+          },
+          "designation": {
+            "title": "Designation",
+            "type": "string"
+          },
+          "fidelity": {
+            "title": "Fidelity",
+            "type": "string"
+          },
+          "mission_delta_v_km_per_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mission Delta V Km Per S"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "option_id": {
+            "title": "Option Id",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "source_version": {
+            "title": "Source Version",
+            "type": "string"
+          },
+          "time_of_flight_days": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Of Flight Days"
+          }
+        },
+        "required": [
+          "designation",
+          "option_id",
+          "source_url",
+          "source_version",
+          "fidelity"
+        ],
+        "title": "SpaceDataRecord",
+        "type": "object"
+      },
+      "SpaceDataResponse": {
+        "properties": {
+          "cache_ttl_seconds": {
+            "title": "Cache Ttl Seconds",
+            "type": "integer"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/SpaceDataRecord"
+            },
+            "title": "Records",
+            "type": "array"
+          },
+          "retrieved_at": {
+            "title": "Retrieved At",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "source_version": {
+            "title": "Source Version",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "records",
+          "source_url",
+          "source_version",
+          "retrieved_at",
+          "cache_ttl_seconds"
+        ],
+        "title": "SpaceDataResponse",
+        "type": "object"
+      },
       "SpacecraftArchitecture": {
         "additionalProperties": false,
         "properties": {
@@ -3279,6 +5027,36 @@
         "title": "TemplateMissionState",
         "type": "object"
       },
+      "TraceabilityData": {
+        "additionalProperties": false,
+        "properties": {
+          "graph": {
+            "$ref": "#/components/schemas/ArchitectureGraph"
+          }
+        },
+        "required": [
+          "graph"
+        ],
+        "title": "TraceabilityData",
+        "type": "object"
+      },
+      "TraceabilityRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis": {
+            "$ref": "#/components/schemas/MissionAnalysis"
+          },
+          "missionState": {
+            "$ref": "#/components/schemas/MissionState"
+          }
+        },
+        "required": [
+          "missionState",
+          "analysis"
+        ],
+        "title": "TraceabilityRequest",
+        "type": "object"
+      },
       "TradeAlternative": {
         "additionalProperties": false,
         "properties": {
@@ -3452,6 +5230,54 @@
         "title": "TrajectorySelection",
         "type": "object"
       },
+      "UncertainParameter": {
+        "additionalProperties": false,
+        "properties": {
+          "distribution": {
+            "$ref": "#/components/schemas/DistributionSpec"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "aleatory",
+              "epistemic"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "sourceRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceref"
+          }
+        },
+        "required": [
+          "id",
+          "path",
+          "kind",
+          "distribution",
+          "rationale"
+        ],
+        "title": "UncertainParameter",
+        "type": "object"
+      },
       "Uncertainty": {
         "additionalProperties": false,
         "properties": {
@@ -3514,6 +5340,33 @@
           "distribution"
         ],
         "title": "Uncertainty",
+        "type": "object"
+      },
+      "UncertaintyProfile": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/UncertainParameter"
+            },
+            "title": "Parameters",
+            "type": "array"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "parameters"
+        ],
+        "title": "UncertaintyProfile",
         "type": "object"
       },
       "ValidateData": {
@@ -3650,6 +5503,82 @@
         "summary": "Health"
       }
     },
+    "/api/mission/autonomy/choose": {
+      "post": {
+        "operationId": "autonomy_choose_api_mission_autonomy_choose_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutonomyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_AutonomyData_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Autonomy Choose"
+      }
+    },
+    "/api/mission/belief/update": {
+      "post": {
+        "operationId": "belief_update_api_mission_belief_update_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BeliefUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_BeliefData_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Belief Update"
+      }
+    },
     "/api/mission/dossier": {
       "post": {
         "description": "Evidence Passport v1 (architecture 19.9). The run is re-validated by the schema; the\nbudgets are recomputed here from its snapshot and the replay is re-checked here, so the\npassport never relies on client-calculated analysis or a client claim of identity.",
@@ -3689,6 +5618,44 @@
         "summary": "Export Dossier"
       }
     },
+    "/api/mission/health-monitor": {
+      "post": {
+        "operationId": "health_monitor_api_mission_health_monitor_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HealthMonitorRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_HealthMonitorData_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Health Monitor"
+      }
+    },
     "/api/mission/import": {
       "post": {
         "description": "Validate an exported MissionPackage (architecture 13, 16). Body = the raw package JSON.\n\nAll-or-nothing: nothing is stored server-side and any failure returns an error envelope,\nso the client replaces its saved state only on ok=true. Titles are sanitised by the\nschema; the analysis is recomputed here (the exported one is derived, never trusted).",
@@ -3706,6 +5673,44 @@
           }
         },
         "summary": "Import Package"
+      }
+    },
+    "/api/mission/optimize": {
+      "post": {
+        "operationId": "optimize_api_mission_optimize_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptimizationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_OptimizationResult_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Optimize"
       }
     },
     "/api/mission/replay": {
@@ -3745,6 +5750,44 @@
           }
         },
         "summary": "Replay Run"
+      }
+    },
+    "/api/mission/robustness": {
+      "post": {
+        "operationId": "robustness_api_mission_robustness_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RobustnessRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_RobustnessResult_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Robustness"
       }
     },
     "/api/mission/run/{run_id}": {
@@ -3837,6 +5880,44 @@
         "summary": "Decide"
       }
     },
+    "/api/mission/schedule": {
+      "post": {
+        "operationId": "schedule_api_mission_schedule_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_MissionSchedule_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Schedule"
+      }
+    },
     "/api/mission/simulate": {
       "post": {
         "description": "Run one deterministic simulation (architecture 11.2). Never accepts a client analysis.",
@@ -3874,6 +5955,44 @@
           }
         },
         "summary": "Simulate Mission"
+      }
+    },
+    "/api/mission/traceability": {
+      "post": {
+        "operationId": "traceability_api_mission_traceability_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TraceabilityRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_TraceabilityData_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Traceability"
       }
     },
     "/api/mission/trade-study": {
@@ -3951,6 +6070,63 @@
           }
         },
         "summary": "Validate Mission"
+      }
+    },
+    "/api/space-data/neo-accessible": {
+      "get": {
+        "operationId": "neo_accessible_api_space_data_neo_accessible_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_SpaceDataResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Neo Accessible"
+      }
+    },
+    "/api/space-data/neo/{designation}": {
+      "get": {
+        "operationId": "neo_by_designation_api_space_data_neo__designation__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "designation",
+            "required": true,
+            "schema": {
+              "title": "Designation",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_SpaceDataResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Neo By Designation"
       }
     },
     "/api/templates": {

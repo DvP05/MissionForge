@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { ErrorState, LoadingState } from "@/components/common/States";
 import { LaunchPanel } from "@/components/mission-control/LaunchPanel";
+import { MissionVisualization } from "@/components/visualization/MissionVisualization";
 import { BudgetPanel } from "@/components/budgets/BudgetPanel";
 import { useAnalysis } from "@/hooks/useAnalysis";
 import { useMissionStore, type ComponentCategory } from "@/state/mission-store";
@@ -33,6 +34,7 @@ export function ArchitectPage() {
   return (
     <div className="space-y-4" data-testid="architect-page">
       <LaunchPanel />
+      <MissionVisualization mission={mission} />
       <div className="grid gap-4 lg:grid-cols-[22fr_48fr_30fr]">
         <aside aria-label="Subsystem selection" data-testid="architect-left" className="min-w-0">
           <CategoryNav mission={mission} index={catalog.index} active={category} onSelect={setCategory} />

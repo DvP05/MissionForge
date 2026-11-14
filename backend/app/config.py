@@ -54,3 +54,5 @@ DEFAULT_MISSIONS_DIR = Path(__file__).resolve().parents[2] / "data" / "missions"
 
 # <repo>/data/scenarios: scenario event sets (explicit path passed into the simulation).
 DEFAULT_SCENARIOS_DIR = Path(__file__).resolve().parents[2] / "data" / "scenarios"
+
+DEFAULT_JPL_SNAPSHOT = Path(__file__).resolve().parents[2] / "data" / "demo-jpl-snapshot.json"

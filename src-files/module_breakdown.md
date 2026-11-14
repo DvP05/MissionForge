@@ -601,7 +601,7 @@ JSON export or the playable journey.
 
 **Priority:** P1  
 **Owner:** Graphics/frontend contributor  
-**Primary files:** `frontend/src/components/scene/**`, `frontend/src/components/visualization/**`, `frontend/src/lib/scene/**`
+**Primary files:** `frontend/src/components/visualization/**`, `frontend/src/components/mission-control/SchematicPanel.tsx`, `frontend/src/components/architect/ArchitectPage.tsx`
 
 ### Objective
 
