@@ -7,9 +7,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.errors import register_error_handlers
 from app.api.middleware import BodySizeLimitMiddleware
 from app.api.routes import catalog, health, missions, templates
-from app.config import get_settings
+from app.config import DEFAULT_SCENARIOS_DIR, get_settings
+from app.domain.simulation.anomalies import load_event_sets
 from app.services.catalog_service import CatalogService
 from app.services.mission_service import MissionService
+from app.services.simulation_service import SimulationService
 from app.services.template_service import TemplateService
 
 
@@ -22,7 +24,16 @@ def create_app() -> FastAPI:
     template_service = TemplateService.from_directory()
     app.state.catalog_service = catalogs
     app.state.template_service = template_service
-    app.state.mission_service = MissionService(catalogs, template_service, settings.engine_version)
+    mission_service = MissionService(catalogs, template_service, settings.engine_version)
+    app.state.mission_service = mission_service
+    app.state.simulation_service = SimulationService(
+        mission_service,
+        catalogs.catalog,
+        template_service,
+        load_event_sets(DEFAULT_SCENARIOS_DIR),
+        engine_version=settings.engine_version,
+        app_version=settings.app_version,
+    )
 
     # Added innermost-first: size limit, then CORS, then the request id (outermost).
     app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.max_request_bytes)

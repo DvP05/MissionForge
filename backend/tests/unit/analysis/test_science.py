@@ -31,7 +31,10 @@ def inst(caps: list[str], pointing: float = 1.0, cid: str = "i1") -> CatalogComp
 
 
 def req(
-    rid: str = "m1", cap: str = "imaging", w: float = 1.0, required: bool = True,
+    rid: str = "m1",
+    cap: str = "imaging",
+    w: float = 1.0,
+    required: bool = True,
     thr: Quantity | None = None,
 ) -> MeasurementRequirement:
     return MeasurementRequirement(

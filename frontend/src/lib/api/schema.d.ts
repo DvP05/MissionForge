@@ -38,6 +38,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/mission/run/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Run
+         * @description A stored run (Mission Control reload). 404 once evicted; the client keeps its own copy.
+         */
+        get: operations["get_run_api_mission_run__run_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission/run/{run_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide
+         * @description Branch a stored run with one player decision. Returns a NEW run; the source is unchanged.
+         */
+        post: operations["decide_api_mission_run__run_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission/simulate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Simulate Mission
+         * @description Run one deterministic simulation (architecture 11.2). Never accepts a client analysis.
+         */
+        post: operations["simulate_mission_api_mission_simulate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/mission/trade-study": {
         parameters: {
             query?: never;
@@ -165,6 +225,14 @@ export interface components {
             /** Ok */
             ok: boolean;
         };
+        /** ApiResult[SimulateData] */
+        ApiResult_SimulateData_: {
+            data?: components["schemas"]["SimulateData"] | null;
+            error?: components["schemas"]["ApiError"] | null;
+            meta: components["schemas"]["ApiMeta"];
+            /** Ok */
+            ok: boolean;
+        };
         /** ApiResult[TradeStudyResult] */
         ApiResult_TradeStudyResult_: {
             data?: components["schemas"]["TradeStudyResult"] | null;
@@ -189,6 +257,37 @@ export interface components {
             meta: components["schemas"]["ApiMeta"];
             /** Ok */
             ok: boolean;
+        };
+        /** AutonomyDecision */
+        AutonomyDecision: {
+            belief: components["schemas"]["BeliefState"];
+            /** Candidates */
+            candidates: components["schemas"]["ScoredAction"][];
+            /**
+             * Decisionmaker
+             * @enum {string}
+             */
+            decisionMaker: "ground" | "onboard-policy";
+            /**
+             * Policy
+             * @enum {string}
+             */
+            policy: "conservative" | "science-first" | "resource-aware";
+            /** Reason */
+            reason: string;
+            /** Selectedactionid */
+            selectedActionId?: string | null;
+        };
+        /** BeliefState */
+        BeliefState: {
+            /** Entropybits */
+            entropyBits: number;
+            /** Hypotheses */
+            hypotheses: components["schemas"]["HypothesisProbability"][];
+            /** Observationhistory */
+            observationHistory: components["schemas"]["ObservationRecord"][];
+            /** Version */
+            version: number;
         };
         /** BudgetAnalysis */
         BudgetAnalysis: {
@@ -313,6 +412,42 @@ export interface components {
             /** Suggestedactions */
             suggestedActions?: components["schemas"]["SuggestedAction"][];
         };
+        /** DecisionChoice */
+        DecisionChoice: {
+            /** Effects */
+            effects?: {
+                [key: string]: number;
+            };
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Tradeoff */
+            tradeoff: string;
+        };
+        /** DecisionRecord */
+        DecisionRecord: {
+            /** Choiceid */
+            choiceId: string;
+            /**
+             * Decisionmaker
+             * @enum {string}
+             */
+            decisionMaker: "ground" | "onboard-policy" | "player";
+            /** Eventid */
+            eventId: string;
+            /** Missionday */
+            missionDay: number;
+            /** Rationale */
+            rationale: string;
+        };
+        /** DecisionRequest */
+        DecisionRequest: {
+            /** Choiceid */
+            choiceId: string;
+            /** Eventid */
+            eventId: string;
+        };
         /** Destination */
         Destination: {
             /** Bodyid */
@@ -347,6 +482,25 @@ export interface components {
             /** Severity */
             severity: number;
         };
+        /** FinalReport */
+        FinalReport: {
+            /** Counterfactuals */
+            counterfactuals: string[];
+            /** Limitations */
+            limitations: string[];
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "success" | "partial" | "failure" | "terminated";
+            /** Realizedrisks */
+            realizedRisks: string[];
+            /** Rootcauses */
+            rootCauses: string[];
+            score: components["schemas"]["ScoreBreakdown"];
+            /** Summary */
+            summary: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -365,6 +519,13 @@ export interface components {
             jplAdapter: components["schemas"]["JplAdapterStatus"];
             /** Schemaversion */
             schemaVersion: string;
+        };
+        /** HypothesisProbability */
+        HypothesisProbability: {
+            /** Hypothesisid */
+            hypothesisId: string;
+            /** Probability */
+            probability: number;
         };
         /** JplAdapterStatus */
         JplAdapterStatus: {
@@ -443,6 +604,109 @@ export interface components {
             /** Powermarginfraction */
             powerMarginFraction: number;
         };
+        /** MissionEvent */
+        MissionEvent: {
+            /**
+             * Choices
+             * @default []
+             */
+            choices: components["schemas"]["DecisionChoice"][];
+            /** Decisionmaker */
+            decisionMaker?: ("ground" | "onboard-policy" | "player" | "system") | null;
+            /** Description */
+            description: string;
+            /** Id */
+            id: string;
+            /** Missionday */
+            missionDay: number;
+            /**
+             * Phase
+             * @enum {string}
+             */
+            phase: "pre-launch" | "launch-deployment" | "commissioning" | "cruise" | "mid-course" | "approach" | "science-ops" | "downlink-return" | "complete" | "terminated";
+            /** Resolvedby */
+            resolvedBy?: string | null;
+            /** Sequence */
+            sequence: number;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "info" | "warning" | "critical";
+            /** Title */
+            title: string;
+            /** Trigger */
+            trigger: {
+                [key: string]: string | boolean | number;
+            };
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "milestone" | "telemetry" | "anomaly" | "decision" | "science" | "downlink";
+        };
+        /** MissionRun */
+        MissionRun: {
+            /**
+             * Autonomylog
+             * @default []
+             */
+            autonomyLog: components["schemas"]["AutonomyDecision"][];
+            /** Catalogversion */
+            catalogVersion: string;
+            /** Decisions */
+            decisions: components["schemas"]["DecisionRecord"][];
+            /** Designrevision */
+            designRevision: number;
+            /** Engineversion */
+            engineVersion: string;
+            /** Events */
+            events: components["schemas"]["MissionEvent"][];
+            /** Experimental */
+            experimental: boolean;
+            finalReport: components["schemas"]["FinalReport"];
+            inputSnapshot: components["schemas"]["MissionState"];
+            manifest: components["schemas"]["MissionRunManifest"];
+            /** Missionid */
+            missionId: string;
+            /** Phasetransitions */
+            phaseTransitions: components["schemas"]["PhaseTransition"][];
+            /** Phases */
+            phases: ("pre-launch" | "launch-deployment" | "commissioning" | "cruise" | "mid-course" | "approach" | "science-ops" | "downlink-return" | "complete" | "terminated")[];
+            /** Runid */
+            runId: string;
+            /** Scenarioeventsetid */
+            scenarioEventSetId: string;
+            /** Scienceoutcomes */
+            scienceOutcomes: components["schemas"]["ScienceOutcome"][];
+            /** Seed */
+            seed: number;
+            /** Telemetry */
+            telemetry: components["schemas"]["TelemetrySample"][];
+        };
+        /**
+         * MissionRunManifest
+         * @description Replay manifest (architecture 19.9). Re-exported by app.schemas.evidence.
+         *
+         *     Versions are plain strings so an imported run made with a different engine /
+         *     catalogue version stays representable and can be flagged "not identical replay".
+         */
+        MissionRunManifest: {
+            /** Appversion */
+            appVersion: string;
+            /** Catalogversion */
+            catalogVersion: string;
+            /** Engineversion */
+            engineVersion: string;
+            /** Eventsetid */
+            eventSetId: string;
+            /** Scenarioversion */
+            scenarioVersion: string;
+            /** Schemaversion */
+            schemaVersion: string;
+            /** Seed */
+            seed: number;
+        };
         /** MissionState */
         MissionState: {
             architecture: components["schemas"]["SpacecraftArchitecture"];
@@ -493,6 +757,15 @@ export interface components {
             /** Startday */
             startDay: number;
         };
+        /** ObservationRecord */
+        ObservationRecord: {
+            /** Outcomeid */
+            outcomeId: string;
+            /** Taskid */
+            taskId: string;
+            /** Timestampmissionseconds */
+            timestampMissionSeconds: number;
+        };
         /** OperationsPlan */
         OperationsPlan: {
             /**
@@ -511,6 +784,16 @@ export interface components {
              * @enum {string}
              */
             safeModePolicy: "conservative" | "balanced" | "aggressive";
+        };
+        /** PhaseTransition */
+        PhaseTransition: {
+            /** Missionday */
+            missionDay: number;
+            /**
+             * Phase
+             * @enum {string}
+             */
+            phase: "pre-launch" | "launch-deployment" | "commissioning" | "cruise" | "mid-course" | "approach" | "science-ops" | "downlink-return" | "complete" | "terminated";
         };
         /** Provenance */
         Provenance: {
@@ -606,6 +889,20 @@ export interface components {
             /** Title */
             title: string;
         };
+        /** ScienceOutcome */
+        ScienceOutcome: {
+            /** Collectedfraction */
+            collectedFraction: number;
+            /** Objectiveid */
+            objectiveId: string;
+            /** Returnedfraction */
+            returnedFraction: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "achieved" | "partial" | "missed";
+        };
         /** ScoreBreakdown */
         ScoreBreakdown: {
             /** Dimensions */
@@ -626,6 +923,52 @@ export interface components {
             score: number;
             /** Weight */
             weight: number;
+        };
+        /** ScoredAction */
+        ScoredAction: {
+            /** Actionid */
+            actionId: string;
+            /** Feasible */
+            feasible: boolean;
+            /** Rejectionreason */
+            rejectionReason?: string | null;
+            /** Utility */
+            utility: number;
+        };
+        /**
+         * SimulateData
+         * @description Architecture 11.2 shape. `telemetry`, `events` and `finalReport` are the very same
+         *     objects as the `run` fields (convenience copies, never separately computed).
+         */
+        SimulateData: {
+            analysis: components["schemas"]["MissionAnalysis"];
+            /** Events */
+            events: components["schemas"]["MissionEvent"][];
+            finalReport: components["schemas"]["FinalReport"];
+            /** Notes */
+            notes?: string[];
+            run: components["schemas"]["MissionRun"];
+            /** Telemetry */
+            telemetry: components["schemas"]["TelemetrySample"][];
+        };
+        /** SimulateRequest */
+        SimulateRequest: {
+            /** Decisions */
+            decisions?: {
+                [key: string]: string;
+            } | null;
+            /**
+             * Experimental
+             * @default false
+             */
+            experimental: boolean;
+            missionState: components["schemas"]["MissionState"];
+            /** Montecarlosamples */
+            monteCarloSamples?: number | null;
+            /** Randomseed */
+            randomSeed: number;
+            /** Scenarioeventsetid */
+            scenarioEventSetId?: string | null;
         };
         /** SpacecraftArchitecture */
         SpacecraftArchitecture: {
@@ -658,6 +1001,30 @@ export interface components {
             expectedEffect: string;
             /** Label */
             label: string;
+        };
+        /** TelemetrySample */
+        TelemetrySample: {
+            /** Channel */
+            channel: string;
+            /**
+             * Fidelity
+             * @enum {string}
+             */
+            fidelity: "source-backed" | "derived" | "gameplay-estimate" | "not-modelled";
+            /** Missionday */
+            missionDay: number;
+            /**
+             * Phase
+             * @enum {string}
+             */
+            phase: "pre-launch" | "launch-deployment" | "commissioning" | "cruise" | "mid-course" | "approach" | "science-ops" | "downlink-return" | "complete" | "terminated";
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "kg" | "m" | "s" | "day" | "km" | "km/s" | "m/s" | "W" | "Wh" | "J" | "bit/s" | "bit" | "Hz" | "dB" | "dBW" | "K" | "USD" | "USD_2026" | "%" | "rad" | "deg" | "fraction";
+            /** Value */
+            value: number;
         };
         /**
          * TemplateMissionState
@@ -821,6 +1188,105 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResult_HealthData_"];
+                };
+            };
+        };
+    };
+    get_run_api_mission_run__run_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_SimulateData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_api_mission_run__run_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_SimulateData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    simulate_mission_api_mission_simulate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SimulateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResult_SimulateData_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

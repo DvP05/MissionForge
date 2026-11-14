@@ -8,6 +8,7 @@ from fastapi import Request
 
 from app.services.catalog_service import CatalogService
 from app.services.mission_service import MissionService
+from app.services.simulation_service import SimulationService
 from app.services.template_service import TemplateService, new_mission_id
 
 Clock = Callable[[], datetime]
@@ -23,6 +24,10 @@ def get_template_service(request: Request) -> TemplateService:
 
 def get_mission_service(request: Request) -> MissionService:
     return cast(MissionService, request.app.state.mission_service)
+
+
+def get_simulation_service(request: Request) -> SimulationService:
+    return cast(SimulationService, request.app.state.simulation_service)
 
 
 def _utc_now() -> datetime:

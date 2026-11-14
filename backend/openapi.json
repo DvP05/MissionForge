@@ -199,6 +199,44 @@
         "title": "ApiResult[MissionState]",
         "type": "object"
       },
+      "ApiResult_SimulateData_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SimulateData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiMeta"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "meta"
+        ],
+        "title": "ApiResult[SimulateData]",
+        "type": "object"
+      },
       "ApiResult_TradeStudyResult_": {
         "additionalProperties": false,
         "properties": {
@@ -315,6 +353,99 @@
           "meta"
         ],
         "title": "ApiResult[list[ScenarioTemplate]]",
+        "type": "object"
+      },
+      "AutonomyDecision": {
+        "additionalProperties": false,
+        "properties": {
+          "belief": {
+            "$ref": "#/components/schemas/BeliefState"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/ScoredAction"
+            },
+            "title": "Candidates",
+            "type": "array"
+          },
+          "decisionMaker": {
+            "enum": [
+              "ground",
+              "onboard-policy"
+            ],
+            "title": "Decisionmaker",
+            "type": "string"
+          },
+          "policy": {
+            "enum": [
+              "conservative",
+              "science-first",
+              "resource-aware"
+            ],
+            "title": "Policy",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "selectedActionId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selectedactionid"
+          }
+        },
+        "required": [
+          "decisionMaker",
+          "policy",
+          "belief",
+          "candidates",
+          "reason"
+        ],
+        "title": "AutonomyDecision",
+        "type": "object"
+      },
+      "BeliefState": {
+        "additionalProperties": false,
+        "properties": {
+          "entropyBits": {
+            "ge": 0,
+            "title": "Entropybits",
+            "type": "number"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/components/schemas/HypothesisProbability"
+            },
+            "title": "Hypotheses",
+            "type": "array"
+          },
+          "observationHistory": {
+            "items": {
+              "$ref": "#/components/schemas/ObservationRecord"
+            },
+            "title": "Observationhistory",
+            "type": "array"
+          },
+          "version": {
+            "minimum": 0.0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "hypotheses",
+          "observationHistory",
+          "entropyBits",
+          "version"
+        ],
+        "title": "BeliefState",
         "type": "object"
       },
       "BudgetAnalysis": {
@@ -722,6 +853,100 @@
         "title": "ConstraintResult",
         "type": "object"
       },
+      "DecisionChoice": {
+        "additionalProperties": false,
+        "properties": {
+          "effects": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Effects",
+            "type": "object"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "tradeoff": {
+            "title": "Tradeoff",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "tradeoff"
+        ],
+        "title": "DecisionChoice",
+        "type": "object"
+      },
+      "DecisionRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "choiceId": {
+            "title": "Choiceid",
+            "type": "string"
+          },
+          "decisionMaker": {
+            "enum": [
+              "ground",
+              "onboard-policy",
+              "player"
+            ],
+            "title": "Decisionmaker",
+            "type": "string"
+          },
+          "eventId": {
+            "title": "Eventid",
+            "type": "string"
+          },
+          "missionDay": {
+            "ge": 0,
+            "title": "Missionday",
+            "type": "number"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          }
+        },
+        "required": [
+          "eventId",
+          "choiceId",
+          "decisionMaker",
+          "missionDay",
+          "rationale"
+        ],
+        "title": "DecisionRecord",
+        "type": "object"
+      },
+      "DecisionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "choiceId": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Choiceid",
+            "type": "string"
+          },
+          "eventId": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Eventid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "eventId",
+          "choiceId"
+        ],
+        "title": "DecisionRequest",
+        "type": "object"
+      },
       "Destination": {
         "additionalProperties": false,
         "properties": {
@@ -828,6 +1053,67 @@
         "title": "FailureMode",
         "type": "object"
       },
+      "FinalReport": {
+        "additionalProperties": false,
+        "properties": {
+          "counterfactuals": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Counterfactuals",
+            "type": "array"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "outcome": {
+            "enum": [
+              "success",
+              "partial",
+              "failure",
+              "terminated"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "realizedRisks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Realizedrisks",
+            "type": "array"
+          },
+          "rootCauses": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Rootcauses",
+            "type": "array"
+          },
+          "score": {
+            "$ref": "#/components/schemas/ScoreBreakdown"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "outcome",
+          "summary",
+          "score",
+          "realizedRisks",
+          "rootCauses",
+          "counterfactuals",
+          "limitations"
+        ],
+        "title": "FinalReport",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -877,6 +1163,27 @@
           "jplAdapter"
         ],
         "title": "HealthData",
+        "type": "object"
+      },
+      "HypothesisProbability": {
+        "additionalProperties": false,
+        "properties": {
+          "hypothesisId": {
+            "title": "Hypothesisid",
+            "type": "string"
+          },
+          "probability": {
+            "ge": 0,
+            "le": 1,
+            "title": "Probability",
+            "type": "number"
+          }
+        },
+        "required": [
+          "hypothesisId",
+          "probability"
+        ],
+        "title": "HypothesisProbability",
         "type": "object"
       },
       "JplAdapterStatus": {
@@ -1110,6 +1417,314 @@
         "title": "MissionConstraints",
         "type": "object"
       },
+      "MissionEvent": {
+        "additionalProperties": false,
+        "properties": {
+          "choices": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DecisionChoice"
+            },
+            "title": "Choices",
+            "type": "array"
+          },
+          "decisionMaker": {
+            "anyOf": [
+              {
+                "enum": [
+                  "ground",
+                  "onboard-policy",
+                  "player",
+                  "system"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionmaker"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "missionDay": {
+            "ge": 0,
+            "title": "Missionday",
+            "type": "number"
+          },
+          "phase": {
+            "enum": [
+              "pre-launch",
+              "launch-deployment",
+              "commissioning",
+              "cruise",
+              "mid-course",
+              "approach",
+              "science-ops",
+              "downlink-return",
+              "complete",
+              "terminated"
+            ],
+            "title": "Phase",
+            "type": "string"
+          },
+          "resolvedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolvedby"
+          },
+          "sequence": {
+            "minimum": 0.0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "severity": {
+            "enum": [
+              "info",
+              "warning",
+              "critical"
+            ],
+            "title": "Severity",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "trigger": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            },
+            "title": "Trigger",
+            "type": "object"
+          },
+          "type": {
+            "enum": [
+              "milestone",
+              "telemetry",
+              "anomaly",
+              "decision",
+              "science",
+              "downlink"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "sequence",
+          "missionDay",
+          "phase",
+          "type",
+          "severity",
+          "title",
+          "description",
+          "trigger"
+        ],
+        "title": "MissionEvent",
+        "type": "object"
+      },
+      "MissionRun": {
+        "additionalProperties": false,
+        "properties": {
+          "autonomyLog": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/AutonomyDecision"
+            },
+            "title": "Autonomylog",
+            "type": "array"
+          },
+          "catalogVersion": {
+            "title": "Catalogversion",
+            "type": "string"
+          },
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/DecisionRecord"
+            },
+            "title": "Decisions",
+            "type": "array"
+          },
+          "designRevision": {
+            "minimum": 0.0,
+            "title": "Designrevision",
+            "type": "integer"
+          },
+          "engineVersion": {
+            "title": "Engineversion",
+            "type": "string"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/MissionEvent"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "experimental": {
+            "title": "Experimental",
+            "type": "boolean"
+          },
+          "finalReport": {
+            "$ref": "#/components/schemas/FinalReport"
+          },
+          "inputSnapshot": {
+            "$ref": "#/components/schemas/MissionState"
+          },
+          "manifest": {
+            "$ref": "#/components/schemas/MissionRunManifest"
+          },
+          "missionId": {
+            "title": "Missionid",
+            "type": "string"
+          },
+          "phaseTransitions": {
+            "items": {
+              "$ref": "#/components/schemas/PhaseTransition"
+            },
+            "title": "Phasetransitions",
+            "type": "array"
+          },
+          "phases": {
+            "items": {
+              "enum": [
+                "pre-launch",
+                "launch-deployment",
+                "commissioning",
+                "cruise",
+                "mid-course",
+                "approach",
+                "science-ops",
+                "downlink-return",
+                "complete",
+                "terminated"
+              ],
+              "type": "string"
+            },
+            "title": "Phases",
+            "type": "array"
+          },
+          "runId": {
+            "title": "Runid",
+            "type": "string"
+          },
+          "scenarioEventSetId": {
+            "title": "Scenarioeventsetid",
+            "type": "string"
+          },
+          "scienceOutcomes": {
+            "items": {
+              "$ref": "#/components/schemas/ScienceOutcome"
+            },
+            "title": "Scienceoutcomes",
+            "type": "array"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          },
+          "telemetry": {
+            "items": {
+              "$ref": "#/components/schemas/TelemetrySample"
+            },
+            "title": "Telemetry",
+            "type": "array"
+          }
+        },
+        "required": [
+          "runId",
+          "missionId",
+          "designRevision",
+          "seed",
+          "scenarioEventSetId",
+          "engineVersion",
+          "catalogVersion",
+          "experimental",
+          "inputSnapshot",
+          "manifest",
+          "phases",
+          "phaseTransitions",
+          "events",
+          "telemetry",
+          "decisions",
+          "scienceOutcomes",
+          "finalReport"
+        ],
+        "title": "MissionRun",
+        "type": "object"
+      },
+      "MissionRunManifest": {
+        "additionalProperties": false,
+        "description": "Replay manifest (architecture 19.9). Re-exported by app.schemas.evidence.\n\nVersions are plain strings so an imported run made with a different engine /\ncatalogue version stays representable and can be flagged \"not identical replay\".",
+        "properties": {
+          "appVersion": {
+            "title": "Appversion",
+            "type": "string"
+          },
+          "catalogVersion": {
+            "title": "Catalogversion",
+            "type": "string"
+          },
+          "engineVersion": {
+            "title": "Engineversion",
+            "type": "string"
+          },
+          "eventSetId": {
+            "title": "Eventsetid",
+            "type": "string"
+          },
+          "scenarioVersion": {
+            "title": "Scenarioversion",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "title": "Schemaversion",
+            "type": "string"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "engineVersion",
+          "catalogVersion",
+          "scenarioVersion",
+          "eventSetId",
+          "seed",
+          "appVersion"
+        ],
+        "title": "MissionRunManifest",
+        "type": "object"
+      },
       "MissionState": {
         "additionalProperties": false,
         "properties": {
@@ -1229,6 +1844,31 @@
         "title": "ObservationPlanItem",
         "type": "object"
       },
+      "ObservationRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "outcomeId": {
+            "title": "Outcomeid",
+            "type": "string"
+          },
+          "taskId": {
+            "title": "Taskid",
+            "type": "string"
+          },
+          "timestampMissionSeconds": {
+            "ge": 0,
+            "title": "Timestampmissionseconds",
+            "type": "number"
+          }
+        },
+        "required": [
+          "taskId",
+          "outcomeId",
+          "timestampMissionSeconds"
+        ],
+        "title": "ObservationRecord",
+        "type": "object"
+      },
       "OperationsPlan": {
         "additionalProperties": false,
         "properties": {
@@ -1278,6 +1918,38 @@
           "autonomyLevel"
         ],
         "title": "OperationsPlan",
+        "type": "object"
+      },
+      "PhaseTransition": {
+        "additionalProperties": false,
+        "properties": {
+          "missionDay": {
+            "ge": 0,
+            "title": "Missionday",
+            "type": "number"
+          },
+          "phase": {
+            "enum": [
+              "pre-launch",
+              "launch-deployment",
+              "commissioning",
+              "cruise",
+              "mid-course",
+              "approach",
+              "science-ops",
+              "downlink-return",
+              "complete",
+              "terminated"
+            ],
+            "title": "Phase",
+            "type": "string"
+          }
+        },
+        "required": [
+          "phase",
+          "missionDay"
+        ],
+        "title": "PhaseTransition",
         "type": "object"
       },
       "Provenance": {
@@ -1610,6 +2282,44 @@
         "title": "ScienceObjective",
         "type": "object"
       },
+      "ScienceOutcome": {
+        "additionalProperties": false,
+        "properties": {
+          "collectedFraction": {
+            "ge": 0,
+            "le": 1,
+            "title": "Collectedfraction",
+            "type": "number"
+          },
+          "objectiveId": {
+            "title": "Objectiveid",
+            "type": "string"
+          },
+          "returnedFraction": {
+            "ge": 0,
+            "le": 1,
+            "title": "Returnedfraction",
+            "type": "number"
+          },
+          "status": {
+            "enum": [
+              "achieved",
+              "partial",
+              "missed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "objectiveId",
+          "collectedFraction",
+          "returnedFraction",
+          "status"
+        ],
+        "title": "ScienceOutcome",
+        "type": "object"
+      },
       "ScoreBreakdown": {
         "additionalProperties": false,
         "properties": {
@@ -1667,6 +2377,147 @@
           "explanation"
         ],
         "title": "ScoreDimension",
+        "type": "object"
+      },
+      "ScoredAction": {
+        "additionalProperties": false,
+        "properties": {
+          "actionId": {
+            "title": "Actionid",
+            "type": "string"
+          },
+          "feasible": {
+            "title": "Feasible",
+            "type": "boolean"
+          },
+          "rejectionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejectionreason"
+          },
+          "utility": {
+            "title": "Utility",
+            "type": "number"
+          }
+        },
+        "required": [
+          "actionId",
+          "utility",
+          "feasible"
+        ],
+        "title": "ScoredAction",
+        "type": "object"
+      },
+      "SimulateData": {
+        "additionalProperties": false,
+        "description": "Architecture 11.2 shape. `telemetry`, `events` and `finalReport` are the very same\nobjects as the `run` fields (convenience copies, never separately computed).",
+        "properties": {
+          "analysis": {
+            "$ref": "#/components/schemas/MissionAnalysis"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/MissionEvent"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "finalReport": {
+            "$ref": "#/components/schemas/FinalReport"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "run": {
+            "$ref": "#/components/schemas/MissionRun"
+          },
+          "telemetry": {
+            "items": {
+              "$ref": "#/components/schemas/TelemetrySample"
+            },
+            "title": "Telemetry",
+            "type": "array"
+          }
+        },
+        "required": [
+          "analysis",
+          "run",
+          "telemetry",
+          "events",
+          "finalReport"
+        ],
+        "title": "SimulateData",
+        "type": "object"
+      },
+      "SimulateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "decisions": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisions"
+          },
+          "experimental": {
+            "default": false,
+            "title": "Experimental",
+            "type": "boolean"
+          },
+          "missionState": {
+            "$ref": "#/components/schemas/MissionState"
+          },
+          "monteCarloSamples": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Montecarlosamples"
+          },
+          "randomSeed": {
+            "title": "Randomseed",
+            "type": "integer"
+          },
+          "scenarioEventSetId": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenarioeventsetid"
+          }
+        },
+        "required": [
+          "missionState",
+          "randomSeed"
+        ],
+        "title": "SimulateRequest",
         "type": "object"
       },
       "SpacecraftArchitecture": {
@@ -1753,6 +2604,88 @@
           "expectedEffect"
         ],
         "title": "SuggestedAction",
+        "type": "object"
+      },
+      "TelemetrySample": {
+        "additionalProperties": false,
+        "properties": {
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "fidelity": {
+            "enum": [
+              "source-backed",
+              "derived",
+              "gameplay-estimate",
+              "not-modelled"
+            ],
+            "title": "Fidelity",
+            "type": "string"
+          },
+          "missionDay": {
+            "ge": 0,
+            "title": "Missionday",
+            "type": "number"
+          },
+          "phase": {
+            "enum": [
+              "pre-launch",
+              "launch-deployment",
+              "commissioning",
+              "cruise",
+              "mid-course",
+              "approach",
+              "science-ops",
+              "downlink-return",
+              "complete",
+              "terminated"
+            ],
+            "title": "Phase",
+            "type": "string"
+          },
+          "unit": {
+            "enum": [
+              "kg",
+              "m",
+              "s",
+              "day",
+              "km",
+              "km/s",
+              "m/s",
+              "W",
+              "Wh",
+              "J",
+              "bit/s",
+              "bit",
+              "Hz",
+              "dB",
+              "dBW",
+              "K",
+              "USD",
+              "USD_2026",
+              "%",
+              "rad",
+              "deg",
+              "fraction"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "channel",
+          "unit",
+          "missionDay",
+          "value",
+          "fidelity",
+          "phase"
+        ],
+        "title": "TelemetrySample",
         "type": "object"
       },
       "TemplateMissionState": {
@@ -2165,6 +3098,135 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/mission/run/{run_id}": {
+      "get": {
+        "description": "A stored run (Mission Control reload). 404 once evicted; the client keeps its own copy.",
+        "operationId": "get_run_api_mission_run__run_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_SimulateData_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Run"
+      }
+    },
+    "/api/mission/run/{run_id}/decision": {
+      "post": {
+        "description": "Branch a stored run with one player decision. Returns a NEW run; the source is unchanged.",
+        "operationId": "decide_api_mission_run__run_id__decision_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_SimulateData_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Decide"
+      }
+    },
+    "/api/mission/simulate": {
+      "post": {
+        "description": "Run one deterministic simulation (architecture 11.2). Never accepts a client analysis.",
+        "operationId": "simulate_mission_api_mission_simulate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult_SimulateData_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Simulate Mission"
       }
     },
     "/api/mission/trade-study": {
