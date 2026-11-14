@@ -53,10 +53,17 @@ class UncertaintyProfile(ContractModel):
 
 
 class MetricQuantiles(ContractModel):
-    p10: FiniteFloat
-    median: FiniteFloat
-    p90: FiniteFloat
+    """Quantiles over the samples where the metric is defined (R38: None margins skipped).
+
+    All three are None when no sample defined the metric; ``defined_samples`` says how
+    many samples contributed.
+    """
+
+    p10: FiniteFloat | None
+    median: FiniteFloat | None
+    p90: FiniteFloat | None
     unit: str
+    defined_samples: StrictInt = Field(default=0, ge=0)
 
 
 class RobustnessResult(ContractModel):

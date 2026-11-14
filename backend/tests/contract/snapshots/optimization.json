@@ -1534,12 +1534,26 @@
         "additionalProperties": false,
         "properties": {
           "after": {
-            "title": "After",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After"
           },
           "before": {
-            "title": "Before",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
           },
           "metric": {
             "title": "Metric",
@@ -1605,12 +1619,26 @@
     "additionalProperties": false,
     "properties": {
       "after": {
-        "title": "After",
-        "type": "number"
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "After"
       },
       "before": {
-        "title": "Before",
-        "type": "number"
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Before"
       },
       "metric": {
         "title": "Metric",

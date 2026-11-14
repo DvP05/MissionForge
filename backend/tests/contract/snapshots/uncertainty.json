@@ -80,18 +80,46 @@
   },
   "MetricQuantiles": {
     "additionalProperties": false,
+    "description": "Quantiles over the samples where the metric is defined (R38: None margins skipped).\n\nAll three are None when no sample defined the metric; ``defined_samples`` says how\nmany samples contributed.",
     "properties": {
+      "definedSamples": {
+        "default": 0,
+        "minimum": 0,
+        "title": "Definedsamples",
+        "type": "integer"
+      },
       "median": {
-        "title": "Median",
-        "type": "number"
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Median"
       },
       "p10": {
-        "title": "P10",
-        "type": "number"
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "P10"
       },
       "p90": {
-        "title": "P90",
-        "type": "number"
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "P90"
       },
       "unit": {
         "title": "Unit",
@@ -111,18 +139,46 @@
     "$defs": {
       "MetricQuantiles": {
         "additionalProperties": false,
+        "description": "Quantiles over the samples where the metric is defined (R38: None margins skipped).\n\nAll three are None when no sample defined the metric; ``defined_samples`` says how\nmany samples contributed.",
         "properties": {
+          "definedSamples": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Definedsamples",
+            "type": "integer"
+          },
           "median": {
-            "title": "Median",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median"
           },
           "p10": {
-            "title": "P10",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P10"
           },
           "p90": {
-            "title": "P90",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P90"
           },
           "unit": {
             "title": "Unit",

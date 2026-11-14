@@ -64,8 +64,9 @@ class ArchitectureGraph(ContractModel):
 
 class MetricChange(ContractModel):
     metric: str
-    before: FiniteFloat
-    after: FiniteFloat
+    # None = undefined / not-modelled at that revision (R38: never a fake 0).
+    before: FiniteFloat | None
+    after: FiniteFloat | None
     unit: str
 
 

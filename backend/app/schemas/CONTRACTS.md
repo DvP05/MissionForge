@@ -252,6 +252,7 @@ which regenerates `openapi.json` / frontend types only when a route exposes the 
 | 2026-11-13 | Interface v1 frozen (Task 1.3) | controller rulings D1–D9, R9 |
 | 2026-11-13 | Fix round 1: replayable immutable runs, autonomy belief, feasibility invariants, `fraction` unit, schedule data loss, phase transitions, cross-reference validators, graph/impact/analyst/health payloads, CI snapshot guard | controller ruling R10 |
 | 2026-11-14 | `BudgetAnalysis` margin fractions (mass/energy/data) and `deltaVMarginKmPerS` become `float \| None`; snapshots, OpenAPI and TS types regenerated | controller ruling R38 |
+| 2026-11-14 | Phase 4↔6 integration: `MetricChange.before/after` and `MetricQuantiles.p10/median/p90` become `float \| None` (undefined margins, R38); `MetricQuantiles.definedSamples` added; snapshots, OpenAPI and TS types regenerated | integration ruling R42 |
 
 ## Templates (Task 1.5)
 
