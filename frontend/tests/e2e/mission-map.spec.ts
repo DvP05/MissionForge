@@ -12,6 +12,7 @@ async function launch(page: Page, scenario: string, fixComms: boolean): Promise<
   if (fixComms) {
     await page.getByTestId("category-nav-communications").click();
     await page.getByTestId("select-comms-xband-medium").click();
+    await page.getByTestId("confirm-change").click();
     await expect(page.getByTestId("mission-ready-badge")).toHaveText(/^mission-ready$/i);
   }
   await page.getByTestId("launch-button").click();

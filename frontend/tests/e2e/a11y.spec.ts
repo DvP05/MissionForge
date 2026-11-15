@@ -19,6 +19,7 @@ async function journey(page: Page): Promise<{ missionId: string; runId: string }
   await expect(page.getByTestId("analysis-revision")).toContainText(/revision 0/i, { timeout: 30_000 });
   await page.getByTestId("category-nav-communications").click();
   await page.getByTestId("select-comms-xband-medium").click();
+  await page.getByTestId("confirm-change").click();
   await expect(page.getByTestId("mission-ready-badge")).toHaveText(/^mission-ready$/i);
   await page.getByTestId("launch-button").click();
   await page.waitForURL(/\/control\/[^/]+/, { timeout: 30_000 });
@@ -43,7 +44,9 @@ for (const width of [1280, 375]) {
     const failures: string[] = [];
     for (const [path, ready] of routes) {
       await page.goto(path);
-      if (ready) await expect(page.getByTestId(ready).first()).toBeVisible({ timeout: 30_000 });
+      // phone-width architect shows one zone at a time: wait for the analysis to arrive, visible or not
+      if (ready) await expect(page.getByTestId(ready).first()).toBeAttached({ timeout: 30_000 });
+      if (ready === "analysis-revision") await expect(page.getByTestId(ready).first()).toContainText(/revision/i, { timeout: 30_000 });
       await page.waitForLoadState("networkidle");
       for (const v of await seriousViolations(page)) failures.push(`${path}: ${v}`);
     }

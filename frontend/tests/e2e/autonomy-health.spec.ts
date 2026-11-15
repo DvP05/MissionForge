@@ -11,6 +11,7 @@ async function launchFeasible(page: Page): Promise<string> {
   await expect(page.getByTestId("analysis-revision")).toContainText(/revision 0/i, { timeout: 30_000 });
   await page.getByTestId("category-nav-communications").click();
   await page.getByTestId("select-comms-xband-medium").click();
+  await page.getByTestId("confirm-change").click();
   await expect(page.getByTestId("mission-ready-badge")).toHaveText(/^mission-ready$/i);
   await page.getByTestId("launch-button").click();
   await page.waitForURL(/\/control\/[^/]+/, { timeout: 30_000 });

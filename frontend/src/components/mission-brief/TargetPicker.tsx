@@ -71,7 +71,7 @@ export function TargetPicker() {
     );
 
   return (
-    <section data-testid="target-picker" aria-labelledby="target-picker-h" className="min-w-0 max-w-full space-y-3">
+    <section data-testid="target-picker" aria-labelledby="target-picker-h" className="panel min-w-0 max-w-full space-y-3 p-4">
       <h2 id="target-picker-h" className="flex items-center gap-2 text-lg font-semibold">
         <Satellite aria-hidden className="h-4 w-4 text-accent-cyan" />
         Target and trajectory

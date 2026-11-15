@@ -1,34 +1,269 @@
 @import "tailwindcss";
 
-/* Mission-control design tokens: midnight / graphite surfaces, cyan + amber accents. */
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/jetbrains-mono";
+
+/*
+ * MISSIONFORGE design tokens: the "Aerospace Mission Telemetry & Command System" (Stitch).
+ * Graphite avionics surfaces, hairline borders, sharp machined corners, Space Grotesk for
+ * structure and JetBrains Mono for readouts. Colour is a micro-accent only: signal amber for the
+ * active station and primary action, orbital cyan for nominal, warning amber, emergency crimson.
+ * Components use the Tailwind colours below, never raw hex values.
+ */
 :root {
-  --midnight: #070b14;
-  --graphite: #111827;
-  --graphite-border: #243044;
-  --text: #e6edf7;
-  --text-muted: #8fa0b8;
-  --cyan: #22d3ee;
-  --amber: #fbbf24;
+  --bg: #121413; /* surface */
+  --bg-2: #0d0e0e; /* surface-container-lowest: viewports, readout wells */
+  --panel: #1b1c1c; /* surface-container-low: bulkhead panels */
+  --elevated: #292a2a; /* surface-container-high: tactical cards, active segments */
+  --border-col: #3d4142; /* #696e6e hairline at ~45% on the panels */
+  --primary: #d8d9da; /* primary readouts, nominal / go */
+  --signal: #f5a623; /* active station + primary trigger */
+  --cyan: #38bdf8; /* orbital cyan: nominal vectors, links, focus */
+  --blue: #7dd3fc;
+  --violet: #c4b5fd; /* science discovery, used sparingly */
+  --amber: #fbbf24; /* warning */
+  --red: #f87171; /* emergency */
+  --green: #d8d9da; /* "pass" is the primary readout colour, as in the Stitch gates */
+  --text: #e3e2e1;
+  --text-2: #a9adae; /* telemetry secondary (4.5:1+ on the panels) */
+  --text-3: #8d9192; /* tertiary text, still 4.5:1 on the panels */
 }
 
 @theme inline {
-  --color-background: var(--midnight);
-  --color-surface: var(--graphite);
-  --color-border: var(--graphite-border);
+  --color-background: var(--bg);
+  --color-background-2: var(--bg-2);
+  --color-surface: var(--panel);
+  --color-elevated: var(--elevated);
+  --color-border: var(--border-col);
   --color-foreground: var(--text);
-  --color-muted: var(--text-muted);
+  --color-muted: var(--text-2);
+  --color-faint: var(--text-3);
+  --color-primary: var(--primary);
+  --color-signal: var(--signal);
   --color-accent-cyan: var(--cyan);
+  --color-accent-blue: var(--blue);
+  --color-accent-violet: var(--violet);
   --color-accent-amber: var(--amber);
-  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --color-accent-red: var(--red);
+  --color-accent-green: var(--green);
+  --font-sans: "Space Grotesk Variable", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  /* machined, sharp-edged: every radius is 0 except full (status LEDs) */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-panel: 0;
+  --radius-control: 0;
+  --text-readout: 1.125rem;
+  /* motion tokens (mirrored in lib/motion/motion.ts) */
+  --duration-micro: 150ms;
+  --duration-panel: 220ms;
+  --duration-state: 360ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 html {
   color-scheme: dark;
 }
 
+/* One visible focus ring everywhere (keyboard only). */
+:focus-visible {
+  outline: 1px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Player motion override (settings menu): same effect as the OS reduced-motion setting. */
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Button intents: primary (the next action), secondary, tertiary, destructive. */
+@layer components {
+  .btn {
+    display: inline-flex;
+    min-height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: 1px solid transparent;
+    padding: 0 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: background-color var(--duration-micro) var(--ease-out), border-color var(--duration-micro) var(--ease-out),
+      color var(--duration-micro) var(--ease-out);
+  }
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  /* execution trigger: the one next action on a screen */
+  .btn-primary {
+    background: var(--signal);
+    color: #070808;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--signal) 82%, #fff);
+  }
+  /* secondary avionics trigger */
+  .btn-secondary {
+    background: #232729;
+    border-color: #696e6e;
+    color: var(--primary);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: #3f4445;
+    border-color: var(--primary);
+  }
+  .btn-tertiary {
+    border-color: var(--border-col);
+    color: var(--text-2);
+  }
+  .btn-tertiary:hover:not(:disabled) {
+    color: var(--text);
+    border-color: #696e6e;
+    background: #232729;
+  }
+  /* destructive / abort */
+  .btn-danger {
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .btn-danger:hover:not(:disabled) {
+    background: var(--red);
+    color: #070808;
+  }
+  .readout {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+  letter-spacing: 0.01em;
+}
+main h1,
+main h2 {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.font-mono,
+code,
+kbd {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Deep-space backdrop: fixed, behind everything, purely decorative (no images, no network). */
+.space-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--bg);
+}
+.space-backdrop::before {
+  /* HUD datum grid: fine-pitch dots, rendered at very low opacity */
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.07;
+  background-image: radial-gradient(circle at 1px 1px, #c3c7c8 1px, transparent 0);
+  background-size: 24px 24px;
+}
+.space-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(70rem 30rem at 70% -10%, color-mix(in oklab, var(--primary) 5%, transparent), transparent 70%);
+}
+
+@layer components {
+/* HUD reticle overlay for viewports (24px hairline grid). */
+.hud-grid {
+  background-image:
+    linear-gradient(color-mix(in oklab, #696e6e 18%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, #696e6e 18%, transparent) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Telemetry label: mono, uppercase, wide tracking (Stitch label-caps). */
+.label-caps {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* 45-degree chamfered corners for hero bays (top-right, bottom-left). Not used on panels that
+   host popovers, since clip-path would cut them. */
+.chamfer {
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+
+}
+
+@layer components {
+/* Shared panel surface: bulkhead tier with a hairline frame, no soft shadows. */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border-col);
+}
+.panel.is-active {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 40%, transparent);
+}
+
+}
+
+/* Hangar floor: perspective grid used by the hero, decorative only. */
+.hangar-floor {
+  background-image:
+    linear-gradient(color-mix(in oklab, #696e6e 60%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, #696e6e 60%, transparent) 1px, transparent 1px);
+  background-size: 3rem 3rem;
+  transform: perspective(28rem) rotateX(62deg);
+  transform-origin: 50% 0%;
+  mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scan-line {
+    animation: scan 3.2s ease-in-out infinite;
+  }
+}
+@keyframes scan {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10%,
+  90% {
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(100%);
+  }
 }

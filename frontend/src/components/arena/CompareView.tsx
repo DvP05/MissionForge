@@ -1,5 +1,6 @@
 "use client";
 
+import { recordProgress } from "@/lib/progress/progress";
 import { CircleAlert, Copy, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -89,6 +90,7 @@ export function CompareView() {
     );
     if (abort.signal.aborted) return;
     if (result.ok && result.data) {
+      recordProgress(mission.missionId, "tradeStudy", mission.designRevision);
       setRun({ kind: "done", result: result.data, labels, version: startedAt });
     } else {
       setRun({ kind: "error", message: describeFailure(result.error, labels) });

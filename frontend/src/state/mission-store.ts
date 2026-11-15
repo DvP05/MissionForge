@@ -71,6 +71,8 @@ export interface MissionStoreState {
   mission: MissionState | null;
   designRevision: number;
   analysis: MissionAnalysis | null;
+  /** The analysis the current one replaced (presentation only: before/after impact report). */
+  previousAnalysis: MissionAnalysis | null;
   analysisRevision: number | null;
   status: AnalysisStatus;
   /** True while edits exist that have not been committed as a new revision. */
@@ -92,6 +94,11 @@ export interface MissionStoreState {
   removeObjective: (objectiveId: string) => void;
   updateOperations: (patch: Partial<OperationsPlan>) => void;
   updateConstraints: (patch: Partial<MissionConstraints>) => void;
+  /**
+   * Makes the architecture equal to `target` through ordinary component selections and commits
+   * ONE new revision (undo, loading a trade-study design). Revision numbers only move forward.
+   */
+  restoreArchitecture: (target: MissionState["architecture"]) => void;
   /** Phase 5: use a served JPL option as the trajectory + destination (new revision). */
   setTrajectory: (trajectory: MissionState["trajectory"], destination: MissionState["destination"]) => void;
   commitRevision: () => void;
@@ -111,6 +118,7 @@ const EMPTY = {
   mission: null,
   designRevision: 0,
   analysis: null,
+  previousAnalysis: null,
   analysisRevision: null,
   status: "idle" as AnalysisStatus,
   dirty: false,
@@ -250,6 +258,22 @@ export const useMissionStore = create<MissionStoreState>()((set, get) => {
       edit((m) => ({ ...m, constraints: { ...m.constraints, ...patch } }));
     },
 
+    restoreArchitecture(target) {
+      const current = get().mission;
+      if (!current) return;
+      for (const [category, field] of Object.entries(SINGLE_SELECT_FIELD) as [
+        Exclude<ComponentCategory, "instrument">,
+        (typeof SINGLE_SELECT_FIELD)[keyof typeof SINGLE_SELECT_FIELD],
+      ][]) {
+        if (current.architecture[field] !== target[field]) get().selectComponent(category, target[field]);
+      }
+      const want = new Set(target.instrumentIds);
+      const have = new Set(get().mission?.architecture.instrumentIds ?? []);
+      for (const id of have) if (!want.has(id)) get().selectComponent("instrument", id);
+      for (const id of target.instrumentIds) if (!have.has(id)) get().selectComponent("instrument", id);
+      get().commitRevision();
+    },
+
     setTrajectory(trajectory, destination) {
       edit((m) => ({ ...m, trajectory, destination }));
       get().commitRevision();
@@ -282,7 +306,13 @@ export const useMissionStore = create<MissionStoreState>()((set, get) => {
       const { mission } = get();
       if (!mission || analysis.missionId !== mission.missionId) return false;
       if (analysis.designRevision !== mission.designRevision) return false;
-      set({ analysis, analysisRevision: analysis.designRevision, status: "idle" });
+      const before = get().analysis;
+      set({
+        analysis,
+        previousAnalysis: before && before.designRevision !== analysis.designRevision ? before : get().previousAnalysis,
+        analysisRevision: analysis.designRevision,
+        status: "idle",
+      });
       return true;
     },
 

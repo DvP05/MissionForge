@@ -34,8 +34,8 @@ export function formatFraction(value: number | null | undefined): string {
   return `${PLAIN.format(value * 100)} %`;
 }
 
-/** "cost" -> "Cost", "power_w" -> "Power w" */
+/** "cost" -> "Cost", "power_w" -> "Power" (a trailing unit suffix such as `_w` is dropped). */
 export function humanize(key: string): string {
-  const text = key.replace(/_/g, " ");
+  const text = key.replace(/_w$/, "").replace(/_/g, " ");
   return text.charAt(0).toUpperCase() + text.slice(1);
 }

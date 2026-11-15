@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -7,6 +8,7 @@ import { StatusPill } from "@/components/common/StatusPill";
 import { ErrorState, LoadingState } from "@/components/common/States";
 import { apiGet, type DataOf } from "@/lib/api-client";
 import { useMissionStore, type ScenarioId } from "@/state/mission-store";
+import { DestinationGlyph } from "./DestinationGlyph";
 
 type Templates = DataOf<Awaited<ReturnType<typeof apiGet<"/api/templates">>>>;
 type Template = Templates[number];
@@ -79,16 +81,33 @@ export function ScenarioGrid() {
           const enabled = ENABLED.has(template.scenarioId);
           const busy = startingId === template.scenarioId;
           return (
-            <li
+            <motion.li
               key={template.scenarioId}
               data-testid={`scenario-card-${template.scenarioId}`}
-              className="flex min-w-0 flex-col gap-3 rounded-xl border border-border bg-surface p-5"
+              whileHover={{ y: -3 }}
+              transition={{ duration: 0.15 }}
+              className="panel flex min-w-0 flex-col gap-3 overflow-hidden p-5 hover:border-accent-cyan/50"
             >
+              <DestinationGlyph scenarioId={template.scenarioId} className="-mx-5 -mt-5 mb-1 h-28 w-[calc(100%+2.5rem)] max-w-none contrast-125 grayscale" />
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <h3 className="text-lg font-semibold">{template.title}</h3>
                 {enabled ? null : <StatusPill tone="warn">Preview</StatusPill>}
               </div>
               <p className="text-sm text-muted">{template.narrative}</p>
+              <dl className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-background/40 p-2 text-xs">
+                <div className="min-w-0">
+                  <dt className="text-muted">Target</dt>
+                  <dd className="truncate font-medium" title={template.missionState.destination.name}>{template.missionState.destination.name}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted">Duration</dt>
+                  <dd className="readout">{template.missionState.operations.missionDurationDays} d</dd>
+                </div>
+                <div>
+                  <dt className="text-muted">Objectives</dt>
+                  <dd className="readout">{template.missionState.scienceObjectives.length}</dd>
+                </div>
+              </dl>
               {template.topConstraints.length > 0 ? (
                 <ul className="list-disc space-y-1 pl-5 text-xs text-muted">
                   {template.topConstraints.slice(0, 3).map((c) => (
@@ -96,18 +115,21 @@ export function ScenarioGrid() {
                   ))}
                 </ul>
               ) : null}
+              {template.fidelityNotes.length > 0 ? (
+                <p className="text-[11px] text-muted">Fidelity: {template.fidelityNotes[0]}. Scene art is illustrative.</p>
+              ) : null}
               <div className="mt-auto pt-2">
                 <button
                   type="button"
                   disabled={!enabled || startingId !== null}
                   aria-label={enabled ? undefined : `${template.title}: coming soon`}
                   onClick={() => start(template)}
-                  className="min-h-11 w-full rounded-lg border border-accent-cyan/60 px-4 text-sm font-medium text-accent-cyan hover:bg-accent-cyan/10 disabled:cursor-not-allowed disabled:border-border disabled:text-muted disabled:hover:bg-transparent"
+                  className="min-h-11 w-full rounded-lg border border-accent-cyan/60 bg-accent-cyan/10 px-4 text-sm font-medium text-accent-cyan hover:bg-accent-cyan/20 disabled:cursor-not-allowed disabled:border-border disabled:text-muted disabled:hover:bg-transparent"
                 >
                   {enabled ? (busy ? "Starting..." : "Start mission") : "Coming soon"}
                 </button>
               </div>
-            </li>
+            </motion.li>
           );
         })}
       </ul>

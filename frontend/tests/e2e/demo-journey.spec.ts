@@ -32,6 +32,7 @@ for (const width of [1280, 375]) {
     const massBefore = await page.getByTestId("budget-tile-mass").innerText();
     await page.getByTestId("category-nav-communications").click();
     await page.getByTestId("select-comms-xband-medium").click();
+    await page.getByTestId("confirm-change").click();
     await expect(page.getByTestId("analysis-revision")).toContainText(/revision 1/i);
     await expect(page.getByTestId("constraint-card-link-margin")).toHaveAttribute("data-status", "pass");
     await expect(page.getByTestId("mission-ready-badge")).toHaveText(/^mission-ready$/i);

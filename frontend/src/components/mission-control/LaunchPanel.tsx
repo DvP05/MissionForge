@@ -2,9 +2,10 @@
 
 import { Rocket } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { apiPost } from "@/lib/api-client";
+import { LaunchSequence } from "./LaunchSequence";
 import { useMissionStore } from "@/state/mission-store";
 import { useRunStore } from "@/state/run-store";
 
@@ -21,6 +22,15 @@ export function LaunchPanel() {
   const [busy, setBusy] = useState(false);
   const [blocked, setBlocked] = useState<Blocked | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const launchRef = useRef<HTMLButtonElement>(null);
+
+  // Arriving from the stage rail ("Mission control" / "Review" before any flight): bring the
+  // launch control into view and focus it, since this panel renders after the page loads.
+  useEffect(() => {
+    if (window.location.hash !== "#launch") return;
+    launchRef.current?.closest("section")?.scrollIntoView({ block: "center" });
+    launchRef.current?.focus({ preventScroll: true });
+  }, []);
 
   if (!mission) return null;
 
@@ -51,10 +61,11 @@ export function LaunchPanel() {
   const labelOf = (id: string) => analysis?.constraints.find((c) => c.id === id)?.label ?? id;
 
   return (
-    <section aria-label="Launch" className="space-y-3 rounded-lg border border-border bg-surface p-3">
+    <section id="launch" aria-label="Launch" className="panel scroll-mt-24 space-y-3 p-3">
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
+          ref={launchRef}
           data-testid="launch-button"
           onClick={() => launch(false)}
           disabled={busy}
@@ -63,7 +74,11 @@ export function LaunchPanel() {
           <Rocket aria-hidden className="h-4 w-4" />
           {busy ? "Launching…" : "Launch mission"}
         </button>
-        <p className="text-xs text-muted">Runs one deterministic simulation with seed {mission.randomSeed}.</p>
+        {busy ? (
+          <LaunchSequence />
+        ) : (
+          <p className="text-xs text-muted">Runs one deterministic simulation with seed {mission.randomSeed}.</p>
+        )}
       </div>
       {blocked ? (
         <div data-testid="launch-blocked" role="alert" className="space-y-2 rounded-lg border border-accent-amber/60 p-3 text-sm">
@@ -88,7 +103,7 @@ export function LaunchPanel() {
         </div>
       ) : null}
       {error ? (
-        <p role="alert" className="text-sm text-red-300">
+        <p role="alert" className="text-sm text-accent-red">
           {error}
         </p>
       ) : null}

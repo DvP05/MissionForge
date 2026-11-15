@@ -55,7 +55,7 @@ export function ImportedDecisionNotice({ data, event }: { data: RunData; event: 
         Re-simulating runs the same design, seed and your earlier choices on this server and opens the new run here.
       </p>
       {error ? (
-        <p role="alert" className="text-sm text-red-300">
+        <p role="alert" className="text-sm text-accent-red">
           {error}
         </p>
       ) : null}

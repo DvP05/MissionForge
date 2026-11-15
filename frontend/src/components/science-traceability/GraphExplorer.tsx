@@ -91,7 +91,7 @@ function NodeButton({
         <span className="mt-1 flex flex-wrap items-center gap-2">
           {typeof status === "string" ? (
             <span
-              className={`text-xs font-medium ${status === "uncovered" ? "text-red-300" : status === "covered" ? "text-accent-cyan" : "text-accent-amber"}`}
+              className={`text-xs font-medium ${status === "uncovered" ? "text-accent-red" : status === "covered" ? "text-accent-cyan" : "text-accent-amber"}`}
             >
               {STATUS_TEXT[status] ?? status}
             </span>
@@ -218,7 +218,7 @@ function WhyChanged({ impact, objectiveTitle }: { impact: ImpactView | null; obj
       {nothing ? <p>This edit did not change any modelled metric, constraint or objective.</p> : null}
       {r.newlyViolated.length > 0 ? (
         <div>
-          <h4 className="font-semibold text-red-300">Got worse</h4>
+          <h4 className="font-semibold text-accent-red">Got worse</h4>
           <ul className="list-disc pl-5" data-testid="graph-why-worse">
             {r.newlyViolated.map((id) => (
               <li key={id}>{label(id)}</li>

@@ -24,6 +24,7 @@ async function openArchitect(page: Page): Promise<string> {
 async function pickMediumComms(page: Page) {
   await page.getByTestId("category-nav-communications").click();
   await page.getByTestId("select-comms-xband-medium").click();
+  await page.getByTestId("confirm-change").click();
   await expect(page.getByTestId("analysis-revision")).toContainText(/revision 1/i);
 }
 

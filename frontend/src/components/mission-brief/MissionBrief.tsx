@@ -75,10 +75,12 @@ export function MissionBrief() {
   const currentAnalysis = analysis && analysisRevision === mission.designRevision ? analysis : null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <ConceptCard />
 
-      <section aria-labelledby="scenario-heading" className="space-y-3">
+      {/* the mission and the science choices side by side */}
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <section aria-labelledby="scenario-heading" className="panel space-y-3 p-4">
         <div className="flex flex-wrap items-center gap-2">
           <h2 id="scenario-heading" className="text-lg font-semibold">
             Scenario
@@ -103,11 +105,14 @@ export function MissionBrief() {
         </div>
       </section>
 
+      <div className="panel min-w-0 p-4">
+        <ObjectiveSelector choices={choices} onToggle={onToggle} onPriority={onPriority} />
+      </div>
+      </div>
+
       <TargetPicker />
 
-      <ObjectiveSelector choices={choices} onToggle={onToggle} onPriority={onPriority} />
-
-      <section aria-labelledby="trace-heading" className="space-y-3">
+      <section aria-labelledby="trace-heading" className="panel space-y-3 p-4">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 id="trace-heading" className="text-lg font-semibold">
             Science traceability

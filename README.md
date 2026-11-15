@@ -21,15 +21,24 @@ estimate, or not modelled. See [LICENSE-NOTICE.md](LICENSE-NOTICE.md).
 
 ## Player journey
 
-1. **Mission brief** (`/mission/<id>`): science objectives, measurement requirements, and (asteroid
+1. **Mission hangar** (`/`): continue a saved mission or start a scenario.
+2. **Mission brief** (`/mission/<id>`): science objectives, measurement requirements, and (asteroid
    scenario) the target picker with a source badge.
-2. **Architect** (`/architect/<id>`): pick components; coupled budgets, hard constraints, the traceability
-   graph and change impact update live. Launch is blocked while a hard constraint fails.
-3. **Arena** (`/arena/<id>`): Pareto explorer, robustness lab (Monte Carlo), observation schedule.
-4. **Mission control** (`/control/<runId>`): deterministic seeded run, telemetry, 2D mission map,
+3. **Science lab** (`/science/<id>`): objective → measurement → instrument → engineering consequence →
+   expected return, with the serving instruments highlighted on the spacecraft.
+4. **Architect** (`/architect/<id>`): a 3D spacecraft built from the catalogue (placeholder geometry, not
+   to scale). Install, replace and remove parts; the inspector, live engineering dashboard, budgets and
+   constraints all show the backend analysis of the current design revision. Launch is blocked while a hard
+   constraint fails.
+5. **Trade study** (`/arena/<id>`): Pareto explorer, robustness lab (Monte Carlo), observation schedule.
+6. **Mission control** (`/control/<runId>`): deterministic seeded run, telemetry, 2D mission map,
    operator decisions, onboard autonomy during communication blackouts, health-monitor residuals.
-5. **Review** (`/review/<runId>`): root causes, counterfactuals, design analyst, and the
+7. **Review** (`/review/<runId>`): root causes, counterfactuals, design analyst, and the
    **Evidence Passport** export (re-importable JSON plus self-contained HTML).
+8. **Archive** (`/archive`): saved designs and flown runs in this browser.
+
+How the frontend was rebuilt, and which libraries were used, is described in
+[docs/frontend-design.md](docs/frontend-design.md).
 
 All calculations run in the Python backend; the frontend never computes an authoritative result and never
 calls JPL directly.
@@ -110,7 +119,7 @@ backend/            FastAPI + Pydantic v2 service (all domain calculations)
   app/schemas/      frozen API contracts (see CONTRACTS.md)
   scripts/          catalogue validator, demo package, JPL capture, OpenAPI export
   tests/            unit, integration, contract snapshot and golden tests
-frontend/           Next.js 16 / React 19 / Tailwind / Recharts / Zustand UI, Playwright e2e
+frontend/           Next.js 16 / React 19 / Tailwind / Recharts / Zustand / React Three Fiber UI, Playwright e2e
 data/               catalogue, scenario templates and event sets, uncertainty profile, demo, JPL snapshot
 docs/               release checklist and build plan
 src-files/          product, architecture and research specifications

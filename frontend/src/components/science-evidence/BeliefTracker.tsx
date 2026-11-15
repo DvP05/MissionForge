@@ -95,7 +95,7 @@ export function BeliefTracker() {
       </header>
 
       {status === "error" ? (
-        <p role="alert" className="text-sm text-red-300">
+        <p role="alert" className="text-sm text-accent-red">
           The belief could not be updated.{" "}
           <button type="button" className="underline" onClick={() => void request(null)}>
             Retry

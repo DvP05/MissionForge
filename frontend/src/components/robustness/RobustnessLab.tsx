@@ -1,5 +1,6 @@
 "use client";
 
+import { recordProgress } from "@/lib/progress/progress";
 import { Dices, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -66,7 +67,10 @@ export function RobustnessLab() {
       { signal: abort.signal, timeoutMs: 30_000 },
     );
     if (abort.signal.aborted) return;
-    if (response.ok && response.data) setRun({ kind: "done", result: response.data.result, revision });
+    if (response.ok && response.data) {
+      recordProgress(mission.missionId, "riskReviewed", revision);
+      setRun({ kind: "done", result: response.data.result, revision });
+    }
     else setRun({ kind: "error", message: response.error?.message ?? "The robustness run failed." });
   };
 
@@ -128,7 +132,7 @@ export function RobustnessLab() {
       </div>
 
       {run.kind === "error" ? (
-        <p role="alert" className="text-sm text-red-300">
+        <p role="alert" className="text-sm text-accent-red">
           {run.message}
         </p>
       ) : null}

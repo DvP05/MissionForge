@@ -8,7 +8,7 @@ import type { DecisionRecord, MissionEvent } from "./playback";
 const SEVERITY: Record<MissionEvent["severity"], { Icon: LucideIcon; tone: string }> = {
   info: { Icon: Info, tone: "text-accent-cyan" },
   warning: { Icon: TriangleAlert, tone: "text-accent-amber" },
-  critical: { Icon: CircleAlert, tone: "text-red-300" },
+  critical: { Icon: CircleAlert, tone: "text-accent-red" },
 };
 
 const TYPES = ["milestone", "telemetry", "anomaly", "decision", "science", "downlink"] as const;

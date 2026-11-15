@@ -23,7 +23,7 @@ export function ConstraintPanel({
         Constraints
       </h2>
       {analysis ? (
-        <ul className="space-y-3">
+        <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {ordered(analysis.constraints).map((c) => (
             <ConstraintCard key={c.id} constraint={c} selected={c.id === selectedId} marginProvenance={analysisFailed(analysis) ? null : analysisProvenance(analysis)} onExplain={onExplain} />
           ))}

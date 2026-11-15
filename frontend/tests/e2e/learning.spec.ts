@@ -31,6 +31,7 @@ test("first mission completes with hints and prediction, no blocking dialog", as
   await page.getByTestId("prediction-prompt").getByLabel(/over three quarters/i).check();
   await page.getByTestId("category-nav-communications").click();
   await page.getByTestId("select-comms-xband-medium").click();
+  await page.getByTestId("confirm-change").click();
   await expect(page.getByTestId("mission-ready-badge")).toHaveText(/^mission-ready$/i);
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.getByTestId("launch-button").click();
@@ -62,6 +63,7 @@ test("pre-check on landing, post-check on review compares scores; stored locally
   const id = await architect(page);
   await page.getByTestId("category-nav-communications").click();
   await page.getByTestId("select-comms-xband-medium").click();
+  await page.getByTestId("confirm-change").click();
   await expect(page.getByTestId("mission-ready-badge")).toHaveText(/^mission-ready$/i);
   await page.getByTestId("launch-button").click();
   await page.waitForURL(/\/control\/[^/]+/, { timeout: 30_000 });

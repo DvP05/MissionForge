@@ -25,6 +25,8 @@ async function stored(page: Page, id: string) {
 async function choose(page: Page, category: string, componentId: string) {
   await page.getByTestId(`category-nav-${category}`).click();
   await page.getByTestId(`select-${componentId}`).click();
+  // replacing a single-slot component (or removing an instrument) is confirmed first
+  if (category !== "instrument") await page.getByTestId("confirm-change").click();
 }
 
 test.describe("architect layout", () => {
@@ -90,11 +92,14 @@ test.describe("component selection", () => {
     await page.keyboard.press("Enter");
     const target = "select-comms-xband-medium";
     let reached = false;
-    for (let i = 0; i < 40 && !reached; i += 1) {
+    for (let i = 0; i < 200 && !reached; i += 1) {
       await page.keyboard.press("Tab");
       reached = (await page.evaluate(() => document.activeElement?.getAttribute("data-testid"))) === target;
     }
     expect(reached).toBe(true);
+    await page.keyboard.press("Enter");
+    // the replace confirmation opens with focus on its confirm button
+    await expect(page.getByTestId("change-dialog")).toBeVisible();
     await page.keyboard.press("Enter");
     await expect(page.getByTestId("revision-pill")).toHaveText("Revision 1");
     expect((await stored(page, id)).architecture.communicationsId).toBe("comms-xband-medium");

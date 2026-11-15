@@ -64,7 +64,7 @@ export function DecisionCard({
     <section
       data-testid="decision-card"
       aria-labelledby="decision-title"
-      className="space-y-3 rounded-lg border border-accent-amber/60 bg-accent-amber/5 p-4"
+      className="space-y-3 rounded-xl border-2 border-accent-amber/70 bg-accent-amber/[0.07] p-5 shadow-[0_0_32px_-12px_var(--amber)]"
     >
       <div className="space-y-1">
         <p role="alert" className="text-xs font-medium uppercase tracking-wide text-accent-amber">
@@ -144,7 +144,7 @@ export function DecisionCard({
         ))}
       </fieldset>
       {error ? (
-        <p role="alert" className="text-sm text-red-300">
+        <p role="alert" className="text-sm text-accent-red">
           {error}
         </p>
       ) : null}

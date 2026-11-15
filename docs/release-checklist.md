@@ -23,7 +23,7 @@ cd backend && uv run python -m pytest -q --cov=app
 - [x] Same seeded mission produces the same result: golden analysis and run fixtures, replay tests, `test_all_scenarios.py`, demo-package drift test.
 - [x] Works without JPL network access: live access is off by default; the bundled snapshot is served and labelled (SYNTHETIC until captured, then DEMO — captured <date>).
 - [x] Mobile layout verified at 375 px: no horizontal overflow on brief, architect, control and review; axe at 375 px.
-- [x] WebGL fallback: there is no WebGL view (3D was cut per the cut order); the 2D mission map is the only map.
+- [x] WebGL fallback: the 3D spacecraft (architect, science lab) falls back to a 2D schematic of the same parts when WebGL is unavailable; `three` is not loaded on the hangar (`tests/e2e/spacecraft-builder.spec.ts`). The mission map is 2D.
 - [x] Credits and non-endorsement statement visible: footer on every page and `/about` (credits, sources, fidelity tiers, non-endorsement, no NASA/JPL logos).
 
 ## prod section 18: release checklist

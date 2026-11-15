@@ -5,9 +5,9 @@ export type PillTone = "neutral" | "info" | "ok" | "warn" | "danger";
 const TONES: Record<PillTone, string> = {
   neutral: "border-border text-muted",
   info: "border-accent-cyan/50 text-accent-cyan",
-  ok: "border-accent-cyan/50 text-accent-cyan",
+  ok: "border-accent-green/50 text-accent-green",
   warn: "border-accent-amber/60 text-accent-amber",
-  danger: "border-red-400/60 text-red-300",
+  danger: "border-accent-red/60 text-accent-red",
 };
 
 /** Small text label. Meaning is always in the text; tone only reinforces it. */
@@ -25,7 +25,7 @@ export function StatusPill({
   return (
     <span
       data-testid={testId}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${TONES[tone]}`}
+      className={`inline-flex items-center gap-1.5 border bg-[#232729]/80 px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wider ${TONES[tone]}`}
     >
       {icon}
       {children}

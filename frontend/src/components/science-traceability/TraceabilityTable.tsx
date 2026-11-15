@@ -8,7 +8,7 @@ const STATUS: Record<TraceStatus, { label: string; icon: ReactNode; tone: string
   uncovered: {
     label: "UNCOVERED",
     icon: <CircleAlert aria-hidden className="h-4 w-4 shrink-0" />,
-    tone: "text-red-300",
+    tone: "text-accent-red",
   },
   "not-returned": {
     label: "Data not returned",

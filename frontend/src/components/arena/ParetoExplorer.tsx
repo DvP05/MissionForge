@@ -1,5 +1,6 @@
 "use client";
 
+import { recordProgress } from "@/lib/progress/progress";
 import { Play, Swords } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -133,6 +134,7 @@ export function ParetoExplorer() {
     );
     if (abort.signal.aborted) return;
     if (response.ok && response.data) {
+      recordProgress(mission.missionId, "tradeStudy", mission.designRevision);
       setRun({ kind: "done", data: response.data });
       setSelectedId(response.data.archetypes.lean ?? response.data.paretoFrontIds[0] ?? null);
     } else {
@@ -204,7 +206,7 @@ export function ParetoExplorer() {
       </div>
 
       {run.kind === "error" ? (
-        <p role="alert" className="text-sm text-red-300">
+        <p role="alert" className="text-sm text-accent-red">
           {run.message}
         </p>
       ) : null}

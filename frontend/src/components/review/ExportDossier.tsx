@@ -1,5 +1,6 @@
 "use client";
 
+import { recordProgress } from "@/lib/progress/progress";
 import { useState } from "react";
 
 import { apiPost } from "@/lib/api-client";
@@ -28,6 +29,7 @@ export function ExportDossier({ data }: { data: RunData }) {
       setError(`${res.error?.message ?? "The passport could not be created."} Nothing was downloaded.`);
       return;
     }
+    recordProgress(data.run.missionId, "dossierExported", data.run.designRevision);
     const safeId = runId.replace(/[^A-Za-z0-9-]/g, "-");
     const jsonName = `missionforge-passport-${safeId}.json`;
     const htmlName = `missionforge-passport-${safeId}.html`;
@@ -62,7 +64,7 @@ export function ExportDossier({ data }: { data: RunData }) {
         {busy ? "Exporting..." : "Export Evidence Passport"}
       </button>
       {error ? (
-        <p role="alert" data-testid="export-passport-error" className="text-sm text-red-400">
+        <p role="alert" data-testid="export-passport-error" className="text-sm text-accent-red">
           {error}
         </p>
       ) : null}

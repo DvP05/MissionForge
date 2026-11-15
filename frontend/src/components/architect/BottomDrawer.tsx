@@ -25,7 +25,7 @@ export function BottomDrawer({
     <section
       aria-label="Details: explanation, provenance and recent changes"
       data-testid="bottom-drawer"
-      className="grid gap-4 rounded-xl border border-border bg-surface p-4 lg:grid-cols-3"
+      className="grid gap-4 lg:grid-flow-dense lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]"
     >
       <div className="space-y-2">
         <h2 className="text-sm font-semibold">Explanation</h2>
@@ -35,16 +35,20 @@ export function BottomDrawer({
             : "Choose Explain on a constraint to read why it has its status."}
         </p>
       </div>
-      <div className="space-y-2">
-        <h2 className="text-sm font-semibold">Provenance and assumptions</h2>
+      <div className="space-y-2 lg:col-start-2 lg:row-span-2 lg:row-start-1">
+        <h2 className="text-sm font-semibold">
+          Provenance and assumptions{analysis ? ` (${analysis.assumptions.length})` : ""}
+        </h2>
         {analysis && analysis.assumptions.length > 0 ? (
-          <ul className="list-disc space-y-1 pl-4 text-sm">
+          <div tabIndex={0} role="region" aria-label="Engine assumptions (scrolls)" className="max-h-[26rem] overflow-y-auto border border-border bg-background-2 p-3">
+          <ul className="list-disc gap-6 space-y-1 pl-4 text-xs leading-relaxed md:columns-2">
             {analysis.assumptions.map((a) => (
               <li key={a} data-testid="drawer-assumption">
                 {a}
               </li>
             ))}
           </ul>
+          </div>
         ) : (
           <p className="text-sm text-muted">Assumptions appear with the first analysis.</p>
         )}

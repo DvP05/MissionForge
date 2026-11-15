@@ -222,7 +222,7 @@ test.describe("workspace mission switching", () => {
     await expect(page.getByTestId("revision-pill")).toHaveText("Revision 1");
 
     // Client-side navigation keeps the store (and the mounted workspace chrome) alive.
-    await page.locator('header a[href="/"]').first().click();
+    await page.locator('a[href="/"]:visible').first().click();
     await page.getByTestId(NEO).getByRole("button", { name: /start mission/i }).click();
     await page.waitForURL(/\/mission\/mission-[0-9a-f]{12}$/);
     const b = new URL(page.url()).pathname.split("/").pop() as string;
