@@ -109,9 +109,24 @@ export function ReadinessBoard() {
                         Engine suggests: {a.label}. {a.expectedEffect}
                       </p>
                     ))}
-                    <button type="button" data-testid={`gate-repair-${r.gate.id}`} onClick={() => open(r.repair)} className="btn btn-secondary min-h-8 px-2 text-xs">
-                      <Wrench aria-hidden className="h-3.5 w-3.5" /> Open {repairLabel}
-                    </button>
+                    <div className="flex flex-wrap gap-1.5">
+                      <button type="button" data-testid={`gate-repair-${r.gate.id}`} onClick={() => open(r.repair)} className="btn btn-secondary min-h-8 px-2 text-xs">
+                        <Wrench aria-hidden className="h-3.5 w-3.5" /> Open {repairLabel}
+                      </button>
+                      {r.gate.id === "comms" || r.gate.id === "science" ? (
+                        <button
+                          type="button"
+                          data-testid={`gate-ops-${r.gate.id}`}
+                          onClick={() => {
+                            useArchitectUi.getState().setMobileTab("spacecraft");
+                            requestAnimationFrame(() => document.getElementById("ops-heading")?.scrollIntoView({ block: "center" }));
+                          }}
+                          className="btn btn-tertiary min-h-8 px-2 text-xs"
+                        >
+                          Adjust operations plan
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
                 ) : null}
               </li>

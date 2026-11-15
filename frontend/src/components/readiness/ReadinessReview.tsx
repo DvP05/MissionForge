@@ -13,7 +13,7 @@ import { constraintStatus } from "@/lib/spacecraft/engineering-status";
 import { evaluateGates, gateCounts } from "@/lib/spacecraft/gates";
 import { useMissionStore } from "@/state/mission-store";
 
-const VERDICT = { PASS: "GO", WATCH: "GO · WATCH", FAIL: "NO-GO", "NOT MODELLED": "NOT MODELLED", ANALYSING: "ANALYSING", STALE: "STALE" } as const;
+const VERDICT = { PASS: "GO", WATCH: "WATCH · blocks ready", FAIL: "NO-GO", "NOT MODELLED": "NOT MODELLED", ANALYSING: "ANALYSING", STALE: "STALE" } as const;
 
 /**
  * Readiness review (Stitch "Formal System Readiness Review"). Each gate is audited from the
@@ -48,6 +48,32 @@ export function ReadinessReview() {
           Every gate below is the engine&apos;s constraint result for this exact revision. A gate is GO only when all of its
           modelled constraints pass; anything the engine does not model is reported as such, never as GO.
         </p>
+        {!analysis.missionReady ? (
+          <div data-testid="readiness-blockers" className="mt-3 border-l-2 border-accent-amber bg-background-2 p-3 text-sm">
+            <p className="font-medium">What keeps this design from mission-ready</p>
+            <p className="mt-0.5 text-xs text-muted">
+              The engine calls a design mission-ready only when every modelled constraint passes. A FAIL blocks launch; a WATCH
+              still lets you launch but blocks the mission-ready verdict.
+            </p>
+            <ul className="mt-2 space-y-1">
+              {analysis.constraints
+                .filter((c) => c.status === "fail" || c.status === "warning")
+                .map((c) => (
+                  <li key={c.id} className="flex flex-wrap items-baseline gap-2">
+                    <EngStatusChip status={constraintStatus(c)} />
+                    <span className="font-medium">{c.label}</span>
+                    <span className="text-xs text-muted">{c.explanation}</span>
+                    {(c.suggestedActions ?? []).slice(0, 1).map((a) => (
+                      <span key={a.actionId} className="text-xs text-muted">· Engine suggests: {a.label}.</span>
+                    ))}
+                  </li>
+                ))}
+            </ul>
+            <Link href={`/architect/${mission.missionId}#ops-heading`} className="btn btn-secondary mt-2 min-h-8 px-2 text-xs">
+              Fix it in the architect (components and operations plan)
+            </Link>
+          </div>
+        ) : null}
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <span
             data-testid="readiness-verdict"

@@ -3,6 +3,8 @@
 import { CircleAlert, CircleCheck, CircleDot, Circle } from "lucide-react";
 import Link from "next/link";
 
+import { focusLaunchSoon } from "@/lib/launch-focus";
+
 import type { Stage, StageStatus } from "@/lib/progress/progress";
 
 export type StageView = "brief" | "science" | "architect" | "arena" | "readiness" | "control" | "review";
@@ -85,6 +87,7 @@ export function MissionStageNav({
             aria-current={active ? "page" : undefined}
             data-stage-status={status}
             data-testid={`stage-link-${v}`}
+            onClick={flown ? undefined : focusLaunchSoon}
             title={flown ? undefined : "Not flown yet: opens the launch panel in the architect"}
             className={cls}
           >

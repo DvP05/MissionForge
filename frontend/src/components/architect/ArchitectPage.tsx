@@ -23,6 +23,7 @@ import { ConstraintPanel } from "./ConstraintPanel";
 import { DetailTabs } from "./DetailTabs";
 import { EngineeringDashboard, LiveBudgetRail } from "./EngineeringDashboard";
 import { ImpactReport } from "./ImpactReport";
+import { OperationsPanel } from "./OperationsPanel";
 import { ReadinessBoard } from "./ReadinessBoard";
 import { useCatalog } from "./useCatalog";
 
@@ -96,6 +97,7 @@ export function ArchitectPage() {
           <SpacecraftStage mission={mission} index={catalog.index} />
           <ImpactReport index={catalog.index} />
           <ReadinessBoard />
+          <OperationsPanel mission={mission} index={catalog.index} />
           {category === "power" ? <ConceptCard id="lo3" /> : null}
           {category === "propulsion" ? <ConceptCard id="lo4" /> : null}
         </div>

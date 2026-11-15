@@ -14,6 +14,7 @@ import {
   Shapes,
 } from "lucide-react";
 import Link from "next/link";
+import { focusLaunchSoon } from "@/lib/launch-focus";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
@@ -96,7 +97,10 @@ export function StationRail({ onNavigate }: { onNavigate?: () => void }) {
           <Link
             key={s.key}
             href={s.href(missionId, runId)}
-            onClick={onNavigate}
+            onClick={() => {
+              onNavigate?.();
+              if (s.href(missionId, runId).endsWith("#launch")) focusLaunchSoon();
+            }}
             aria-current={active ? "page" : undefined}
             title={note ?? undefined}
             data-testid={`station-${s.key}`}

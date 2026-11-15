@@ -146,3 +146,74 @@ test("phone width: Build / Spacecraft / Budgets tabs keep every zone reachable",
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(0);
 });
+
+test("a refused launch clears once the design is fixed, so a fixed design never flies as experimental", async ({ page }) => {
+  await openArchitect(page);
+  await expect(page.getByTestId("launch-preflight")).toHaveAttribute("data-state", "blocked");
+  await page.getByTestId("launch-button").click();
+  await expect(page.getByTestId("launch-blocked")).toBeVisible();
+  await expect(page.getByTestId("launch-experimental")).toBeVisible();
+
+  // fix the failing link in the architect: the stale refusal and its experimental offer go away
+  await page.getByTestId("category-nav-communications").click();
+  await page.getByTestId("select-comms-xband-medium").click();
+  await page.getByTestId("confirm-change").click();
+  await expect(page.getByTestId("launch-blocked")).toHaveCount(0);
+  await expect(page.getByTestId("launch-experimental")).toHaveCount(0);
+  await expect(page.getByTestId("launch-preflight")).toHaveAttribute("data-state", "ready", { timeout: 30_000 });
+
+  // and a normal launch flies it, not badged experimental
+  await page.getByTestId("launch-button").click();
+  await page.waitForURL(/\/control\//, { timeout: 60_000 });
+  await expect(page.getByTestId("mission-control")).toBeVisible();
+  await expect(page.getByTestId("experimental-badge")).toHaveCount(0);
+});
+
+test("'launch first' links focus the launch button even from the same page", async ({ page }) => {
+  await openArchitect(page);
+  await page.getByTestId("engineering-dashboard").scrollIntoViewIfNeeded();
+  await page.getByTestId("stage-link-control").click();
+  await expect(page.getByTestId("launch-button")).toBeFocused();
+  await expect(page.getByTestId("launch-button")).toBeInViewport();
+});
+
+async function start(page: Page, scenario: string): Promise<string> {
+  await page.goto("/");
+  await page.getByTestId(`scenario-card-${scenario}`).getByRole("button", { name: /start mission/i }).click();
+  await page.waitForURL(/\/mission\/mission-[0-9a-f]{12}$/);
+  return new URL(page.url()).pathname.split("/").pop() as string;
+}
+
+test("Blue Sentinel: the readiness review names the data-return watch, and longer passes make it mission-ready", async ({ page }) => {
+  const id = await start(page, "earth-observation");
+  await page.goto(`/readiness/${id}`);
+  await expect(page.getByTestId("readiness-verdict")).toContainText(/not mission-ready/i, { timeout: 30_000 });
+  await expect(page.getByTestId("readiness-blockers")).toContainText(/data return/i);
+
+  await page.goto(`/architect/${id}`);
+  await expect(page.getByTestId("ops-data-return")).toHaveAttribute("data-status", "WATCH", { timeout: 30_000 });
+  await expect(page.getByTestId("launch-preflight")).toContainText(/keep it from mission-ready; launch is allowed/i);
+  await page.getByTestId("ops-pass").selectOption("90");
+  await expect(page.getByTestId("revision-pill")).toHaveText("Revision 1");
+  await expect(page.getByTestId("ops-data-return")).toHaveAttribute("data-status", "PASS", { timeout: 30_000 });
+  await expect(page.getByTestId("mission-ready-badge")).toHaveText(/^mission-ready$/i);
+
+  await page.goto(`/readiness/${id}`);
+  await expect(page.getByTestId("readiness-verdict")).toContainText(/engine verdict: mission-ready/i, { timeout: 30_000 });
+  await expect(page.getByTestId("readiness-blockers")).toHaveCount(0);
+});
+
+test("Shadowline: a faster radio plus a higher downlink rate clears the watch; rates above the radio are not offered", async ({ page }) => {
+  const id = await start(page, "lunar-polar-scout");
+  await page.goto(`/architect/${id}`);
+  await expect(page.getByTestId("ops-data-return")).toHaveAttribute("data-status", "WATCH", { timeout: 30_000 });
+  // the medium radio tops out at 100 kbit/s: nothing faster is offered
+  await expect(page.getByTestId("ops-rate").locator("option", { hasText: "250 kbit/s" })).toHaveCount(0);
+  await page.getByTestId("category-nav-communications").click();
+  await page.getByTestId("select-comms-xband-highgain").click();
+  await page.getByTestId("confirm-change").click();
+  await expect(page.getByTestId("ops-rate").locator("option", { hasText: "250 kbit/s" })).toHaveCount(1);
+  await page.getByTestId("ops-rate").selectOption("250000");
+  await expect(page.getByTestId("ops-data-return")).toHaveAttribute("data-status", "PASS", { timeout: 30_000 });
+  await expect(page.getByTestId("mission-ready-badge")).toHaveText(/^mission-ready$/i);
+});

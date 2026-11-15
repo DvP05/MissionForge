@@ -13,32 +13,61 @@ estimate, or not modelled. See [LICENSE-NOTICE.md](LICENSE-NOTICE.md).
 
 ## Scenarios
 
-| Scenario | Mission | What it teaches |
-|---|---|---|
-| **Echoes of Origins** (`neo-rendezvous`) | Near-Earth asteroid rendezvous | Targets come from the JPL Small-Body Mission Design API (through the backend only); launch C3 vs spacecraft delta-v |
-| **Shadowline** (`lunar-polar-scout`) | Lunar polar orbiter | Power and thermal in permanently shadowed regions, contact windows |
-| **Blue Sentinel** (`earth-observation`) | Earth observation | Data volume, downlink and storage trades |
+| Scenario | Mission | What it teaches | One way to make the starter design mission-ready |
+|---|---|---|---|
+| **Echoes of Origins** (`neo-rendezvous`) | Near-Earth asteroid rendezvous | Targets come from the JPL Small-Body Mission Design API (through the backend only); launch C3 vs spacecraft delta-v; link budget | Replace the low-gain radio with the medium-gain one |
+| **Shadowline** (`lunar-polar-scout`) | Lunar polar orbiter | Power and thermal near permanently shadowed regions, contact windows, data return | High-gain radio plus a 250 kbit/s downlink rate, or observe less (duty × 0.6, at a science cost) |
+| **Blue Sentinel** (`earth-observation`) | Earth observation | Data volume, downlink and storage trades | Lengthen ground-station passes to 90 min or more |
+
+Each starter design has one deliberate weakness. These fixes were checked against the engine; other designs
+work too.
 
 ## Player journey
 
-1. **Mission hangar** (`/`): continue a saved mission or start a scenario.
-2. **Mission brief** (`/mission/<id>`): science objectives, measurement requirements, and (asteroid
-   scenario) the target picker with a source badge.
-3. **Science lab** (`/science/<id>`): objective → measurement → instrument → engineering consequence →
-   expected return, with the serving instruments highlighted on the spacecraft.
-4. **Architect** (`/architect/<id>`): a 3D spacecraft built from the catalogue (placeholder geometry, not
-   to scale). Install, replace and remove parts; the inspector, live engineering dashboard, budgets and
-   constraints all show the backend analysis of the current design revision. Launch is blocked while a hard
-   constraint fails.
-5. **Trade study** (`/arena/<id>`): Pareto explorer, robustness lab (Monte Carlo), observation schedule.
-6. **Mission control** (`/control/<runId>`): deterministic seeded run, telemetry, 2D mission map,
-   operator decisions, onboard autonomy during communication blackouts, health-monitor residuals.
-7. **Review** (`/review/<runId>`): root causes, counterfactuals, design analyst, and the
-   **Evidence Passport** export (re-importable JSON plus self-contained HTML).
-8. **Archive** (`/archive`): saved designs and flown runs in this browser.
+The app is a mission console: a **station rail** on the left reaches every stage, and a **telemetry strip**
+on top shows the active mission's target, design revision, analysed link margin and readiness (real values
+only). Every mission page also shows the stage rail, the recommended next step, milestones and badges.
 
-How the frontend was rebuilt, and which libraries were used, is described in
-[docs/frontend-design.md](docs/frontend-design.md).
+1. **Command centre** (`/`): continue a saved mission or start a scenario; load the saved demo mission.
+2. **Mission briefing** (`/mission/<id>`): scenario, science objectives, measurement requirements,
+   traceability, and (asteroid scenario) the target picker with a source badge.
+3. **Science lab** (`/science/<id>`): objective → measurement → instrument → engineering consequence →
+   expected return, with the serving instruments highlighted on the 3D spacecraft.
+4. **Mission architect** (`/architect/<id>`):
+   - **Spacecraft:** a 3D model built from the catalogue (placeholder geometry, not to scale; 2D fallback
+     without WebGL), with exploded, technical and subsystem views.
+   - **Changing parts:** explicit **Add / Replace / Remove** with confirmation (old vs new specs, or
+     the measurements a removal would leave uncovered), and **Undo** as a new design revision.
+   - **Impact report:** the engine's before/after values for each change.
+   - **Readiness gates:** GO / WATCH / NO-GO groups of the engine's checks.
+   - **Operations plan:** downlink rate (up to the radio's maximum), pass length and observation duty
+     cycle.
+   - **Live budget rail.**
+   - **Launch:** blocked while a hard constraint fails. A WATCH still allows launch but keeps the design
+     from "mission-ready".
+5. **Trade study** (`/arena/<id>`): Pareto explorer, robustness lab (Monte Carlo) and side-by-side
+   comparison of alternative designs.
+6. **Readiness review** (`/readiness/<id>`):
+   - a gate-by-gate audit with actual / limit / margin for every constraint;
+   - **what blocks the mission-ready verdict**, with a link back to fix it;
+   - flight authorisation (launch).
+7. **Mission control** (`/control/<runId>`): deterministic seeded run, mission map, telemetry bus and
+   history, operator decisions, onboard autonomy during communication blackouts, health-monitor residuals.
+8. **Mission debrief** (`/review/<runId>`): outcome, objectives, score, science returned, margins, root
+   causes, counterfactuals, design analyst, and the **Evidence Passport** export (re-importable JSON plus
+   self-contained HTML).
+9. **Blueprints hangar** (`/archive`): saved designs and flown runs in this browser.
+
+**Mission-ready vs launchable:**
+- the engine calls a design **mission-ready** only when every modelled constraint passes;
+- a **FAIL** blocks a normal launch (an experimental, badged what-if is offered instead);
+- a **WATCH** allows launch but not the mission-ready verdict.
+
+The UI never shows "mission-ready" itself; it only reports the engine's verdict.
+
+The interface follows the "Aerospace Mission Telemetry & Command System" design (graphite panels, machined
+corners, Space Grotesk and JetBrains Mono, self-hosted). How the frontend was built, and which libraries
+were used, is in [docs/frontend-design.md](docs/frontend-design.md).
 
 All calculations run in the Python backend; the frontend never computes an authoritative result and never
 calls JPL directly.
@@ -85,9 +114,18 @@ The script sends requests one at a time and validates every response before writ
 
 ## Demo
 
-Use **Load saved demo mission** on the home page (`data/demo/demo-saved.json`, seed 42) for a
-reliable judging run; it works offline. The rehearsal list is in
-[docs/release-checklist.md](docs/release-checklist.md).
+Use **Load saved demo mission** on the command centre (`data/demo/demo-saved.json`, seed 42) for a
+reliable judging run; it works offline.
+
+A short live route:
+1. Start **Echoes of Origins** and open the architect. The link-margin gate is NO-GO and launch is refused.
+2. Replace the radio with the medium-gain link. The impact report shows link margin FAIL → PASS and the
+   design becomes mission-ready.
+3. Open the readiness review, then launch.
+4. Make a decision in mission control.
+5. Export the Evidence Passport from the debrief.
+
+The rehearsal list is in [docs/release-checklist.md](docs/release-checklist.md).
 
 ## Checks
 
@@ -95,9 +133,11 @@ reliable judging run; it works offline. The rehearsal list is in
 bash scripts/check_all.sh            # or scripts/check_all.ps1 on Windows
 ```
 
-This runs ruff, mypy and pytest for the backend, the catalogue validator, an OpenAPI → TypeScript freshness
-check, and eslint / tsc / `next build` for the frontend. End-to-end tests (Playwright + axe, 1280 px and
-375 px) are separate:
+This runs ruff, mypy and pytest for the backend (1171 tests), the catalogue validator, an OpenAPI →
+TypeScript freshness check, and eslint / tsc / `next build` for the frontend.
+
+End-to-end tests are separate (148 Playwright tests, with axe at 1280 px and 375 px). They also check that
+3D parts never overlap for any bus size, and that the hangar never loads the 3D engine:
 
 ```bash
 cd frontend
@@ -119,9 +159,12 @@ backend/            FastAPI + Pydantic v2 service (all domain calculations)
   app/schemas/      frozen API contracts (see CONTRACTS.md)
   scripts/          catalogue validator, demo package, JPL capture, OpenAPI export
   tests/            unit, integration, contract snapshot and golden tests
-frontend/           Next.js 16 / React 19 / Tailwind / Recharts / Zustand / React Three Fiber UI, Playwright e2e
+frontend/           Next.js 16 / React 19 / Tailwind / Recharts / Zustand UI, React Three Fiber (3D),
+                    anime.js + Motion (animation), Playwright e2e
+  src/lib/spacecraft/  catalogue -> 3D mapping, gates, engineering status (presentation only)
+  src/lib/progress/    stages, badges and challenges from real state
 data/               catalogue, scenario templates and event sets, uncertainty profile, demo, JPL snapshot
-docs/               release checklist and build plan
+docs/               release checklist, frontend design notes, build plan
 src-files/          product, architecture and research specifications
 scripts/            check_all and API type generation
 ```
