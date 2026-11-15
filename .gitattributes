@@ -1,0 +1,5 @@
+# Generated files are written with LF by scripts/gen_api_types; keep them LF on every OS
+# so the API-type freshness check in check_all never trips on line endings.
+backend/openapi.json text eol=lf
+frontend/src/lib/api/schema.d.ts text eol=lf
+*.sh text eol=lf

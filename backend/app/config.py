@@ -37,7 +37,8 @@ class Settings(BaseSettings):
     # app.domain.analysis.orchestrator.ENGINE_VERSION and the catalogue version is the
     # loaded catalogue's own `version`, so an env var can never make them disagree.
 
-    cors_origins: list[str] = ["http://localhost:3000"]
+    # The dev/prod frontend, whether opened as localhost or by IP (both are the same server).
+    cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
     # Request body limit (architecture 13): bodies above this are rejected with 413.
     max_request_bytes: int = 256 * 1024
@@ -62,10 +63,11 @@ DEFAULT_CATALOG_DIR = Path(__file__).resolve().parents[2] / "data" / "catalog"
 # <repo>/data/missions: scenario templates (explicit path passed into the pure domain layer).
 DEFAULT_MISSIONS_DIR = Path(__file__).resolve().parents[2] / "data" / "missions"
 
-# <repo>/data/demo/demo-saved.json: seeded demo mission package (Task 7.5). Not in
-# data/missions, whose every *.json is read as a scenario template.
 # <repo>/data/jpl/demo-snapshot.json: offline JPL snapshot (synthetic until captured, R6).
 DEFAULT_JPL_SNAPSHOT = Path(__file__).resolve().parents[2] / "data" / "jpl" / "demo-snapshot.json"
+
+# <repo>/data/demo/demo-saved.json: seeded demo mission package (Task 7.5). Not in
+# data/missions, whose every *.json is read as a scenario template.
 DEFAULT_DEMO_PACKAGE = Path(__file__).resolve().parents[2] / "data" / "demo" / "demo-saved.json"
 
 # <repo>/data/scenarios: scenario event sets (explicit path passed into the simulation).

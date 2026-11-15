@@ -43,7 +43,10 @@ def test_unhandled_error_maps_to_internal_error_envelope() -> None:
 def test_cors_limited_to_frontend_origin() -> None:
     ok = client.get("/api/health", headers={"Origin": "http://localhost:3000"})
     assert ok.headers.get("access-control-allow-origin") == "http://localhost:3000"
-    bad = client.get("/api/health", headers={"Origin": "http://evil.example"})
+    # the same dev server opened by IP must work too (judging-laptop risk)
+    ip = client.get("/api/health", headers={"Origin": "http://127.0.0.1:3000"})
+    assert ip.headers.get("access-control-allow-origin") == "http://127.0.0.1:3000"
+    bad =client.get("/api/health", headers={"Origin": "http://evil.example"})
     assert "access-control-allow-origin" not in bad.headers
 
 
